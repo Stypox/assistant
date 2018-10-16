@@ -2,3 +2,7 @@
 
 *.exe
 *.o
+
+GPATH
+GTAGS
+GRTAGS
