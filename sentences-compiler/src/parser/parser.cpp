@@ -3,6 +3,8 @@
 #include <fstream>
 #include <iostream>
 
+#include "../lexer/tokenizer.h"
+
 using namespace lexer;
 
 namespace parser {

@@ -4,7 +4,7 @@
 #include <optional>
 #include <filesystem>
 
-#include "../lexer/tokenizer.h"
+#include "../lexer/stream.h"
 #include "constructs.h"
 
 namespace parser {
