@@ -3,7 +3,7 @@
 namespace tokenizer {
 	Token::Token(Type type, std::string value) :
 		type{type}, value{value} {
-		if (type == word) {
+		if (type == letters) {
 			for (auto&& ch : value)
 				ch = tolower(ch);
 		}

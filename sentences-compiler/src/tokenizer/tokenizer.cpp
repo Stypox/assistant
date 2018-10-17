@@ -67,7 +67,7 @@ namespace tokenizer {
 			ch = get();
 
 			if (isLetter(ch))
-				tokenStream.push({Token::word, readWord()});
+				tokenStream.push({Token::letters, readWord()});
 			else if (isGrammar(ch))
 				tokenStream.push({Token::grammar, std::string{1, ch}});
 			else if (ch == '\n') {

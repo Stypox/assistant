@@ -7,7 +7,7 @@ namespace tokenizer {
 	struct Token {
 		enum Type : char {
 			empty,
-			word,
+			letters,
 			grammar,
 			code,
 		};
