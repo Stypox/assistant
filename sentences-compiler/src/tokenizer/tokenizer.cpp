@@ -52,10 +52,10 @@ namespace tokenizer {
 			unget();
 			return word;
 		};
-		auto readCode = [&]{
-			std::string code;
-			std::getline(input, code);
-			return code + "\n";
+		auto readLine = [&]{
+			std::string line;
+			std::getline(input, line);
+			return line;
 		};
 		auto skipLine = [&]{
 			do ch = get();
@@ -76,7 +76,7 @@ namespace tokenizer {
 
 				ch = get();
 				if (ch == '\t')
-					tokenStream.push({Token::code, readCode(), currentLine});
+					tokenStream.push({Token::code, readLine(), currentLine});
 				unget();
 			}
 			else if (ch == '#')
