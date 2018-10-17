@@ -67,16 +67,16 @@ namespace tokenizer {
 			ch = get();
 
 			if (isLetter(ch))
-				tokenStream.push({Token::letters, readWord()});
+				tokenStream.push({Token::letters, readWord(), currentLine});
 			else if (isGrammar(ch))
-				tokenStream.push({Token::grammar, std::string{1, ch}});
+				tokenStream.push({Token::grammar, std::string{1, ch}, currentLine});
 			else if (ch == '\n') {
 				++currentLine;
 				currentChar = 0;
 
 				ch = get();
 				if (ch == '\t')
-					tokenStream.push({Token::code, readCode()});
+					tokenStream.push({Token::code, readCode(), currentLine});
 				unget();
 			}
 			else if (ch == '#')
