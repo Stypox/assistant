@@ -10,6 +10,7 @@ namespace tokenizer {
 			letters,
 			grammar,
 			code,
+			include,
 		};
 
 		Type type;

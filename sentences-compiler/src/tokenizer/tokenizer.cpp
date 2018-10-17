@@ -77,6 +77,8 @@ namespace tokenizer {
 				ch = get();
 				if (ch == '\t')
 					tokenStream.push({Token::code, readLine(), currentLine});
+				else if (ch == '-')
+					tokenStream.push({Token::include, readLine(), currentLine});
 				unget();
 			}
 			else if (ch == '#')
