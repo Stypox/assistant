@@ -26,8 +26,8 @@ namespace tokenizer {
 
 	Stream tokenize(std::istream& input) {
 		Stream tokenStream;
-		char ch;
-		unsigned int currentLine = 1,
+		char ch = '\n'; // simulate newline
+		unsigned int currentLine = 0,
 			currentChar = 0;
 
 		auto get = [&]{
@@ -64,8 +64,6 @@ namespace tokenizer {
 		};
 
 		while (input) {
-			ch = get();
-
 			if (isLetter(ch))
 				tokenStream.push({Token::letters, readWord(), currentLine});
 			else if (isGrammar(ch))
@@ -85,6 +83,8 @@ namespace tokenizer {
 				skipLine();
 			else if (!isSpace(ch))
 				throw std::runtime_error{"Invalid syntax: Unknown character '" + std::string(1, ch) + "' at line " + std::to_string(currentLine) + ", column " + std::to_string(currentChar)};
+			
+			ch = get();
 		}
 
 		return tokenStream;
