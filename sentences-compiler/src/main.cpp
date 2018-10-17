@@ -1,13 +1,11 @@
 #include <iostream>
 
-#include "tokenizer/tokenizer.h"
+#include "parser/parser.h"
 
 int main() {
 	try {
-		tokenizer::Stream ts = tokenizer::tokenize(std::cin);
-		for (auto token = ts.get(); token; token = ts.get()) {
-			std::cout << static_cast<int>(token.type) << " " << token.value << "\n";
-		}
+		parser::Parser parser;
+		parser.parse(std::cin);
 	}
 	catch (const std::runtime_error& e) {
 		std::cout << e.what();
