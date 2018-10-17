@@ -17,7 +17,7 @@ namespace tokenizer {
 		std::string value;
 		unsigned int line;
 
-		Token(Type type, std::string value, unsigned int line);
+		Token(Type type, const std::string& value, unsigned int line);
 
 		inline char ch() { return value[0]; }
 		inline operator bool() { return type != empty; }

@@ -1,8 +1,8 @@
 #include "token.h"
 
 namespace tokenizer {
-	Token::Token(Type type, std::string value, unsigned int line) :
-		type{type}, value{value}, line{line} {
+	Token::Token(Type p_type, const std::string& p_value, unsigned int p_line) :
+		type{p_type}, value{p_value}, line{p_line} {
 		if (type == letters) {
 			for (auto&& ch : value)
 				ch = tolower(ch);
