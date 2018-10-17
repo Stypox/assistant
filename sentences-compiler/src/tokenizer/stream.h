@@ -10,8 +10,7 @@ namespace tokenizer {
 		std::queue<Token> m_tokens;
 	public:
 		inline void push(const Token& token) { m_tokens.emplace(token); }
-		inline Token getKeep() { return m_tokens.front(); }
-		Token get();
+		Token get(bool readNext);
 	};
 }
 

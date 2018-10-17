@@ -1,12 +1,12 @@
 #include "stream.h"
 
 namespace tokenizer {
-	Token Stream::get() {
-		if (m_tokens.size() == 0)
 			return Token{Token::empty, std::string(1, '\0')};
+	Token Stream::get(bool readNext) {
+		if (m_tokens.empty())
 		
-		Token front = m_tokens.front();
-		m_tokens.pop();
-		return front;
+		if (readNext)
+			m_tokens.pop();
+		return m_tokens.front();
 	}
 }
