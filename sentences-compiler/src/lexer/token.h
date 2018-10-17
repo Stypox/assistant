@@ -3,7 +3,7 @@
 
 #include <string>
 
-namespace tokenizer {	
+namespace lexer {	
 	struct Token {
 		enum Type : char {
 			empty,

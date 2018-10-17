@@ -6,7 +6,7 @@ SRC = ./src/
 
 EXECUTABLE = sentence-compiler.exe
 OBJECT_FILES = $(SRC)main.o \
-	$(SRC)tokenizer/tokenizer.o $(SRC)tokenizer/token.o $(SRC)tokenizer/stream.o \
+	$(SRC)lexer/tokenizer.o $(SRC)lexer/token.o $(SRC)lexer/stream.o \
 	$(SRC)parser/parser.o $(SRC)parser/constructs.o
 
 # executable
@@ -17,13 +17,13 @@ $(EXECUTABLE): $(OBJECT_FILES)
 $(SRC)main.o: $(SRC)main.cpp $(SRC)parser/parser.o
 	$(CXX) $(CXXFLAGS) -o $(SRC)main.o -c $(SRC)main.cpp
 
-# src/tokenizer/
-$(SRC)tokenizer/tokenizer.o: $(SRC)tokenizer/tokenizer.cpp $(SRC)tokenizer/tokenizer.h $(SRC)tokenizer/stream.o
-	$(CXX) $(CXXFLAGS) -o $(SRC)tokenizer/tokenizer.o -c $(SRC)tokenizer/tokenizer.cpp
-$(SRC)tokenizer/stream.o: $(SRC)tokenizer/stream.cpp $(SRC)tokenizer/stream.h $(SRC)tokenizer/token.o
-	$(CXX) $(CXXFLAGS) -o $(SRC)tokenizer/stream.o -c $(SRC)tokenizer/stream.cpp
-$(SRC)tokenizer/token.o: $(SRC)tokenizer/token.cpp $(SRC)tokenizer/token.h
-	$(CXX) $(CXXFLAGS) -o $(SRC)tokenizer/token.o -c $(SRC)tokenizer/token.cpp
+# src/lexer/
+$(SRC)lexer/tokenizer.o: $(SRC)lexer/tokenizer.cpp $(SRC)lexer/tokenizer.h $(SRC)lexer/stream.o
+	$(CXX) $(CXXFLAGS) -o $(SRC)lexer/tokenizer.o -c $(SRC)lexer/tokenizer.cpp
+$(SRC)lexer/stream.o: $(SRC)lexer/stream.cpp $(SRC)lexer/stream.h $(SRC)lexer/token.o
+	$(CXX) $(CXXFLAGS) -o $(SRC)lexer/stream.o -c $(SRC)lexer/stream.cpp
+$(SRC)lexer/token.o: $(SRC)lexer/token.cpp $(SRC)lexer/token.h
+	$(CXX) $(CXXFLAGS) -o $(SRC)lexer/token.o -c $(SRC)lexer/token.cpp
 
 #src/parser/
 $(SRC)parser/parser.o: $(SRC)parser/parser.cpp $(SRC)parser/parser.h $(SRC)parser/constructs.o

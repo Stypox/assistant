@@ -1,6 +1,6 @@
 #include "stream.h"
 
-namespace tokenizer {
+namespace lexer {
 	Token Stream::get(bool readNext) {
 		if (m_tokens.empty())
 			return Token{Token::empty, std::string(1, '\0'), 0};

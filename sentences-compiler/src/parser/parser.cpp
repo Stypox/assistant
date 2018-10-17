@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iostream>
 
-using namespace tokenizer;
+using namespace lexer;
 
 namespace parser {
 	std::string Parser::readAllFile(std::filesystem::path path, unsigned int tokenLine) {

@@ -4,12 +4,12 @@
 #include <optional>
 #include <filesystem>
 
-#include "../tokenizer/tokenizer.h"
+#include "../lexer/tokenizer.h"
 #include "constructs.h"
 
 namespace parser {
 	class Parser {
-		tokenizer::Stream m_ts;
+		lexer::Stream m_ts;
 		std::vector<Section> m_sections;
 		bool m_readNext = false;
 

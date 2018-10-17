@@ -2,7 +2,7 @@
 
 #include <string>
 
-namespace tokenizer {
+namespace lexer {
 	bool isSpace(char ch) {
 		switch (ch) {
 			case ' ': case '\f': case '\r': case '\t': case '\v':

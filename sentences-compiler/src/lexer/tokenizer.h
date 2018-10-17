@@ -5,7 +5,7 @@
 
 #include "stream.h"
 
-namespace tokenizer {
+namespace lexer {
 	Stream tokenize(std::istream& input);
 }
 

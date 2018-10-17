@@ -5,7 +5,7 @@
 
 #include "token.h"
 
-namespace tokenizer {	
+namespace lexer {	
 	class Stream {
 		std::queue<Token> m_tokens;
 	public:
