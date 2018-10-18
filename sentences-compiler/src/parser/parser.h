@@ -21,7 +21,6 @@ namespace parser {
 		std::optional<Sentence> sentence();
 		std::vector<OrWord> words();
 		std::optional<OrWord> orWord();
-		std::optional<ImportanceWord> importanceWord();
 		Code code();
 
 	public:

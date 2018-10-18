@@ -13,18 +13,11 @@ namespace parser {
 		friend std::ostream& operator<< (std::ostream& stream, const Code& code);
 	};
 
-	class ImportanceWord {
-		std::string m_letters;
+	class OrWord {
+		std::vector<std::string> m_words;
 		bool m_required;
 	public:
-		ImportanceWord(const std::string& letters, bool required);
-		friend std::ostream& operator<< (std::ostream& stream, const ImportanceWord& importanceWord);
-	};
-
-	class OrWord {
-		std::vector<ImportanceWord> m_importanceWords;
-	public:
-		OrWord(const std::vector<ImportanceWord>& importanceWords);
+		OrWord(const std::vector<std::string>& words, bool required);
 		friend std::ostream& operator<< (std::ostream& stream, const OrWord& orWord);
 	};
 

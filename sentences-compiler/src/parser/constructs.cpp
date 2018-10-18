@@ -5,10 +5,8 @@ namespace parser {
 		m_sentences{sentences}, m_code{code} {}
 	Sentence::Sentence(const std::vector<OrWord>& orWords) :
 		m_orWords{orWords} {}
-	OrWord::OrWord(const std::vector<ImportanceWord>& importanceWords) :
-		m_importanceWords{importanceWords} {}
-	ImportanceWord::ImportanceWord(const std::string& letters, bool required) :
-		m_letters{letters}, m_required{required} {}
+	OrWord::OrWord(const std::vector<std::string>& words, bool required) :
+		m_words{words}, m_required{required} {}
 	Code::Code(const std::string& lines) :
 		m_lines{lines} {}
 
@@ -27,16 +25,13 @@ namespace parser {
 		return stream;
 	}
 	std::ostream& operator<< (std::ostream& stream, const OrWord& orWord) {
-		stream << orWord.m_importanceWords[0];
-		for (auto it = orWord.m_importanceWords.begin() + 1; it < orWord.m_importanceWords.end(); ++it)
+		if (!orWord.m_required)
+			stream << "[";
+		stream << orWord.m_words[0];
+		for (auto it = orWord.m_words.begin() + 1; it < orWord.m_words.end(); ++it)
 			stream << "/" << *it;
-		return stream;
-	}
-	std::ostream& operator<< (std::ostream& stream, const ImportanceWord& importanceWord) {
-		if (importanceWord.m_required)
-			stream << importanceWord.m_letters;
-		else
-			stream << "[" << importanceWord.m_letters << "]";
+		if (!orWord.m_required)
+			stream << "]";
 		return stream;
 	}
 	std::ostream& operator<< (std::ostream& stream, const Code& code) {

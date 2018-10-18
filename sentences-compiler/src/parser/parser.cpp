@@ -77,46 +77,32 @@ namespace parser {
 		return resWords;
 	}
 	std::optional<OrWord> Parser::orWord() {
-		std::vector<ImportanceWord> resImportanceWords;
-		auto resImportanceWord = importanceWord();
-		if (!resImportanceWord.has_value())
-			return {};
-		resImportanceWords.push_back(*resImportanceWord);
-		
-		while (1) {
-			Token token = m_ts.get(m_readNext);
-			if (token.type == Token::grammar && token.ch() == '|') {
-				m_readNext = true;
-				resImportanceWord = importanceWord();
-				if (resImportanceWord.has_value())
-					resImportanceWords.push_back(*resImportanceWord);
-				else
-					throw std::runtime_error{"Grammar error: excepted importanceWord after '|' token on line " + std::to_string(token.line)};
-			}
-			else {
-				m_readNext = false;
-				break;
-			}
-		}
-		return std::optional<OrWord>{std::in_place, resImportanceWords};
-	}
-	std::optional<ImportanceWord> Parser::importanceWord() {
+		std::vector<std::string> resWords;
+
 		Token token = m_ts.get(m_readNext);
-		if (token.type == Token::letters) {
-			std::string resLetters = token.value;
-			token = m_ts.get(true);
-			if (token.type == Token::grammar && token.ch() == '?') {
-				m_readNext = true;
-				return std::optional<ImportanceWord>{std::in_place, resLetters, false};
-			}
-			else {
-				m_readNext = false;
-				return std::optional<ImportanceWord>{std::in_place, resLetters, true};
-			}
-		}
-		else {
+		if (!(token.type == Token::letters)) {
 			m_readNext = false;
 			return {};
+		}
+		resWords.push_back(token.value);
+		
+		while (1) {
+			token = m_ts.get(true);
+			if (token.type == Token::grammar && token.ch() == '|') {
+				token = m_ts.get(true);
+				if (token.type == Token::letters)
+					resWords.push_back(token.value);
+				else
+					throw std::runtime_error{"Grammar error: excepted letters after '|' token on line " + std::to_string(token.line)};
+			}
+			else if (token.type == Token::grammar && token.ch() == '?') {
+				m_readNext = true;
+				return std::optional<OrWord>{std::in_place, resWords, false};
+			}
+			else {
+				m_readNext = false;
+				return std::optional<OrWord>{std::in_place, resWords, true};
+			}
 		}
 	}
 	Code Parser::code() {
