@@ -173,7 +173,7 @@ namespace parser {
 		}
 
 		if (noCode)
-			throw std::runtime_error{"Grammar error: missing code after section " + std::to_string(m_sections.size() + 1)};
+			throw std::runtime_error{"Grammar error:" + token.position() + ": missing code after section " + std::to_string(m_sections.size() + 1)};
 		m_readNext = false;
 		return Code{lines};
 	}
