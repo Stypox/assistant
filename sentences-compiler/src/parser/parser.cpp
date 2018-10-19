@@ -8,11 +8,11 @@
 using namespace lexer;
 
 namespace parser {
-	std::string Parser::readAllFile(std::filesystem::path path, unsigned int tokenLine) {
+	std::string readAllFile(std::filesystem::path path, std::string tokenPosition) {
 		if (std::filesystem::is_directory(path))
-			throw std::runtime_error{"Filesystem error: file \"" + path.string() + "\" specified on line " + std::to_string(tokenLine) + " is a directory"};
+			throw std::runtime_error{"Filesystem error:" + tokenPosition + ": file \"" + path.string() + "\" is a directory"};
 		else if (!std::filesystem::exists(path))
-			throw std::runtime_error{"Filesystem error: file \"" + path.string() + "\" specified on line " + std::to_string(tokenLine) + " does not exist"};
+			throw std::runtime_error{"Filesystem error:" + tokenPosition + ": file \"" + path.string() + "\" does not exist"};
 		
 		std::string code;
 		size_t fileSize = std::filesystem::file_size(path);
@@ -20,7 +20,7 @@ namespace parser {
 
 		std::ifstream file{path, std::ios::binary};
 		if (!file.is_open())
-			throw std::runtime_error{"Filesystem error: unable to open file \"" + path.string() + "\" specified on line " + std::to_string(tokenLine)};
+			throw std::runtime_error{"Filesystem error:" + tokenPosition + ": unable to open file \"" + path.string() + "\""};
 		file.read(code.data(), fileSize);
 
 		if (code.empty() || code.back() != '\n')
@@ -38,8 +38,8 @@ namespace parser {
 				m_capturingSections.push_back(std::get<CapturingSection>(*resSection));
 			resSection = section();
 		}
-		if (Token token = m_ts.get(false); token)
-			throw std::runtime_error("Grammar error: expected sentence but got token \"" + token.value + "\" on line " + std::to_string(token.line));
+		if (Token token = m_ts.get(false); !token.empty())
+			throw std::runtime_error("Grammar error:" + token.position() + ": expected sentence but got token \"" + token.str() + "\"");
 	}
 	std::optional<std::variant<Section, CapturingSection>> Parser::section() {
 		auto resSentences = sentences();
@@ -74,14 +74,14 @@ namespace parser {
 		else if (resSentences.empty())
 			return resCapturingSentences;
 		else
-			throw std::runtime_error{"Grammar error: sentences with and without capturing groups in the same section are not allowed, on line " + std::to_string(m_ts.get(false).line)};
+			throw std::runtime_error{"Grammar error:" + m_ts.get(false).position() + ": sentences with and without capturing groups in the same section are not allowed"};
 	}
 	std::optional<std::variant<Sentence, CapturingSentence>> Parser::sentence() {
 		auto [resOrWordsBefore, resOrWordsAfter, hasCapturingGroup] = words();
 		if (resOrWordsBefore.empty() && resOrWordsAfter.empty())
 			return {};
 
-		if (Token token = m_ts.get(m_readNext); token.type == Token::grammar && token.ch() == ';') {
+		if (Token token = m_ts.get(m_readNext); token == ';') {
 			m_readNext = true;
 			if (hasCapturingGroup)
 				return std::optional<std::variant<Sentence, CapturingSentence>>{std::in_place, CapturingSentence{resOrWordsBefore, resOrWordsAfter}};
@@ -89,7 +89,7 @@ namespace parser {
 				return std::optional<std::variant<Sentence, CapturingSentence>>{std::in_place, Sentence{resOrWordsBefore}};
 		}
 		else {
-			throw std::runtime_error{"Grammar error: excepted ';' but got \"" + token.value + "\" at the end of sentence on line " + std::to_string(token.line)};
+			throw std::runtime_error{"Grammar error:" + token.position() + ": excepted ';' but got \"" + token.str() + "\" at the end of sentence"};
 		}
 	}
 	std::tuple<std::vector<OrWord>, std::vector<OrWord>, bool> Parser::words() {
@@ -99,7 +99,7 @@ namespace parser {
 			auto [resWord, isCapturingGroup] = orWord();
 			if (isCapturingGroup) {
 				if (hasCapturingGroup)
-					throw std::runtime_error{"Grammar error: only one capturing group per sentence is allowed, on line " + std::to_string(m_ts.get(false).line)};
+					throw std::runtime_error{"Grammar error:" + m_ts.get(false).position() + ": only one capturing group per sentence is allowed"};
 
 				hasCapturingGroup = true;
 				continue;
@@ -121,29 +121,29 @@ namespace parser {
 		std::vector<std::string> resWords;
 
 		Token token = m_ts.get(m_readNext);
-		if (token.type == Token::grammar && token.ch() == '.') {
+		if (token == '.') {
 			token = m_ts.get(m_readNext);
-			if (token.type == Token::grammar && token.ch() == '.')
+			if (token == '.')
 				return {{}, true};
 			else
-				throw std::runtime_error{"Grammar error: capturing group is represented by two points \"..\" but there is one alone on line " + std::to_string(token.line)};
+				throw std::runtime_error{"Grammar error:" + token.position() + ": capturing group is represented by two points \"..\" but there is one alone"};
 		}
-		else if (token.type != Token::letters) {
+		else if (token != Token::letters) {
 			m_readNext = false;
 			return {{}, false};
 		}
-		resWords.push_back(token.value);
+		resWords.push_back(token.str());
 		
 		while (1) {
 			token = m_ts.get(true);
-			if (token.type == Token::grammar && token.ch() == '|') {
+			if (token == '|') {
 				token = m_ts.get(true);
-				if (token.type == Token::letters)
-					resWords.push_back(token.value);
+				if (token == Token::letters)
+					resWords.push_back(token.str());
 				else
-					throw std::runtime_error{"Grammar error: excepted letters after '|' token on line " + std::to_string(token.line)};
+					throw std::runtime_error{"Grammar error:" + token.position() + ": excepted letters after '|' token"};
 			}
-			else if (token.type == Token::grammar && token.ch() == '?') {
+			else if (token == '?') {
 				m_readNext = true;
 				return {std::optional<OrWord>{std::in_place, resWords, false}, false};
 			}
@@ -159,12 +159,12 @@ namespace parser {
 		
 		Token token = m_ts.get(m_readNext);
 		while (1) {
-			if (token.type == Token::code) {
-				lines += token.value + "\n";
+			if (token == Token::code) {
+				lines += token.str() + "\n";
 				noCode = false;
 			}
-			else if (token.type == Token::include) {
-				lines += readAllFile(token.value, token.line);
+			else if (token == Token::include) {
+				lines += readAllFile(token.str(), token.position());
 				noCode = false;
 			}
 			else

@@ -14,8 +14,6 @@ namespace parser {
 		std::vector<Section> m_sections;
 		std::vector<CapturingSection> m_capturingSections;
 		bool m_readNext = false;
-
-		std::string readAllFile(std::filesystem::path path, unsigned int tokenLine);
 		
 		void																				sections();
 		std::optional<std::variant<Section, CapturingSection>>								section();

@@ -65,21 +65,21 @@ namespace lexer {
 
 		while (input) {
 			if (isLetter(ch))
-				tokenStream.push({Token::letters, readWord(), currentLine});
+				tokenStream.push({Token::letters, readWord(), currentLine, currentChar});
 			else if (isGrammar(ch))
-				tokenStream.push({Token::grammar, {ch}, currentLine});
+				tokenStream.push({Token::grammar, {ch}, currentLine, currentChar});
 			else if (ch == '\n') {
 				++currentLine;
 				currentChar = 0;
 
 				ch = get();
 				if (ch == '\t')
-					tokenStream.push({Token::code, readLine(), currentLine});
+					tokenStream.push({Token::code, readLine(), currentLine, currentChar});
 				else {
 					while (isSpace(ch))
 						ch = get();
 					if (ch == '-')
-						tokenStream.push({Token::include, readLine(), currentLine});
+						tokenStream.push({Token::include, readLine(), currentLine, currentChar});
 				}
 				unget();
 			}

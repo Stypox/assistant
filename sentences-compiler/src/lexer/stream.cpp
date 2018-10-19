@@ -3,7 +3,7 @@
 namespace lexer {
 	Token Stream::get(bool readNext) {
 		if (m_tokens.empty())
-			return Token{Token::empty, std::string(1, '\0'), 0};
+			return {};
 		
 		if (readNext)
 			m_tokens.pop();

@@ -4,23 +4,33 @@
 #include <string>
 
 namespace lexer {	
-	struct Token {
+	class Token {
+	public:
 		enum Type : char {
-			empty,
-			letters,
-			grammar,
-			code,
-			include,
+			letters = 1,
+			grammar = 2,
+			code = 3,
+			include = 4,
 		};
 
-		Type type;
-		std::string value;
-		unsigned int line;
+	private:
+		Type m_type;
+		std::string m_value;
+		unsigned int m_line, m_column;
+	
+	public:
+		Token();
+		Token(Type type, const std::string& value, unsigned int line, unsigned int column);
 
-		Token(Type type, const std::string& value, unsigned int line);
+		std::string str() const;
 
-		inline char ch() { return value[0]; }
-		inline operator bool() { return type != empty; }
+		bool empty() const;
+		bool operator==(Type type) const;
+		bool operator==(char ch) const;
+		bool operator!=(Type type) const;
+		bool operator!=(char ch) const;
+
+		std::string position() const;
 	};
 }
 
