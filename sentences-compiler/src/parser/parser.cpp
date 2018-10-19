@@ -32,25 +32,26 @@ namespace parser {
 	void Parser::sections() {
 		auto resSection = section();
 		while (resSection.has_value()) {
-			if (std::holds_alternative<Section>(*resSection))
+			if (std::holds_alternative<Section>(*resSection)) // this is a normal section
 				m_sections.push_back(std::get<Section>(*resSection));
-			else
+			else // this section has capturing groups
 				m_capturingSections.push_back(std::get<CapturingSection>(*resSection));
 			resSection = section();
 		}
-		if (Token token = m_ts.get(false); !token.empty())
+		if (Token token = m_ts.get(false); !token.empty()) // there are still tokens left after all has been processed. This means an unexpected token was read.
 			throw std::runtime_error("Grammar error:" + token.position() + ": expected sentence but got token \"" + token.str() + "\"");
 	}
 	std::optional<std::variant<Section, CapturingSection>> Parser::section() {
 		auto resSentences = sentences();
 		if (resSentences.has_value()) {
 			auto resCode = code();
-			if (std::holds_alternative<std::vector<Sentence>>(*resSentences))
+			if (std::holds_alternative<std::vector<Sentence>>(*resSentences)) // this is a normal section
 				return Section{std::get<std::vector<Sentence>>(*resSentences), resCode};
-			else
+			else // this section has capturing groups
 				return CapturingSection{std::get<std::vector<CapturingSentence>>(*resSentences), resCode};
 		}
 		else {
+			// no sentence was read
 			return {};
 		}
 	}
@@ -60,32 +61,33 @@ namespace parser {
 
 		auto resSentence = sentence();
 		while (resSentence.has_value()) {
-			if (std::holds_alternative<Sentence>(*resSentence))
+			// while sentences are being read
+			if (std::holds_alternative<Sentence>(*resSentence)) // this sentence contains a capturing group
 				resSentences.push_back(std::get<Sentence>(*resSentence));
-			else
+			else // this sentence does not contain a capturing group
 				resCapturingSentences.push_back(std::get<CapturingSentence>(*resSentence));
 			resSentence = sentence();
 		}
 
-		if (resCapturingSentences.empty() && resSentences.empty())
+		if (resCapturingSentences.empty() && resSentences.empty()) // no sentence was read
 			return {};
-		if (resCapturingSentences.empty())
+		if (resCapturingSentences.empty()) // only normal sencences were read. This is a normal section.
 			return resSentences;
-		else if (resSentences.empty())
+		else if (resSentences.empty()) // only capturing sencences were read. This section has capturing groups
 			return resCapturingSentences;
-		else
+		else // both normal and capturing sentences were read
 			throw std::runtime_error{"Grammar error:" + m_ts.get(false).position() + ": sentences with and without capturing groups in the same section are not allowed"};
 	}
 	std::optional<std::variant<Sentence, CapturingSentence>> Parser::sentence() {
 		auto [resOrWordsBefore, resOrWordsAfter, hasCapturingGroup] = words();
-		if (resOrWordsBefore.empty() && resOrWordsAfter.empty())
+		if (resOrWordsBefore.empty() && resOrWordsAfter.empty()) // no sentence was read
 			return {};
 
 		if (Token token = m_ts.get(m_readNext); token == ';') {
 			m_readNext = true;
-			if (hasCapturingGroup)
+			if (hasCapturingGroup) // this sentence contains a capturing group
 				return std::optional<std::variant<Sentence, CapturingSentence>>{std::in_place, CapturingSentence{resOrWordsBefore, resOrWordsAfter}};
-			else
+			else // this sentence does not contain a capturing group
 				return std::optional<std::variant<Sentence, CapturingSentence>>{std::in_place, Sentence{resOrWordsBefore}};
 		}
 		else {
@@ -95,9 +97,11 @@ namespace parser {
 	std::tuple<std::vector<OrWord>, std::vector<OrWord>, bool> Parser::words() {
 		bool hasCapturingGroup = false;
 		std::vector<OrWord> resOrWordsBefore, resOrWordsAfter;
+
 		while (1) {
 			auto [resWord, isCapturingGroup] = orWord();
 			if (isCapturingGroup) {
+				// a capturing group was read
 				if (hasCapturingGroup)
 					throw std::runtime_error{"Grammar error:" + m_ts.get(false).position() + ": only one capturing group per sentence is allowed"};
 
@@ -106,12 +110,13 @@ namespace parser {
 			}
 			else {
 				if (resWord.has_value()) {
+					// a word was read
 					if (hasCapturingGroup)
 						resOrWordsAfter.push_back(*resWord);
 					else
 						resOrWordsBefore.push_back(*resWord);
 				}
-				else
+				else // no word was read
 					break;
 			}
 		}
@@ -122,6 +127,7 @@ namespace parser {
 
 		Token token = m_ts.get(m_readNext);
 		if (token == '.') {
+			// this word is a capturing group
 			token = m_ts.get(m_readNext);
 			if (token == '.')
 				return {{}, true};
@@ -137,6 +143,7 @@ namespace parser {
 		while (1) {
 			token = m_ts.get(true);
 			if (token == '|') {
+				// this word can be one of the or-red list (e.g. wa|wb|wc) 
 				token = m_ts.get(true);
 				if (token == Token::letters)
 					resWords.push_back(token.str());
@@ -144,6 +151,7 @@ namespace parser {
 					throw std::runtime_error{"Grammar error:" + token.position() + ": excepted letters after '|' token"};
 			}
 			else if (token == '?') {
+				// word is not required (e.g. word?)
 				m_readNext = true;
 				return {std::optional<OrWord>{std::in_place, resWords, false}, false};
 			}
@@ -164,6 +172,7 @@ namespace parser {
 				noCode = false;
 			}
 			else if (token == Token::include) {
+				// read code from file
 				lines += readAllFile(token.str(), token.position());
 				noCode = false;
 			}
