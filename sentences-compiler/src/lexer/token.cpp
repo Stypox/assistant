@@ -37,6 +37,6 @@ namespace lexer {
 	}
 
 	std::string Token::position() const {
-		return std::to_string(m_line) + ":" + std::to_string(m_column);
+		return (m_line == 0) ? (" end of file") : (std::to_string(m_line) + ":" + std::to_string(m_column));
 	}
 }
