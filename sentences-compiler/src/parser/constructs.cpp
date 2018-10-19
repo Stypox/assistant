@@ -3,8 +3,12 @@
 namespace parser {
 	Section::Section(const std::vector<Sentence>& sentences, const Code& code) :
 		m_sentences{sentences}, m_code{code} {}
+	CapturingSection::CapturingSection(const std::vector<CapturingSentence>& sentences, const Code& code) :
+		m_sentences{sentences}, m_code{code} {}
 	Sentence::Sentence(const std::vector<OrWord>& orWords) :
 		m_orWords{orWords} {}
+	CapturingSentence::CapturingSentence(const std::vector<OrWord>& orWordsBefore, const std::vector<OrWord>& orWordsAfter) :
+		m_orWordsBefore{orWordsBefore}, m_orWordsAfter{orWordsAfter} {}
 	OrWord::OrWord(const std::vector<std::string>& words, bool required) :
 		m_words{words}, m_required{required} {}
 	Code::Code(const std::string& lines) :
@@ -17,10 +21,26 @@ namespace parser {
 			stream << "\n" << sentence;
 		stream << "\n" << section.m_code;
 		return stream;
-	}	
+	}
+	std::ostream& operator<< (std::ostream& stream, const CapturingSection& section) {
+		stream << "SECTION (with capturing group):";
+		for (auto&& sentence : section.m_sentences)
+			stream << "\n" << sentence;
+		stream << "\n" << section.m_code;
+		return stream;
+	}
 	std::ostream& operator<< (std::ostream& stream, const Sentence& sentence) {
 		stream << "SENTENCE:";
 		for (auto&& orWord : sentence.m_orWords)
+			stream << " " << orWord;
+		return stream;
+	}
+	std::ostream& operator<< (std::ostream& stream, const CapturingSentence& sentence) {
+		stream << "SENTENCE:";
+		for (auto&& orWord : sentence.m_orWordsBefore)
+			stream << " " << orWord;
+		stream << " ...";
+		for (auto&& orWord : sentence.m_orWordsAfter)
 			stream << " " << orWord;
 		return stream;
 	}

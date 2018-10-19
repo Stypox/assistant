@@ -32,57 +32,105 @@ namespace parser {
 	void Parser::sections() {
 		auto resSection = section();
 		while (resSection.has_value()) {
-			m_sections.push_back(*resSection);
+			if (std::holds_alternative<Section>(*resSection))
+				m_sections.push_back(std::get<Section>(*resSection));
+			else
+				m_capturingSections.push_back(std::get<CapturingSection>(*resSection));
 			resSection = section();
 		}
 		if (Token token = m_ts.get(false); token)
 			throw std::runtime_error("Grammar error: expected sentence but got token \"" + token.value + "\" on line " + std::to_string(token.line));
 	}
-	std::optional<Section> Parser::section() {
+	std::optional<std::variant<Section, CapturingSection>> Parser::section() {
 		auto resSentences = sentences();
-		if (resSentences.empty())
+		if (resSentences.has_value()) {
+			auto resCode = code();
+			if (std::holds_alternative<std::vector<Sentence>>(*resSentences))
+				return Section{std::get<std::vector<Sentence>>(*resSentences), resCode};
+			else
+				return CapturingSection{std::get<std::vector<CapturingSentence>>(*resSentences), resCode};
+		}
+		else {
 			return {};
-		else 
-			return std::optional<Section>{std::in_place, resSentences, code()};
+		}
 	}
-	std::vector<Sentence> Parser::sentences() {
+	std::optional<std::variant<std::vector<Sentence>, std::vector<CapturingSentence>>> Parser::sentences() {
 		std::vector<Sentence> resSentences;
+		std::vector<CapturingSentence> resCapturingSentences;
+
 		auto resSentence = sentence();
 		while (resSentence.has_value()) {
-			resSentences.push_back(*resSentence);
+			if (std::holds_alternative<Sentence>(*resSentence))
+				resSentences.push_back(std::get<Sentence>(*resSentence));
+			else
+				resCapturingSentences.push_back(std::get<CapturingSentence>(*resSentence));
 			resSentence = sentence();
 		}
-		return resSentences;
+
+		if (resCapturingSentences.empty() && resSentences.empty())
+			return {};
+		if (resCapturingSentences.empty())
+			return resSentences;
+		else if (resSentences.empty())
+			return resCapturingSentences;
+		else
+			throw std::runtime_error{"Grammar error: sentences with and without capturing groups in the same section are not allowed, on line " + std::to_string(m_ts.get(false).line)};
 	}
-	std::optional<Sentence> Parser::sentence() {
-		auto resWords = words();
-		if (resWords.empty())
+	std::optional<std::variant<Sentence, CapturingSentence>> Parser::sentence() {
+		auto [resOrWordsBefore, resOrWordsAfter, hasCapturingGroup] = words();
+		if (resOrWordsBefore.empty() && resOrWordsAfter.empty())
 			return {};
 
 		if (Token token = m_ts.get(m_readNext); token.type == Token::grammar && token.ch() == ';') {
 			m_readNext = true;
-			return std::optional<Sentence>{std::in_place, resWords};
+			if (hasCapturingGroup)
+				return std::optional<std::variant<Sentence, CapturingSentence>>{std::in_place, CapturingSentence{resOrWordsBefore, resOrWordsAfter}};
+			else
+				return std::optional<std::variant<Sentence, CapturingSentence>>{std::in_place, Sentence{resOrWordsBefore}};
 		}
 		else {
 			throw std::runtime_error{"Grammar error: excepted ';' but got \"" + token.value + "\" at the end of sentence on line " + std::to_string(token.line)};
 		}
 	}
-	std::vector<OrWord> Parser::words() {
-		std::vector<OrWord> resWords;
-		auto resWord = orWord();
-		while (resWord.has_value()) {
-			resWords.push_back(*resWord);
-			resWord = orWord();
+	std::tuple<std::vector<OrWord>, std::vector<OrWord>, bool> Parser::words() {
+		bool hasCapturingGroup = false;
+		std::vector<OrWord> resOrWordsBefore, resOrWordsAfter;
+		while (1) {
+			auto [resWord, isCapturingGroup] = orWord();
+			if (isCapturingGroup) {
+				if (hasCapturingGroup)
+					throw std::runtime_error{"Grammar error: only one capturing group per sentence is allowed, on line " + std::to_string(m_ts.get(false).line)};
+
+				hasCapturingGroup = true;
+				continue;
+			}
+			else {
+				if (resWord.has_value()) {
+					if (hasCapturingGroup)
+						resOrWordsAfter.push_back(*resWord);
+					else
+						resOrWordsBefore.push_back(*resWord);
+				}
+				else
+					break;
+			}
 		}
-		return resWords;
+		return {resOrWordsBefore, resOrWordsAfter, hasCapturingGroup};
 	}
-	std::optional<OrWord> Parser::orWord() {
+	std::pair<std::optional<OrWord>, bool> Parser::orWord() {
 		std::vector<std::string> resWords;
 
 		Token token = m_ts.get(m_readNext);
-		if (!(token.type == Token::letters)) {
+		if (token.type == Token::grammar && token.ch() == '.') {
+			token = m_ts.get(m_readNext);
+			if (token.type == Token::grammar && token.ch() == '.')
+				return {{}, true};
+			else
+				throw std::runtime_error{"Grammar error: capturing group is represented by two points \"..\" but there is one alone on line " + std::to_string(token.line)};
+		}
+		else if (token.type != Token::letters) {
 			m_readNext = false;
-			return {};
+			return {{}, false};
 		}
 		resWords.push_back(token.value);
 		
@@ -97,11 +145,11 @@ namespace parser {
 			}
 			else if (token.type == Token::grammar && token.ch() == '?') {
 				m_readNext = true;
-				return std::optional<OrWord>{std::in_place, resWords, false};
+				return {std::optional<OrWord>{std::in_place, resWords, false}, false};
 			}
 			else {
 				m_readNext = false;
-				return std::optional<OrWord>{std::in_place, resWords, true};
+				return {std::optional<OrWord>{std::in_place, resWords, true}, false};
 			}
 		}
 	}
@@ -136,6 +184,8 @@ namespace parser {
 		sections();
 
 		for (auto&& section : m_sections)
+			std::cout << section << "\n";
+		for (auto&& section : m_capturingSections)
 			std::cout << section << "\n";
 	}
 }

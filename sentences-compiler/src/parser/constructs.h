@@ -20,12 +20,28 @@ namespace parser {
 		OrWord(const std::vector<std::string>& words, bool required);
 		friend std::ostream& operator<< (std::ostream& stream, const OrWord& orWord);
 	};
+	
+	class CapturingSentence {
+		std::vector<OrWord> m_orWordsBefore;
+		std::vector<OrWord> m_orWordsAfter;
+	public:
+		CapturingSentence(const std::vector<OrWord>& orWordsBefore, const std::vector<OrWord>& orWordsAfter);
+		friend std::ostream& operator<< (std::ostream& stream, const CapturingSentence& sentence);
+	};
 
 	class Sentence {
 		std::vector<OrWord> m_orWords;
 	public:
 		Sentence(const std::vector<OrWord>& orWords);
 		friend std::ostream& operator<< (std::ostream& stream, const Sentence& sentence);
+	};
+
+	class CapturingSection {
+		std::vector<CapturingSentence> m_sentences;
+		Code m_code;
+	public:
+		CapturingSection(const std::vector<CapturingSentence>& sentences, const Code& code);
+		friend std::ostream& operator<< (std::ostream& stream, const CapturingSection& section);
 	};
 
 	class Section {
