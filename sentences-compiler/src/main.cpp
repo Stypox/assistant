@@ -1,3 +1,4 @@
+#include <fstream>
 #include <iostream>
 
 #include "parser/parser.h"
@@ -5,7 +6,8 @@
 int main() {
 	try {
 		parser::Parser parser;
-		parser.parse(std::cin);
+		std::ifstream file{"test.txt", std::ios::binary};
+		parser.parse(file);
 	}
 	catch (const std::runtime_error& e) {
 		std::cout << e.what();
