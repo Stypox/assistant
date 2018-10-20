@@ -6,19 +6,51 @@
 #include <ostream>
 
 namespace parser {
+	class Section;
+	class CapturingSection;
+	class Sentence;
+	class CapturingSentence;
+	class OrWord;
+	class Code;
+
+	// Code has to be defined before (Capturing)Section to remove "field ‘m_code’ has incomplete type ‘Code’" error.
 	class Code {
 		std::string m_lines;
 	public:
 		Code(const std::string& lines);
+
 		friend std::ostream& operator<< (std::ostream& stream, const Code& code);
 	};
 
-	class OrWord {
-		std::vector<std::string> m_words;
-		bool m_required;
+	class Section {
+		std::vector<Sentence> m_sentences;
+		std::vector<std::vector<std::string>> m_unfoldedSentences;
+		Code m_code;
 	public:
-		OrWord(const std::vector<std::string>& words, bool required);
-		friend std::ostream& operator<< (std::ostream& stream, const OrWord& orWord);
+		Section(const std::vector<Sentence>& sentences, const Code& code);
+		void unfoldSentences();
+
+		friend std::ostream& operator<< (std::ostream& stream, const Section& section);
+	};
+
+	class CapturingSection {
+		std::vector<CapturingSentence> m_sentences;
+		std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> m_unfoldedSentences;
+		Code m_code;
+	public:
+		CapturingSection(const std::vector<CapturingSentence>& sentences, const Code& code);
+		void unfoldSentences();
+
+		friend std::ostream& operator<< (std::ostream& stream, const CapturingSection& section);
+	};
+
+	class Sentence {
+		std::vector<OrWord> m_orWords;
+	public:
+		Sentence(const std::vector<OrWord>& orWords);
+		std::vector<std::vector<std::string>> unfold();
+
+		friend std::ostream& operator<< (std::ostream& stream, const Sentence& sentence);
 	};
 	
 	class CapturingSentence {
@@ -26,30 +58,19 @@ namespace parser {
 		std::vector<OrWord> m_orWordsAfter;
 	public:
 		CapturingSentence(const std::vector<OrWord>& orWordsBefore, const std::vector<OrWord>& orWordsAfter);
+		std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> unfold();
+
 		friend std::ostream& operator<< (std::ostream& stream, const CapturingSentence& sentence);
 	};
 
-	class Sentence {
-		std::vector<OrWord> m_orWords;
+	class OrWord {
+		std::vector<std::string> m_words;
+		bool m_required;
 	public:
-		Sentence(const std::vector<OrWord>& orWords);
-		friend std::ostream& operator<< (std::ostream& stream, const Sentence& sentence);
-	};
+		OrWord(const std::vector<std::string>& words, bool required);
 
-	class CapturingSection {
-		std::vector<CapturingSentence> m_sentences;
-		Code m_code;
-	public:
-		CapturingSection(const std::vector<CapturingSentence>& sentences, const Code& code);
-		friend std::ostream& operator<< (std::ostream& stream, const CapturingSection& section);
-	};
-
-	class Section {
-		std::vector<Sentence> m_sentences;
-		Code m_code;
-	public:
-		Section(const std::vector<Sentence>& sentences, const Code& code);
-		friend std::ostream& operator<< (std::ostream& stream, const Section& section);
+		friend std::vector<std::vector<std::string>> unfold(std::vector<OrWord>::iterator thisWord, std::vector<OrWord>::iterator lastWord);
+		friend std::ostream& operator<< (std::ostream& stream, const OrWord& orWord);
 	};
 }
 

@@ -192,9 +192,13 @@ namespace parser {
 
 		sections();
 
-		for (auto&& section : m_sections)
+		for (auto&& section : m_sections) {
+			section.unfoldSentences();
 			std::cout << section << "\n";
-		for (auto&& section : m_capturingSections)
+		}
+		for (auto&& section : m_capturingSections) {
+			section.unfoldSentences();
 			std::cout << section << "\n";
+		}
 	}
 }
