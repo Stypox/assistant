@@ -86,9 +86,9 @@ namespace parser {
 		if (Token token = m_ts.get(m_readNext); token == ';') {
 			m_readNext = true;
 			if (hasCapturingGroup) // this sentence contains a capturing group
-				return std::optional<std::variant<Sentence, CapturingSentence>>{std::in_place, CapturingSentence{resOrWordsBefore, resOrWordsAfter}};
+				return CapturingSentence{resOrWordsBefore, resOrWordsAfter};
 			else // this sentence does not contain a capturing group
-				return std::optional<std::variant<Sentence, CapturingSentence>>{std::in_place, Sentence{resOrWordsBefore}};
+				return Sentence{resOrWordsBefore};
 		}
 		else {
 			throw std::runtime_error{"Grammar error:" + token.position() + ": excepted ';' but got \"" + token.str() + "\" at the end of sentence"};
@@ -153,11 +153,11 @@ namespace parser {
 			else if (token == '?') {
 				// word is not required (e.g. word?)
 				m_readNext = true;
-				return {std::optional<OrWord>{std::in_place, resWords, false}, false};
+				return {OrWord{resWords, false}, false};
 			}
 			else {
 				m_readNext = false;
-				return {std::optional<OrWord>{std::in_place, resWords, true}, false};
+				return {OrWord{resWords, true}, false};
 			}
 		}
 	}
