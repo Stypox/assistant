@@ -4,7 +4,7 @@ CXXFLAGS = -Wall -g -std=c++17
 CXXLIBS = 
 SRC = ./src/
 
-EXECUTABLE = sentence-compiler.exe
+EXECUTABLE = voice-assistant.exe
 OBJECT_FILES = $(SRC)main.o \
 	$(SRC)parser/parser.o $(SRC)parser/sentence.o
 
