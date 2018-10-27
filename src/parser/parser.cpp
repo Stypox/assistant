@@ -13,7 +13,7 @@ namespace parser {
 			}
 		}
 
-		return {bestSentence, maxScoreSoFar < minimumRequiredScore};
+		return {bestSentence, maxScoreSoFar > minimumRequiredScore};
 	}
 
 	void Parser::parse(const std::vector<std::string>& words) const {
