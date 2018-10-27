@@ -6,7 +6,7 @@
 #include <tuple>
 
 namespace parser {
-	constexpr int minimumRequiredScore = 10;
+	constexpr int minimumRequiredScore = 15;
 
 	class Parser {
 		std::vector<Sentence> m_sentences;
