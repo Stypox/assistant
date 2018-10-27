@@ -11,31 +11,35 @@ namespace parser {
 		int points = pointsAtBeginning;
 		bool foundAllWords = true,
 			exactMatch = true;
-		auto wordsBegin = m_words.begin();
+		
+		auto word = m_words.begin();
+		auto compareWord = compareWords.begin();
 
+		for (; word != m_words.end() && compareWord != compareWords.end(); ++word) {
+			auto foundWord = std::find(compareWord, compareWords.end(), *word);
 
-		for (auto compareWord = compareWords.begin(); compareWord != compareWords.end(); ++compareWord) {
-			if (wordsBegin == m_words.end()) {
-				foundAllWords = false;
-				points += std::max(-pointsFoundWord, static_cast<int>(compareWords.end() - compareWord) * pointsWordsInMiddle);
-				break;
-			}
-
-			auto foundWord = std::find(wordsBegin, m_words.end(), *compareWord);
-
-			if (foundWord == m_words.end()) {
+			if (foundWord == compareWords.end()) {
 				foundAllWords = false;
 			}
 			else {
 				points += pointsFoundWord;
 
-				if (foundWord != wordsBegin) {
+				if (foundWord != compareWord) {
 					exactMatch = false;
-					points += std::max(-pointsFoundWord, static_cast<int>(foundWord - wordsBegin) * pointsWordsInMiddle);
+					points += std::max(minPointsWordInMiddle, pointsWordsInMiddle * static_cast<int>(foundWord - compareWord));
 				}
 
-				wordsBegin = foundWord + 1;
+				compareWord = foundWord + 1;
 			}
+		}
+
+		if (word != m_words.end()) {
+			exactMatch = false;
+			points += std::max(minPointsWordInMiddle, pointsWordsInMiddle * static_cast<int>(m_words.end() - word));
+		}
+		else if (compareWord != compareWords.end()) {
+			exactMatch = false;
+			points += std::max(minPointsWordInMiddle, pointsWordsInMiddle * static_cast<int>(compareWords.end() - compareWord));
 		}
 
 		if (foundAllWords) {

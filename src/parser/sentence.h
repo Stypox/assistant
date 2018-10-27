@@ -6,10 +6,11 @@
 
 namespace parser {
 	constexpr int pointsAtBeginning = 0,
-		pointsFoundWord = 4,
+		pointsFoundWord = 3,
 		pointsWordsInMiddle = -1,
-		pointsFoundAllWords = 10,
-		pointsExactMatch = 5;
+		minPointsWordInMiddle = -10,
+		pointsFoundAllWords = 8,
+		pointsExactMatch = 6;
 
 	class Sentence {
 		const std::vector<std::string> m_words;
