@@ -5,7 +5,8 @@ CXXLIBS =
 SRC = ./src/
 
 EXECUTABLE = sentence-compiler.exe
-OBJECT_FILES = $(SRC)main.o
+OBJECT_FILES = $(SRC)main.o \
+	$(SRC)parser/sentence.o
 
 # executable
 $(EXECUTABLE): $(OBJECT_FILES)
@@ -14,6 +15,10 @@ $(EXECUTABLE): $(OBJECT_FILES)
 # src/
 $(SRC)main.o: $(SRC)main.cpp $(SRC)parser/parser.h $(SRC)parser/sentence.h
 	$(CXX) $(CXXFLAGS) -o $(SRC)main.o -c $(SRC)main.cpp
+
+# src/parser
+$(SRC)parser/sentence.o: $(SRC)parser/sentence.h $(SRC)parser/sentence.cpp
+	$(CXX) $(CXXFLAGS) -o $(SRC)parser/sentence.o -c $(SRC)parser/sentence.cpp
 
 clean:
 	rm $(EXECUTABLE) $(OBJECT_FILES)
