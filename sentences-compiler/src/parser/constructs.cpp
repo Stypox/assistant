@@ -6,11 +6,11 @@ namespace parser {
 	using std::pair;
 
 
-	vector<vector<string>> unfold(vector<OrWord>::iterator thisWord, vector<OrWord>::iterator lastWord) {
+	vector<vector<string>> unfolded(vector<OrWord>::const_iterator thisWord, vector<OrWord>::const_iterator lastWord) {
 		if (thisWord >= lastWord)
 			return {vector<string>{}};
 		
-		auto nextWordsUnfolded = unfold(thisWord + 1, lastWord);
+		auto nextWordsUnfolded = unfolded(thisWord + 1, lastWord);
 
 		vector<vector<string>> sentences = ((thisWord->m_required) ? (vector<vector<string>>{}) : (nextWordsUnfolded));
 		sentences.reserve(sentences.size() + nextWordsUnfolded.size() * thisWord->m_words.size());
@@ -30,21 +30,22 @@ namespace parser {
 
 	Section::Section(const vector<Sentence>& sentences, const Code& code) :
 		m_sentences{sentences}, m_code{code} {}
-	void Section::unfoldSentences() {
-		if (!m_unfoldedSentences.empty())
-			return;
+	vector<vector<string>> Section::unfoldedSentences() const {
+		vector<vector<string>> unfoldedSentences;
 
 		for (auto&& sentence : m_sentences) {
-			auto unfoldedSentences = sentence.unfold();
-			m_unfoldedSentences.insert(m_unfoldedSentences.end(), unfoldedSentences.begin(), unfoldedSentences.end());
+			auto unfolded = sentence.unfolded();
+			unfoldedSentences.insert(unfoldedSentences.end(), unfolded.begin(), unfolded.end());
 		}
+
+		return unfoldedSentences;
 	}
 	std::ostream& operator<< (std::ostream& stream, const Section& section) {
 		stream << "SECTION:";
 		for (auto&& sentence : section.m_sentences)
 			stream << "\n" << sentence;
 		stream << "\nUNFOLDED:";
-		for (auto&& sentence : section.m_unfoldedSentences) {
+		for (auto&& sentence : section.unfoldedSentences()) {
 			stream << "\n -";
 			for (auto&& word : sentence)
 				stream << " " << word;
@@ -56,21 +57,22 @@ namespace parser {
 
 	CapturingSection::CapturingSection(const vector<CapturingSentence>& sentences, const Code& code) :
 		m_sentences{sentences}, m_code{code} {}
-	void CapturingSection::unfoldSentences() {
-		if (!m_unfoldedSentences.empty())
-			return;
+	vector<pair<vector<string>, vector<string>>> CapturingSection::unfoldedSentences() const {
+		vector<pair<vector<string>, vector<string>>> unfoldedSentences;
 
 		for (auto&& sentence : m_sentences) {
-			auto unfoldedSentences = sentence.unfold();
-			m_unfoldedSentences.insert(m_unfoldedSentences.end(), unfoldedSentences.begin(), unfoldedSentences.end());
+			auto unfolded = sentence.unfolded();
+			unfoldedSentences.insert(unfoldedSentences.end(), unfolded.begin(), unfolded.end());
 		}
+
+		return unfoldedSentences;
 	}
 	std::ostream& operator<< (std::ostream& stream, const CapturingSection& section) {
 		stream << "SECTION (with capturing group):";
 		for (auto&& sentence : section.m_sentences)
 			stream << "\n" << sentence;
 		stream << "\nUNFOLDED:";
-		for (auto&& sentence : section.m_unfoldedSentences) {
+		for (auto&& sentence : section.unfoldedSentences()) {
 			stream << "\n *";
 			for (auto&& word : sentence.first)
 				stream << " " << word;
@@ -85,8 +87,8 @@ namespace parser {
 
 	Sentence::Sentence(const vector<OrWord>& orWords) :
 		m_orWords{orWords} {}
-	vector<vector<string>> Sentence::unfold() {
-		return parser::unfold(m_orWords.begin(), m_orWords.end());
+	vector<vector<string>> Sentence::unfolded() const {
+		return parser::unfolded(m_orWords.begin(), m_orWords.end());
 	}
 	std::ostream& operator<< (std::ostream& stream, const Sentence& sentence) {
 		stream << " -";
@@ -98,9 +100,9 @@ namespace parser {
 
 	CapturingSentence::CapturingSentence(const vector<OrWord>& orWordsBefore, const vector<OrWord>& orWordsAfter) :
 		m_orWordsBefore{orWordsBefore}, m_orWordsAfter{orWordsAfter} {}
-	vector<pair<vector<string>, vector<string>>> CapturingSentence::unfold() {
-		auto unfoldedSentencesBefore = parser::unfold(m_orWordsBefore.begin(), m_orWordsBefore.end());
-		auto unfoldedSentencesAfter = parser::unfold(m_orWordsAfter.begin(), m_orWordsAfter.end());
+	vector<pair<vector<string>, vector<string>>> CapturingSentence::unfolded() const {
+		auto unfoldedSentencesBefore = parser::unfolded(m_orWordsBefore.begin(), m_orWordsBefore.end());
+		auto unfoldedSentencesAfter = parser::unfolded(m_orWordsAfter.begin(), m_orWordsAfter.end());
 
 		vector<pair<vector<string>, vector<string>>> sentences;
 		sentences.reserve(unfoldedSentencesBefore.size() * unfoldedSentencesAfter.size());

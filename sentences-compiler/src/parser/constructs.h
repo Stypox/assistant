@@ -15,22 +15,20 @@ namespace parser {
 
 	class Section {
 		std::vector<Sentence> m_sentences;
-		std::vector<std::vector<std::string>> m_unfoldedSentences;
 		Code m_code;
 	public:
 		Section(const std::vector<Sentence>& sentences, const Code& code);
-		void unfoldSentences();
+		std::vector<std::vector<std::string>> unfoldedSentences() const;
 
 		friend std::ostream& operator<< (std::ostream& stream, const Section& section);
 	};
 
 	class CapturingSection {
 		std::vector<CapturingSentence> m_sentences;
-		std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> m_unfoldedSentences;
 		Code m_code;
 	public:
 		CapturingSection(const std::vector<CapturingSentence>& sentences, const Code& code);
-		void unfoldSentences();
+		std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> unfoldedSentences() const;
 
 		friend std::ostream& operator<< (std::ostream& stream, const CapturingSection& section);
 	};
@@ -39,7 +37,7 @@ namespace parser {
 		std::vector<OrWord> m_orWords;
 	public:
 		Sentence(const std::vector<OrWord>& orWords);
-		std::vector<std::vector<std::string>> unfold();
+		std::vector<std::vector<std::string>> unfolded() const;
 
 		friend std::ostream& operator<< (std::ostream& stream, const Sentence& sentence);
 	};
@@ -49,7 +47,7 @@ namespace parser {
 		std::vector<OrWord> m_orWordsAfter;
 	public:
 		CapturingSentence(const std::vector<OrWord>& orWordsBefore, const std::vector<OrWord>& orWordsAfter);
-		std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> unfold();
+		std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> unfolded() const;
 
 		friend std::ostream& operator<< (std::ostream& stream, const CapturingSentence& sentence);
 	};
@@ -60,7 +58,7 @@ namespace parser {
 	public:
 		OrWord(const std::vector<std::string>& words, bool required);
 
-		friend std::vector<std::vector<std::string>> unfold(std::vector<OrWord>::iterator thisWord, std::vector<OrWord>::iterator lastWord);
+		friend std::vector<std::vector<std::string>> unfolded(std::vector<OrWord>::const_iterator thisWord, std::vector<OrWord>::const_iterator lastWord);
 		friend std::ostream& operator<< (std::ostream& stream, const OrWord& orWord);
 	};
 }

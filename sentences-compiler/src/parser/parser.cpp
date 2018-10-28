@@ -197,12 +197,9 @@ namespace parser {
 			m_codeWhenNotUnderstood = *resCode;
 		sections();
 
-		for (auto&& section : m_sections) {
-			section.unfoldSentences();
+		for (auto&& section : m_sections)
 			std::cout << section << "\n";
-		}
-		for (auto&& section : m_capturingSections) {
-			section.unfoldSentences();
+		for (auto&& section : m_capturingSections)
 			std::cout << section << "\n";
 		}
 	}
