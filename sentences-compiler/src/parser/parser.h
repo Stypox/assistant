@@ -11,6 +11,7 @@
 namespace parser {
 	class Parser {
 		lexer::Stream m_ts;
+		Code m_codeWhenNotUnderstood;
 		std::vector<Section> m_sections;
 		std::vector<CapturingSection> m_capturingSections;
 		bool m_readNext = false;
@@ -21,7 +22,7 @@ namespace parser {
 		std::optional<std::variant<Sentence, CapturingSentence>>							sentence();
 		std::tuple<std::vector<OrWord>, std::vector<OrWord>, bool>							words();
 		std::pair<std::optional<OrWord>, bool>												orWord();
-		Code																				code();
+		std::optional<Code>																	code();
 
 	public:
 		void parse(std::istream& input);

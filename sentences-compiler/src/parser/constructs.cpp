@@ -49,7 +49,7 @@ namespace parser {
 			for (auto&& word : sentence)
 				stream << " " << word;
 		}
-		stream << "\n" << section.m_code;
+		stream << "\nCODE:\n" << section.m_code;
 		return stream;
 	}
 
@@ -78,7 +78,7 @@ namespace parser {
 			for (auto&& word : sentence.second)
 				stream << " " << word;
 		}
-		stream << "\n" << section.m_code;
+		stream << "\nCODE:\n" << section.m_code;
 		return stream;
 	}
 
@@ -132,14 +132,6 @@ namespace parser {
 			stream << "/" << *it;
 		if (!orWord.m_required)
 			stream << "]";
-		return stream;
-	}
-
-
-	Code::Code(const string& lines) :
-		m_lines{lines} {}
-	std::ostream& operator<< (std::ostream& stream, const Code& code) {
-		stream << "CODE:\n" << code.m_lines;
 		return stream;
 	}
 }

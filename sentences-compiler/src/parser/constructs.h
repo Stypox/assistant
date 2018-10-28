@@ -11,16 +11,7 @@ namespace parser {
 	class Sentence;
 	class CapturingSentence;
 	class OrWord;
-	class Code;
-
-	// Code has to be defined before (Capturing)Section to remove "field ‘m_code’ has incomplete type ‘Code’" error.
-	class Code {
-		std::string m_lines;
-	public:
-		Code(const std::string& lines);
-
-		friend std::ostream& operator<< (std::ostream& stream, const Code& code);
-	};
+	using Code = std::string;
 
 	class Section {
 		std::vector<Sentence> m_sentences;
