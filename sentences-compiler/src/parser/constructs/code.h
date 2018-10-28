@@ -4,7 +4,9 @@
 #include <string>
 
 namespace parser::constructs {
-	using Code = std::string;
+	class Code : public std::string {
+		
+	};
 }
 
 #endif
