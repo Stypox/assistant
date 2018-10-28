@@ -8,6 +8,8 @@
 using namespace lexer;
 
 namespace parser {
+	using namespace constructs;
+
 	std::string readAllFile(std::filesystem::path path, std::string tokenPosition) {
 		if (std::filesystem::is_directory(path))
 			throw std::runtime_error{"Filesystem error:" + tokenPosition + ": file \"" + path.string() + "\" is a directory"};

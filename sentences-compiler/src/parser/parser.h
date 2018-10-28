@@ -6,10 +6,17 @@
 #include <filesystem>
 
 #include "../lexer/stream.h"
-#include "constructs.h"
+#include "constructs/section.h"
 
 namespace parser {
 	class Parser {
+		using Section = constructs::Section;
+		using CapturingSection = constructs::CapturingSection;
+		using Sentence = constructs::Sentence;
+		using CapturingSentence = constructs::CapturingSentence;
+		using OrWord = constructs::OrWord;
+		using Code = constructs::Code;
+
 		lexer::Stream m_ts;
 		Code m_codeWhenNotUnderstood;
 		std::vector<Section> m_sections;
@@ -28,7 +35,7 @@ namespace parser {
 
 		friend std::tuple<Code, std::vector<Section>, std::vector<CapturingSection>> parse(std::istream& input);
 	};
-	std::tuple<Code, std::vector<Section>, std::vector<CapturingSection>> parse(std::istream& input);
+	std::tuple<constructs::Code, std::vector<constructs::Section>, std::vector<constructs::CapturingSection>> parse(std::istream& input);
 }
 
 #endif
