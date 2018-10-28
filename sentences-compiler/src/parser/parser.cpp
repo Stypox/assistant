@@ -6,18 +6,24 @@
 #include "../lexer/tokenizer.h"
 
 using namespace lexer;
+using namespace parser::constructs;
+namespace fs = std::filesystem;
+using std::vector;
+using std::optional;
+using std::variant;
+using std::tuple;
+using std::pair;
+
 
 namespace parser {
-	using namespace constructs;
-
-	std::string readAllFile(std::filesystem::path path, std::string tokenPosition) {
-		if (std::filesystem::is_directory(path))
+	std::string readAllFile(fs::path path, std::string tokenPosition) {
+		if (fs::is_directory(path))
 			throw std::runtime_error{"Filesystem error:" + tokenPosition + ": file \"" + path.string() + "\" is a directory"};
-		else if (!std::filesystem::exists(path))
+		else if (!fs::exists(path))
 			throw std::runtime_error{"Filesystem error:" + tokenPosition + ": file \"" + path.string() + "\" does not exist"};
 		
 		std::string code;
-		size_t fileSize = std::filesystem::file_size(path);
+		size_t fileSize = fs::file_size(path);
 		code.resize(fileSize + 1);
 
 		std::ifstream file{path, std::ios::binary};
@@ -43,26 +49,26 @@ namespace parser {
 		if (Token token = m_ts.get(false); !token.empty()) // there are still tokens left after all has been processed. This means an unexpected token was read.
 			throw std::runtime_error("Grammar error:" + token.position() + ": expected sentence but got token \"" + token.str() + "\"");
 	}
-	std::optional<std::variant<Section, CapturingSection>> Parser::section() {
+	optional<variant<Section, CapturingSection>> Parser::section() {
 		auto resSentences = sentences();
 		if (resSentences.has_value()) {
 			auto resCode = code();
 			if (!resCode.has_value())
 				throw std::runtime_error{"Grammar error:" + m_ts.get(false).position() + ": missing code after section " + std::to_string(m_sections.size() + m_capturingSections.size() + 1)};
 
-			if (std::holds_alternative<std::vector<Sentence>>(*resSentences)) // this is a normal section
-				return Section{std::get<std::vector<Sentence>>(*resSentences), *resCode};
+			if (std::holds_alternative<vector<Sentence>>(*resSentences)) // this is a normal section
+				return Section{std::get<vector<Sentence>>(*resSentences), *resCode};
 			else // this section has capturing groups
-				return CapturingSection{std::get<std::vector<CapturingSentence>>(*resSentences), *resCode};
+				return CapturingSection{std::get<vector<CapturingSentence>>(*resSentences), *resCode};
 		}
 		else {
 			// no sentence was read
 			return {};
 		}
 	}
-	std::optional<std::variant<std::vector<Sentence>, std::vector<CapturingSentence>>> Parser::sentences() {
-		std::vector<Sentence> resSentences;
-		std::vector<CapturingSentence> resCapturingSentences;
+	optional<variant<vector<Sentence>, vector<CapturingSentence>>> Parser::sentences() {
+		vector<Sentence> resSentences;
+		vector<CapturingSentence> resCapturingSentences;
 
 		auto resSentence = sentence();
 		while (resSentence.has_value()) {
@@ -83,7 +89,7 @@ namespace parser {
 		else // both normal and capturing sentences were read
 			throw std::runtime_error{"Grammar error:" + m_ts.get(false).position() + ": sentences with and without capturing groups in the same section are not allowed"};
 	}
-	std::optional<std::variant<Sentence, CapturingSentence>> Parser::sentence() {
+	optional<variant<Sentence, CapturingSentence>> Parser::sentence() {
 		auto [resOrWordsBefore, resOrWordsAfter, hasCapturingGroup] = words();
 		if (resOrWordsBefore.empty() && resOrWordsAfter.empty()) // no sentence was read
 			return {};
@@ -99,9 +105,9 @@ namespace parser {
 			throw std::runtime_error{"Grammar error:" + token.position() + ": excepted ';' but got \"" + token.str() + "\" at the end of sentence"};
 		}
 	}
-	std::tuple<std::vector<OrWord>, std::vector<OrWord>, bool> Parser::words() {
+	tuple<vector<OrWord>, vector<OrWord>, bool> Parser::words() {
 		bool hasCapturingGroup = false;
-		std::vector<OrWord> resOrWordsBefore, resOrWordsAfter;
+		vector<OrWord> resOrWordsBefore, resOrWordsAfter;
 
 		while (1) {
 			auto [resWord, isCapturingGroup] = orWord();
@@ -127,8 +133,8 @@ namespace parser {
 		}
 		return {resOrWordsBefore, resOrWordsAfter, hasCapturingGroup};
 	}
-	std::pair<std::optional<OrWord>, bool> Parser::orWord() {
-		std::vector<std::string> resWords;
+	pair<optional<OrWord>, bool> Parser::orWord() {
+		vector<std::string> resWords;
 
 		Token token = m_ts.get(m_readNext);
 		if (token == '.') {
@@ -166,7 +172,7 @@ namespace parser {
 			}
 		}
 	}
-	std::optional<Code> Parser::code() {
+	optional<Code> Parser::code() {
 		Code lines;
 		bool noCode = true;
 		
@@ -205,7 +211,7 @@ namespace parser {
 			std::cout << section << "\n";
 	}
 
-	std::tuple<Code, std::vector<Section>, std::vector<CapturingSection>> parse(std::istream& input) {
+	tuple<Code, vector<Section>, vector<CapturingSection>> parse(std::istream& input) {
 		Parser parser;
 		parser.parse(input);
 		return {parser.m_codeWhenNotUnderstood, parser.m_sections, parser.m_capturingSections};
