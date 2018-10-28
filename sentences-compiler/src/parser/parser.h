@@ -24,9 +24,11 @@ namespace parser {
 		std::pair<std::optional<OrWord>, bool>												orWord();
 		std::optional<Code>																	code();
 
-	public:
 		void parse(std::istream& input);
+
+		friend std::tuple<Code, std::vector<Section>, std::vector<CapturingSection>> parse(std::istream& input);
 	};
+	std::tuple<Code, std::vector<Section>, std::vector<CapturingSection>> parse(std::istream& input);
 }
 
 #endif

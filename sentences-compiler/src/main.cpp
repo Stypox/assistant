@@ -5,9 +5,8 @@
 
 int main() {
 	try {
-		parser::Parser parser;
 		std::ifstream file{"test.txt", std::ios::binary};
-		parser.parse(file);
+		parser::parse(file);
 	}
 	catch (const std::runtime_error& e) {
 		std::cout << e.what();

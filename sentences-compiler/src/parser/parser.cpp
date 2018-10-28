@@ -201,6 +201,11 @@ namespace parser {
 			std::cout << section << "\n";
 		for (auto&& section : m_capturingSections)
 			std::cout << section << "\n";
-		}
+	}
+
+	std::tuple<Code, std::vector<Section>, std::vector<CapturingSection>> parse(std::istream& input) {
+		Parser parser;
+		parser.parse(input);
+		return {parser.m_codeWhenNotUnderstood, parser.m_sections, parser.m_capturingSections};
 	}
 }
