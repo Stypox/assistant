@@ -7,7 +7,7 @@ SRC = ./src/
 EXECUTABLE = sentence-compiler.exe
 OBJECT_FILES = $(SRC)main.o \
 	$(SRC)lexer/tokenizer.o $(SRC)lexer/token.o $(SRC)lexer/stream.o \
-	$(SRC)parser/parser.o \
+	$(SRC)parser/parser.o $(SRC)parser/compiler.o \
 		$(SRC)parser/constructs/section.o $(SRC)parser/constructs/sentence.o $(SRC)parser/constructs/orword.o $(SRC)parser/constructs/code.o
 
 # executable
@@ -29,6 +29,8 @@ $(SRC)lexer/token.o: $(SRC)lexer/token.cpp $(SRC)lexer/token.h
 #src/parser/
 $(SRC)parser/parser.o: $(SRC)parser/parser.cpp $(SRC)parser/parser.h $(SRC)parser/constructs/section.o
 	$(CXX) $(CXXFLAGS) -o $(SRC)parser/parser.o -c $(SRC)parser/parser.cpp
+$(SRC)parser/compiler.o: $(SRC)parser/compiler.cpp $(SRC)parser/compiler.h $(SRC)parser/parser.o $(SRC)parser/constructs/section.o
+	$(CXX) $(CXXFLAGS) -o $(SRC)parser/compiler.o -c $(SRC)parser/compiler.cpp
 
 #src/parser/constructs
 $(SRC)parser/constructs/section.o: $(SRC)parser/constructs/section.cpp $(SRC)parser/constructs/section.h $(SRC)parser/constructs/code.o $(SRC)parser/constructs/sentence.o
