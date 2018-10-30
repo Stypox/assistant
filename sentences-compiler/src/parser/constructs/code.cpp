@@ -19,7 +19,7 @@ namespace parser::constructs {
 		newCode.swap(oldCode);
 	}
 
-	Code Code::formattedCpp() {
+	Code Code::cppStringLiteral() {
 		static const string codeDelimiter {"_Code_Delimiter_"};
 		Code copy = *this;
 		copy.insert(0, "R\"" + codeDelimiter + "(");

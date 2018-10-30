@@ -6,7 +6,7 @@
 namespace parser::constructs {
 	class Code : public std::string {
 	public:
-		Code formattedCpp();
+		Code cppStringLiteral();
 	};
 }
 
