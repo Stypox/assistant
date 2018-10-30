@@ -17,7 +17,8 @@ namespace parser::constructs {
 		Section(const std::vector<Sentence>& sentences, const Code& code);
 		std::vector<std::vector<std::string>> unfoldedSentences() const;
 
-		std::string cppList(const std::string& codeObjectName);
+		std::string cppSentencesList(const std::string& codeObjectName);
+		std::string cppCodeStringLiteral();
 
 		friend std::ostream& operator<< (std::ostream& stream, const Section& section);
 	};

@@ -19,7 +19,7 @@ namespace parser::constructs {
 		return m_unfoldedSentences;
 	}
 
-	std::string Section::cppList(const std::string& codeObjectName) {
+	std::string Section::cppSentencesList(const std::string& codeObjectName) {
 		std::string result;
 
 		unfoldedSentences();
@@ -34,6 +34,9 @@ namespace parser::constructs {
 		result.resize(result.size() - 1); // remove last ,
 
 		return result;
+	}
+	std::string Section::cppCodeStringLiteral() {
+		return m_code.cppStringLiteral();
 	}
 
 	std::ostream& operator<< (std::ostream& stream, const Section& section) {
