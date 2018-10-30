@@ -2,9 +2,9 @@
 #include "parser/parser.h"
 
 int main() {
-	parser::Parser p{{{{"Hello"}, "print(\"Ok\")"},
-					  {{"Hey"}, "print(\"Ok\")"}},
+	parser::Parser p{{{{"Hello", "how", "are", "you"}, "print(\"Ok\")"},
+					  {{"Hey", "Hello"}, "print(\"Ok\")"}},
 					  "print(\"Bad\")"};
-	p.parse({"Hey"});
+	p.parse({"Hello"});
 	return 0;
 }

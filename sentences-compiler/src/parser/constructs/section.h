@@ -11,6 +11,7 @@
 namespace parser::constructs {
 	class Section {
 		std::vector<Sentence> m_sentences;
+		mutable std::vector<std::vector<std::string>> m_unfoldedSentences;
 		Code m_code;
 	public:
 		Section(const std::vector<Sentence>& sentences, const Code& code);
@@ -21,6 +22,7 @@ namespace parser::constructs {
 
 	class CapturingSection {
 		std::vector<CapturingSentence> m_sentences;
+		mutable std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> m_unfoldedSentences;
 		Code m_code;
 	public:
 		CapturingSection(const std::vector<CapturingSentence>& sentences, const Code& code);
