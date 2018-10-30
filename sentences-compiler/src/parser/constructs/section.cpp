@@ -19,6 +19,23 @@ namespace parser::constructs {
 		return m_unfoldedSentences;
 	}
 
+	std::string Section::cppList(const std::string& codeObjectName) {
+		std::string result;
+
+		unfoldedSentences();
+		for (auto&& sentence : m_unfoldedSentences) {
+			result.append("{{");
+			for (auto&& word : sentence) {
+				result.append("\"" + word + "\",");
+			}
+			result.back() = '}'; // replace last ,
+			result.append("," + codeObjectName + "},");
+		}
+		result.resize(result.size() - 1); // remove last ,
+
+		return result;
+	}
+
 	std::ostream& operator<< (std::ostream& stream, const Section& section) {
 		stream << "SECTION:";
 		for (auto&& sentence : section.m_sentences)
