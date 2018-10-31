@@ -10,17 +10,19 @@ namespace parser {
 
 	class Parser {
 		std::vector<Sentence> m_sentences;
+		std::vector<CapturingSentence> m_capturingSentences;
 		const std::string m_codeWhenNotUnderstood;
 
-		std::pair<const Sentence*, bool> getHighestScoreSentence(const std::vector<std::string>& words) const;
+		std::pair<const Sentence*, int> getHighestScoreSentence(const std::vector<std::string>& words) const;
+		std::tuple<const CapturingSentence*, std::vector<std::string>, int> getHighestScoreCapturingSentence(const std::vector<std::string>& words) const;
 
 	public:
-		Parser(const std::vector<Sentence> sentences, const std::string& codeWhenNotUnderstood) :
-			m_sentences{sentences}, m_codeWhenNotUnderstood{codeWhenNotUnderstood} {}
-
+		Parser(const std::vector<Sentence>& sentences, const std::vector<CapturingSentence>& capturingSentences, const std::string& codeWhenNotUnderstood);
+		
 		void parse(const std::vector<std::string>& words) const;
 
 		void add(const Sentence& sentence);
+		void add(const CapturingSentence& capturingSentence);
 	};
 }
 

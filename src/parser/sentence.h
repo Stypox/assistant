@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <tuple>
 
 namespace parser {
 	constexpr int pointsAtBeginning = 0,
@@ -10,7 +11,8 @@ namespace parser {
 		pointsWordsInMiddle = -1,
 		minPointsWordInMiddle = -10,
 		pointsFoundAllWords = 8,
-		pointsExactMatch = 6;
+		pointsExactMatch = 6,
+		pointsMissingCapturingGroup = -5;
 
 	class Sentence {
 		const std::vector<std::string> m_words;
@@ -19,6 +21,20 @@ namespace parser {
 		Sentence(const std::vector<std::string>& words, const std::string& code);
 
 		int score(const std::vector<std::string>& compareWords) const;
+		void exec() const;
+	};
+
+	class CapturingSentence {
+		const std::vector<std::string> m_wordsBefore;
+		const std::vector<std::string> m_wordsAfter;
+		const std::string& m_code;
+
+		std::tuple<int, std::vector<std::string>, bool, bool> scoreBefore(const std::vector<std::string>& compareWords) const;
+		std::tuple<int, std::vector<std::string>, bool, bool> scoreAfter(const std::vector<std::string>& compareWords) const;
+	public:
+		CapturingSentence(const std::vector<std::string>& wordsBefore, const std::vector<std::string> wordsAfter, const std::string& code);
+
+		std::pair<int, std::vector<std::string>> score(const std::vector<std::string>& compareWords) const;
 		void exec() const;
 	};
 }
