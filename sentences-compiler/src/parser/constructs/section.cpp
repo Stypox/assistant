@@ -25,9 +25,8 @@ namespace parser::constructs {
 		unfoldedSentences();
 		for (auto&& sentence : m_unfoldedSentences) {
 			result.append("{{");
-			for (auto&& word : sentence) {
+			for (auto&& word : sentence)
 				result.append("\"" + word + "\",");
-			}
 			result.back() = '}'; // replace last ,
 			result.append("," + codeObjectName + "},");
 		}
@@ -65,6 +64,41 @@ namespace parser::constructs {
 			}
 		}
 		return m_unfoldedSentences;
+	}
+
+	std::string CapturingSection::cppSentencesList(const std::string& codeObjectName) {
+		std::string result;
+
+		unfoldedSentences();
+		for (auto&& sentence : m_unfoldedSentences) {
+			if (sentence.first.empty()) {
+				result.append("{{}");
+			}
+			else {
+				result.append("{{");
+				for (auto&& word : sentence.first)
+					result.append("\"" + word + "\",");
+				result.back() = '}'; // replace last ,
+			}
+
+			if (sentence.second.empty()) {
+				result.append(",{}");
+			}
+			else {
+				result.append(",{");
+				for (auto&& word : sentence.second)
+					result.append("\"" + word + "\",");
+				result.back() = '}'; // replace last ,
+			}
+
+			result.append("," + codeObjectName + "},");
+		}
+		result.resize(result.size() - 1); // remove last ,
+
+		return result;
+	}
+	std::string CapturingSection::cppCodeStringLiteral() {
+		return m_code.cppStringLiteral();
 	}
 
 	std::ostream& operator<< (std::ostream& stream, const CapturingSection& section) {

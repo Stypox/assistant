@@ -31,6 +31,9 @@ namespace parser::constructs {
 		CapturingSection(const std::vector<CapturingSentence>& sentences, const Code& code);
 		std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> unfoldedSentences() const;
 
+		std::string cppSentencesList(const std::string& codeObjectName);
+		std::string cppCodeStringLiteral();
+
 		friend std::ostream& operator<< (std::ostream& stream, const CapturingSection& section);
 	};
 }
