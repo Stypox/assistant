@@ -3,8 +3,8 @@
 #include "parser.h"
 
 namespace parser {
-	Compiler::Compiler(std::istream& input) {
-		const auto& [codeWhenNotUnderstood, sections, capturingSections] = parse(input);
+	Compiler::Compiler(const std::vector<std::istream*>& inputs) {
+		const auto& [codeWhenNotUnderstood, sections, capturingSections] = parse(inputs);
 		m_codeWhenNotUnderstood = codeWhenNotUnderstood;
 		m_sections = sections;
 		m_capturingSections = capturingSections;

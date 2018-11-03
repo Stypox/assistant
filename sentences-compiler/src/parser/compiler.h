@@ -9,7 +9,7 @@ namespace parser {
 		std::vector<constructs::Section> m_sections;
 		std::vector<constructs::CapturingSection> m_capturingSections;
 	public:
-		Compiler(std::istream& input);
+		Compiler(const std::vector<std::istream*>& inputs);
 
 		void toCpp(std::ostream& output);
 	};

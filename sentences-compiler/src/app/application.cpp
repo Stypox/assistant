@@ -17,7 +17,7 @@ namespace app {
 		}, {
 
 		}, {
-			{"input", "the input file for compilation (required)", {"-i=", "--input="}, {}},
+			{"input", "the input file(s) for compilation, separated by ';' (required)", {"-i=", "--input="}, {}},
 			{"output", "the output file for compilation (required)", {"-o=", "--output="}, {}},
 			{"language", "the language targeted at compilation (values: c++ (default))", {"-l=", "--language="}, "c++", [](std::string s) { return s == "c++"; }},
 		}
@@ -38,9 +38,21 @@ namespace app {
 		}
 
 		try {
-			std::ifstream inputFile{args.getText("input"), std::ios::binary};
+			std::vector<std::istream*> inputs;
+
+			std::string filenames = args.getText("input");
+			auto begin = filenames.begin();
+			while (1) {
+				auto end = std::find(begin, filenames.end(), ';');
+				inputs.push_back(new std::ifstream{filenames.substr(begin - filenames.begin(), end - begin), std::ios::binary});
+
+				if (end == filenames.end())
+					break;					
+				begin = end + 1;
+			}
+
 			std::ofstream outputFile{args.getText("output"), std::ios::binary};
-			parser::Compiler compiler{inputFile}; // TODO accept more than one file
+			parser::Compiler compiler{inputs};
 
 			if (auto lang = args.getText("language"); lang == "c++")
 				compiler.toCpp(outputFile);

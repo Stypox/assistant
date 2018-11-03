@@ -33,9 +33,9 @@ namespace parser {
 
 		void parse(std::istream& input);
 
-		friend std::tuple<Code, std::vector<Section>, std::vector<CapturingSection>> parse(std::istream& input);
+		friend std::tuple<Code, std::vector<Section>, std::vector<CapturingSection>> parse(const std::vector<std::istream*>& inputs);
 	};
-	std::tuple<constructs::Code, std::vector<constructs::Section>, std::vector<constructs::CapturingSection>> parse(std::istream& input);
+	std::tuple<constructs::Code, std::vector<constructs::Section>, std::vector<constructs::CapturingSection>> parse(const std::vector<std::istream*>& inputs);
 }
 
 #endif
