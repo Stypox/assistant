@@ -17,7 +17,7 @@ namespace app {
 		}, {
 
 		}, {
-			{"input", "the input file(s) for compilation, separated by ';' (required)", {"-i=", "--input="}, {}},
+			{"input", "the input file(s) for compilation, separated by ':' (required)", {"-i=", "--input="}, {}},
 			{"output", "the output file for compilation (required)", {"-o=", "--output="}, {}},
 			{"language", "the language targeted at compilation (values: c++ (default))", {"-l=", "--language="}, "c++", [](std::string s) { return s == "c++"; }},
 		}
@@ -43,7 +43,7 @@ namespace app {
 			std::string filenames = args.getText("input");
 			auto begin = filenames.begin();
 			while (1) {
-				auto end = std::find(begin, filenames.end(), ';');
+				auto end = std::find(begin, filenames.end(), ':');
 				std::ifstream* file = new std::ifstream{filenames.substr(begin - filenames.begin(), end - begin), std::ios::binary};
 				if (!file->is_open())
 					throw std::runtime_error{"No such input file: " + filenames.substr(begin - filenames.begin(), end - begin)};
