@@ -1,17 +1,5 @@
-#include <fstream>
-#include <iostream>
+#include "app/application.h"
 
-#include "parser/compiler.h"
-
-int main() {
-	try {
-		std::ifstream file{"test.txt", std::ios::binary};
-		parser::Compiler compiler{file};
-		compiler.toCpp(std::cout);
-	}
-	catch (const std::runtime_error& e) {
-		std::cout << e.what();
-		exit(1);
-	}
-	return 0;
+int main(int argc, char const *argv[]) {
+	return app::Application::run(argc, argv);
 }
