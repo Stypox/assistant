@@ -44,7 +44,10 @@ namespace app {
 			auto begin = filenames.begin();
 			while (1) {
 				auto end = std::find(begin, filenames.end(), ';');
-				inputs.push_back(new std::ifstream{filenames.substr(begin - filenames.begin(), end - begin), std::ios::binary});
+				std::ifstream* file = new std::ifstream{filenames.substr(begin - filenames.begin(), end - begin), std::ios::binary};
+				if (!file->is_open())
+					throw std::runtime_error{"No such input file: " + filenames.substr(begin - filenames.begin(), end - begin)};
+				inputs.push_back(file);
 
 				if (end == filenames.end())
 					break;					
@@ -52,8 +55,10 @@ namespace app {
 			}
 
 			std::ofstream outputFile{args.getText("output"), std::ios::binary};
-			parser::Compiler compiler{inputs};
+			if (!outputFile.is_open())
+				throw std::runtime_error{"No such output file: " + args.getText("output")};
 
+			parser::Compiler compiler{inputs};
 			if (auto lang = args.getText("language"); lang == "c++")
 				compiler.toCpp(outputFile);
 		}
