@@ -7,6 +7,7 @@ SRC = ./src/
 
 EXECUTABLE = sentence-compiler.exe
 OBJECT_FILES = $(SRC)main.o \
+	$(SRC)app/application.o \
 	$(SRC)lexer/tokenizer.o $(SRC)lexer/token.o $(SRC)lexer/stream.o \
 	$(SRC)parser/parser.o $(SRC)parser/compiler.o \
 		$(SRC)parser/constructs/section.o $(SRC)parser/constructs/sentence.o $(SRC)parser/constructs/orword.o $(SRC)parser/constructs/code.o
@@ -16,8 +17,12 @@ $(EXECUTABLE): $(OBJECT_FILES)
 	$(CXX) $(CXXFLAGS) -o $(EXECUTABLE) $(OBJECT_FILES) $(CXXLIBS)
 
 # src/
-$(SRC)main.o: $(SRC)main.cpp $(SRC)parser/parser.o
+$(SRC)main.o: $(SRC)main.cpp $(SRC)app/application.o
 	$(CXX) $(CXXFLAGS) -o $(SRC)main.o -c $(SRC)main.cpp
+
+# src/app/
+$(SRC)app/application.o: $(SRC)app/application.cpp $(SRC)app/application.h $(SRC)parser/compiler.o
+	$(CXX) $(CXXFLAGS) -o $(SRC)app/application.o -c $(SRC)app/application.cpp
 
 # src/lexer/
 $(SRC)lexer/tokenizer.o: $(SRC)lexer/tokenizer.cpp $(SRC)lexer/tokenizer.h $(SRC)lexer/stream.o
