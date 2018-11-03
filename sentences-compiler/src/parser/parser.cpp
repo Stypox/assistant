@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "../lexer/tokenizer.h"
+#include "../app/application.h"
 
 using namespace lexer;
 using namespace parser::constructs;
@@ -205,17 +206,20 @@ namespace parser {
 		if (auto resCode = code(); resCode.has_value())
 			m_codeWhenNotUnderstood = *resCode;
 		sections();
-
-		for (auto&& section : m_sections)
-			std::cout << section << "\n";
-		for (auto&& section : m_capturingSections)
-			std::cout << section << "\n";
 	}
 
 	tuple<Code, vector<Section>, vector<CapturingSection>> parse(const vector<std::istream*>& inputs) {
 		Parser parser;
 		for (auto&& input : inputs)
 			parser.parse(*input);
+
+		if (app::Application::args.getBool("verbose")) {	
+			std::cout << "CODE WHEN NOT UNDERSTOOD:\n" << parser.m_codeWhenNotUnderstood << "\n";
+			for (auto&& section : parser.m_sections)
+				std::cout << section << "\n";
+			for (auto&& section : parser.m_capturingSections)
+				std::cout << section << "\n";
+		}
 
 		return {parser.m_codeWhenNotUnderstood, parser.m_sections, parser.m_capturingSections};
 	}
