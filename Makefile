@@ -1,6 +1,7 @@
 #Makefile settings
 CXX = g++
-CXXFLAGS = -Wall -g -std=c++17
+CXXINCLUDE = -I../include/
+CXXFLAGS = -Wall -g -std=c++17 $(CXXINCLUDE)
 CXXLIBS = 
 SRC = ./src/
 
