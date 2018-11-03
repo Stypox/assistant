@@ -24,7 +24,8 @@ namespace parser {
 		
 		std::string code;
 		size_t fileSize = fs::file_size(path);
-		code.resize(fileSize + 1);
+		code.reserve(fileSize + 1);
+		code.resize(fileSize);
 
 		std::ifstream file{path, std::ios::binary};
 		if (!file.is_open())
@@ -32,7 +33,7 @@ namespace parser {
 		file.read(code.data(), fileSize);
 
 		if (code.empty() || code.back() != '\n')
-			code.push_back('\n');
+			code += '\n';
 		
 		return code;
 	}
