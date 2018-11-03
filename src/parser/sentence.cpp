@@ -57,7 +57,8 @@ namespace parser {
 		return points;
 	}
 	void Sentence::exec() const {
-		std::cout << m_words[0];
+		for (auto&& w : m_words)
+			std::cout << w << " ";
 	}
 
 
@@ -131,13 +132,14 @@ namespace parser {
 
 		if (word != m_wordsBefore.end()) {
 			exactMatch = false;
-			points += std::max(minPointsWordInMiddle, pointsWordsInMiddle * static_cast<int>(m_wordsAfter.end() - word));
+			points += std::max(minPointsWordInMiddle, pointsWordsInMiddle * static_cast<int>(m_wordsBefore.end() - word));
 		}
-		if (compareWord >= compareWords.end()) {
+		if (compareWord == compareWords.end()) {
 			points += pointsMissingCapturingGroup;
+			return {points, {}, foundAllWords, exactMatch};
 		}
 
-		return {points, {compareWords.begin() + static_cast<int>(compareWords.end() - compareWord - 1), compareWords.end()}, foundAllWords, exactMatch};
+		return {points, {compareWords.begin() + static_cast<int>(compareWord - compareWords.begin()), compareWords.end()}, foundAllWords, exactMatch};
 	}
 
 	CapturingSentence::CapturingSentence(const vector<string>& wordsBefore, const vector<string> wordsAfter, const string& code) :
@@ -160,6 +162,10 @@ namespace parser {
 		return {points, capturingGroup};
 	}
 	void CapturingSentence::exec() const {
-		std::cout << m_code;
+		for (auto&& w : m_wordsBefore)
+			std::cout << w << " ";
+		std::cout << "...";
+		for (auto&& w : m_wordsAfter)
+			std::cout << " " << w;
 	}
 }
