@@ -141,11 +141,14 @@ namespace parser {
 		Token token = m_ts.get(m_readNext);
 		if (token == '.') {
 			// this word is a capturing group
-			token = m_ts.get(m_readNext);
-			if (token == '.')
+			token = m_ts.get(true);
+			if (token == '.') {
+				m_readNext = true;
 				return {{}, true};
-			else
+			}
+			else {
 				throw std::runtime_error{"Grammar error:" + token.position() + ": capturing group is represented by two points \"..\" but there is one alone"};
+			}
 		}
 		else if (token != Token::letters) {
 			m_readNext = false;
