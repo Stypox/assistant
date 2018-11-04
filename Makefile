@@ -4,6 +4,14 @@ CXXINCLUDE = -I../include/
 CXXFLAGS = -Wall -g -std=c++17 $(CXXINCLUDE)
 CXXLIBS = 
 SRC = ./src/
+SENTENCES_COMPILER = ./sentences-compiler/
+
+INPUT_CONTAINS_SPACES = $(findstring $(NULL) ,$(input))
+INPUT_FILES := $(if $(INPUT_CONTAINS_SPACES),,$(subst :, ,$(input)))
+ifeq ($(INPUT_FILES),)
+$(warning input contains spaces. input files will be compiled even if they are up-to-date)
+.PHONY: $(SENTENCES_COMPILER)sentences.cpp
+endif
 
 EXECUTABLE = voice-assistant.exe
 OBJECT_FILES = $(SRC)main.o \
@@ -14,8 +22,14 @@ $(EXECUTABLE): $(OBJECT_FILES)
 	$(CXX) $(CXXFLAGS) -o $(EXECUTABLE) $(OBJECT_FILES) $(CXXLIBS)
 
 # src/
-$(SRC)main.o: $(SRC)main.cpp $(SRC)parser/parser.o
+$(SRC)main.o: $(SRC)main.cpp $(SRC)parser/parser.o $(SENTENCES_COMPILER)sentences.cpp
 	$(CXX) $(CXXFLAGS) -o $(SRC)main.o -c $(SRC)main.cpp
+
+# sentences-compiler/
+$(SENTENCES_COMPILER)sentences.cpp: $(SENTENCES_COMPILER)sentences-compiler.exe $(INPUT_FILES)
+	$(SENTENCES_COMPILER)sentences-compiler.exe --input="$(input)" --output=$(SENTENCES_COMPILER)sentences.cpp -l=c++ -v
+$(SENTENCES_COMPILER)sentences-compiler.exe:
+	cd $(SENTENCES_COMPILER) && make
 
 # src/parser
 $(SRC)parser/parser.o: $(SRC)parser/parser.h $(SRC)parser/parser.cpp $(SRC)parser/sentence.o

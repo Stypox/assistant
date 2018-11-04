@@ -1,10 +1,22 @@
 #include <iostream>
+#include <string>
+#include <sstream>
 #include "parser/parser.h"
 
+#include "../sentences-compiler/sentences.cpp"
+
 int main() {
-	parser::Parser p{{{{"Hello", "how", "are", "you"}, "print(\"Ok\")"},
-					  {{"Hey", "Hello"}, "print(\"Ok\")"}},
-					  "print(\"Bad\")"};
-	p.parse({"Hello"});
+	while (1) {
+		std::string line;
+		std::getline(std::cin, line);
+		std::stringstream linestream;
+		linestream << line;
+		std::vector<std::string> words;
+		while (linestream >> line)
+			words.push_back(line);
+
+		sentences_compiler_gen::parser.parse(words);
+		std::cout << "\n";
+	}
 	return 0;
 }

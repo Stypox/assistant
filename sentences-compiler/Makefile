@@ -5,7 +5,7 @@ CXXFLAGS = -Wall -g -std=c++17 $(CXXINCLUDE)
 CXXLIBS = -lstdc++fs
 SRC = ./src/
 
-EXECUTABLE = sentence-compiler.exe
+EXECUTABLE = sentences-compiler.exe
 OBJECT_FILES = $(SRC)main.o \
 	$(SRC)app/application.o \
 	$(SRC)lexer/tokenizer.o $(SRC)lexer/token.o $(SRC)lexer/stream.o \
