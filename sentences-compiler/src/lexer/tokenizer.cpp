@@ -54,7 +54,10 @@ namespace lexer {
 		};
 		auto readLine = [&]{
 			std::string line;
-			std::getline(input, line);
+			while ((ch = input.get()) != '\n' && input)
+				line.push_back(ch);
+			if (ch == '\n')
+				input.unget();
 			return line;
 		};
 		auto skipLine = [&]{
@@ -80,8 +83,9 @@ namespace lexer {
 						ch = get();
 					if (ch == '-')
 						tokenStream.push({Token::include, readLine(), currentLine, currentChar});
+					else
+						unget();
 				}
-				unget();
 			}
 			else if (ch == '#')
 				skipLine();
