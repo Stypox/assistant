@@ -17,8 +17,8 @@ namespace parser::constructs {
 		Section(const std::vector<Sentence>& sentences, const Code& code);
 		std::vector<std::vector<std::string>> unfoldedSentences() const;
 
-		std::string cppSentencesList(const std::string& codeObjectName);
-		std::string cppCodeStringLiteral();
+		std::string cppSentencesList(const std::string& codeObjectName, bool pretty) const;
+		std::string cppCodeStringLiteral() const;
 
 		friend std::ostream& operator<< (std::ostream& stream, const Section& section);
 	};
@@ -31,8 +31,8 @@ namespace parser::constructs {
 		CapturingSection(const std::vector<CapturingSentence>& sentences, const Code& code);
 		std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> unfoldedSentences() const;
 
-		std::string cppSentencesList(const std::string& codeObjectName);
-		std::string cppCodeStringLiteral();
+		std::string cppSentencesList(const std::string& codeObjectName, bool pretty) const;
+		std::string cppCodeStringLiteral() const;
 
 		friend std::ostream& operator<< (std::ostream& stream, const CapturingSection& section);
 	};

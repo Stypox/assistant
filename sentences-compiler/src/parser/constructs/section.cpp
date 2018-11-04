@@ -19,22 +19,35 @@ namespace parser::constructs {
 		return m_unfoldedSentences;
 	}
 
-	std::string Section::cppSentencesList(const std::string& codeObjectName) {
+	std::string Section::cppSentencesList(const std::string& codeObjectName, bool pretty) const {
 		std::string result;
-
 		unfoldedSentences();
-		for (auto&& sentence : m_unfoldedSentences) {
-			result.append("{{");
-			for (auto&& word : sentence)
-				result.append("\"" + word + "\",");
-			result.back() = '}'; // replace last ,
-			result.append("," + codeObjectName + "},");
-		}
-		result.resize(result.size() - 1); // remove last ,
 
+		if (pretty) {
+			for (auto&& sentence : m_unfoldedSentences) {
+				result.append("\n\t\t{{");
+				for (auto&& word : sentence)
+					result.append("\"" + word + "\", ");
+				*(result.end() - 2) = '}'; // replace last ,
+				*(result.end() - 1) = ',';
+				result.append(" " + codeObjectName + "},");
+			}
+		}
+		else {
+			for (auto&& sentence : m_unfoldedSentences) {
+				result.append("{{");
+				for (auto&& word : sentence)
+					result.append("\"" + word + "\",");
+				result.back() = '}'; // replace last ,
+				result.append("," + codeObjectName + "},");
+			}
+		}
+
+		if (!m_unfoldedSentences.empty())
+			result.resize(result.size() - 1); // remove last ,
 		return result;
 	}
-	std::string Section::cppCodeStringLiteral() {
+	std::string Section::cppCodeStringLiteral() const {
 		return m_code.cppStringLiteral();
 	}
 
@@ -66,38 +79,68 @@ namespace parser::constructs {
 		return m_unfoldedSentences;
 	}
 
-	std::string CapturingSection::cppSentencesList(const std::string& codeObjectName) {
+	std::string CapturingSection::cppSentencesList(const std::string& codeObjectName, bool pretty) const {
 		std::string result;
-
 		unfoldedSentences();
-		for (auto&& sentence : m_unfoldedSentences) {
-			if (sentence.first.empty()) {
-				result.append("{{}");
-			}
-			else {
-				result.append("{{");
-				for (auto&& word : sentence.first)
-					result.append("\"" + word + "\",");
-				result.back() = '}'; // replace last ,
-			}
 
-			if (sentence.second.empty()) {
-				result.append(",{}");
-			}
-			else {
-				result.append(",{");
-				for (auto&& word : sentence.second)
-					result.append("\"" + word + "\",");
-				result.back() = '}'; // replace last ,
-			}
+		if (pretty) {
+			for (auto&& sentence : m_unfoldedSentences) {
+				if (sentence.first.empty()) {
+					result.append("\n\t\t{{}, ");
+				}
+				else {
+					result.append("\n\t\t{{");
+					for (auto&& word : sentence.first)
+						result.append("\"" + word + "\", ");
+					*(result.end() - 2) = '}'; // replace last ,
+					*(result.end() - 1) = ',';
+				}
 
-			result.append("," + codeObjectName + "},");
+				if (sentence.second.empty()) {
+					result.append(" {},");
+				}
+				else {
+					result.append(" {");
+					for (auto&& word : sentence.second)
+						result.append("\"" + word + "\", ");
+					*(result.end() - 2) = '}'; // replace last ,
+					*(result.end() - 1) = ',';
+				}
+
+				result.append(" " + codeObjectName + "},");
+			}
 		}
-		result.resize(result.size() - 1); // remove last ,
+		else {
+			for (auto&& sentence : m_unfoldedSentences) {
+				if (sentence.first.empty()) {
+					result.append("{{}");
+				}
+				else {
+					result.append("{{");
+					for (auto&& word : sentence.first)
+						result.append("\"" + word + "\",");
+					result.back() = '}'; // replace last ,
+				}
 
+				if (sentence.second.empty()) {
+					result.append(",{}");
+				}
+				else {
+					result.append(",{");
+					for (auto&& word : sentence.second)
+						result.append("\"" + word + "\",");
+					result.back() = '}'; // replace last ,
+				}
+
+				result.append("," + codeObjectName + "},");
+			}
+		}
+
+		if (!m_unfoldedSentences.empty())
+			result.resize(result.size() - 1); // remove last ,
 		return result;
 	}
-	std::string CapturingSection::cppCodeStringLiteral() {
+	std::string CapturingSection::cppCodeStringLiteral() const {
 		return m_code.cppStringLiteral();
 	}
 
