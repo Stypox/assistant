@@ -20,11 +20,11 @@ int main() {
 		while (linestream >> line)
 			words.push_back(line);
 
-		if (exec::checkSignals()) {
+		if (exec::checkSignals())
 			break;
 		sentences_compiler_gen::parser.parse(words);
 		std::cout << "\n";
 	}
-	
+
 	return exec::finalize();
 }
