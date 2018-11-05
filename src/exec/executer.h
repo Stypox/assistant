@@ -4,7 +4,11 @@
 #include <string>
 
 namespace exec {
-	void execute(const std::string& code);
+	void initialize();
+	int finalize();
+	int checkSignals();
+
+	int execute(const std::string& code);
 }
 
 #endif

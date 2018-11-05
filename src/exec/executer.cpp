@@ -1,12 +1,19 @@
 #include "executer.h"
 #include "Python.h"
+#include "pyerrors.h"
 
 namespace exec {
-	void execute(const std::string& code) {
+	void initialize() {
 		Py_Initialize();
-		PyRun_SimpleString(code.c_str());
-		if (Py_FinalizeEx() < 0) {
-			exit(120);
-		}
+	}
+	int finalize() {
+		return Py_FinalizeEx();
+	}
+	int checkSignals() {
+		return PyErr_CheckSignals();
+	}
+
+	int execute(const std::string& code) {
+		return PyRun_SimpleString(code.c_str());
 	}
 }
