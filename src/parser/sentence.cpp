@@ -61,10 +61,7 @@ namespace parser {
 	void Sentence::exec(const vector<string>& words) const {
 		// for (auto&& w : m_words)
 		// 	std::cout << w << " ";
-		exec::execute(
-			exec::buildArray(receivedWordsPyName, words) +
-			exec::buildArray(sentenceWordsPyName, m_words) +
-			m_code);
+		exec::execute(exec::addPredef(exec::buildAssistantResonse(exec::assistantResponseName, words, m_words) + m_code));
 	}
 
 
@@ -173,11 +170,6 @@ namespace parser {
 		// std::cout << "...";
 		// for (auto&& w : m_wordsAfter)
 		// 	std::cout << " " << w;
-		exec::execute(
-			exec::buildArray(receivedWordsPyName, words) +
-			exec::buildArray(capturedWordsPyName, capturedWords) +
-			exec::buildArray(sentenceWordsBeforePyName, m_wordsBefore) +
-			exec::buildArray(sentenceWordsAfterPyName, m_wordsAfter) +
-			m_code);
+		exec::execute(exec::addPredef(exec::buildAssistantResonse(exec::assistantResponseName, words, capturedWords, m_wordsBefore, m_wordsAfter) + m_code));
 	}
 }

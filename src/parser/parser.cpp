@@ -48,9 +48,7 @@ namespace parser {
 		auto [bestCapturingSentence, capturedWords, scoreCapturingSentence] = getHighestScoreCapturingSentence(words);
 
 		if (scoreSentence < minimumRequiredScore && scoreCapturingSentence < minimumRequiredScore) {
-			exec::execute(
-				exec::buildArray(receivedWordsPyName, words) +
-				m_codeWhenNotUnderstood);
+			exec::execute(exec::addPredef(exec::buildAssistantResonse(exec::assistantResponseName, words) + m_codeWhenNotUnderstood));
 			return;
 		}
 
@@ -65,9 +63,7 @@ namespace parser {
 		else if (bestCapturingSentence)
 			bestCapturingSentence->exec(words, capturedWords);
 		else
-			exec::execute(
-				exec::buildArray(receivedWordsPyName, words) +
-				m_codeWhenNotUnderstood);
+			exec::execute(exec::addPredef(exec::buildAssistantResonse(exec::assistantResponseName, words) + m_codeWhenNotUnderstood));
 	}
 
 	void Parser::add(const Sentence& sentence) {
