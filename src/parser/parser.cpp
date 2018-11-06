@@ -1,5 +1,7 @@
 #include "parser.h"
 
+#include "../exec/executer.h"
+
 namespace parser {
 	using std::string;
 	using std::vector;
@@ -46,21 +48,26 @@ namespace parser {
 		auto [bestCapturingSentence, capturingGroup, scoreCapturingSentence] = getHighestScoreCapturingSentence(words);
 
 		if (scoreSentence < minimumRequiredScore && scoreCapturingSentence < minimumRequiredScore) {
-			// TODO run code when not understood
+			exec::execute(
+				exec::buildArray(receivedWordsPyName, words) +
+				m_codeWhenNotUnderstood);
 			return;
 		}
 
 		if (bestSentence && bestCapturingSentence) {
 			if (scoreSentence > scoreCapturingSentence)
-				bestSentence->exec();
+				bestSentence->exec(words);
 			else
-				bestCapturingSentence->exec();
+				bestCapturingSentence->exec(words, capturingGroup);
 		}
 		else if (bestSentence)
-			bestSentence->exec();
+			bestSentence->exec(words);
 		else if (bestCapturingSentence)
-			bestCapturingSentence->exec();
-		// TODO run code when not understood
+			bestCapturingSentence->exec(words, capturingGroup);
+		else
+			exec::execute(
+				exec::buildArray(receivedWordsPyName, words) +
+				m_codeWhenNotUnderstood);
 	}
 
 	void Parser::add(const Sentence& sentence) {

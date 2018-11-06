@@ -58,10 +58,13 @@ namespace parser {
 
 		return points;
 	}
-	void Sentence::exec() const {
+	void Sentence::exec(const vector<string>& words) const {
 		// for (auto&& w : m_words)
 		// 	std::cout << w << " ";
-		exec::execute(m_code);
+		exec::execute(
+			exec::buildArray(receivedWordsPyName, words) +
+			exec::buildArray(sentenceWordsPyName, m_words) +
+			m_code);
 	}
 
 
@@ -164,12 +167,17 @@ namespace parser {
 
 		return {points, capturingGroup};
 	}
-	void CapturingSentence::exec() const {
+	void CapturingSentence::exec(const vector<string>& words, const vector<string>& capturingGroup) const {
 		// for (auto&& w : m_wordsBefore)
 		// 	std::cout << w << " ";
 		// std::cout << "...";
 		// for (auto&& w : m_wordsAfter)
 		// 	std::cout << " " << w;
-		exec::execute(m_code);
+		exec::execute(
+			exec::buildArray(receivedWordsPyName, words) +
+			exec::buildArray(capturingGroupPyName, capturingGroup) +
+			exec::buildArray(sentenceWordsBeforePyName, m_wordsBefore) +
+			exec::buildArray(sentenceWordsAfterPyName, m_wordsAfter) +
+			m_code);
 	}
 }
