@@ -16,4 +16,22 @@ namespace exec {
 	int execute(const std::string& code) {
 		return PyRun_SimpleString(code.c_str());
 	}
+
+	std::string buildArray(std::string name, const std::vector<std::string>& words) {
+		name.append("=[");
+		for (auto&& word : words) {
+			name += '"';
+			name.append(word);
+			name.append("\",");
+		}
+
+		if (words.empty())
+			name.append("]\n");
+		else {
+			name.back() = ']';
+			name += '\n';
+		}
+
+		return name;
+	}
 }
