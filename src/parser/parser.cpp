@@ -25,19 +25,19 @@ namespace parser {
 	}
 	tuple<const CapturingSentence*, vector<string>, int> Parser::getHighestScoreCapturingSentence(const vector<string>& words) const {
 		const CapturingSentence* bestSentence = nullptr;
-		vector<string> bestSentenceCapturingGroup;
+		vector<string> bestSentenceCapturedWords;
 		int maxScoreSoFar = std::numeric_limits<int>::min();
 
 		for (auto&& sentence : m_capturingSentences) {
-			const auto& [score, capturingGroup] = sentence.score(words);
+			const auto& [score, capturedWords] = sentence.score(words);
 			if (score > maxScoreSoFar) {
 				maxScoreSoFar = score;
 				bestSentence = &sentence;
-				bestSentenceCapturingGroup = capturingGroup;
+				bestSentenceCapturedWords = capturedWords;
 			}
 		}
 
-		return {bestSentence, bestSentenceCapturingGroup, maxScoreSoFar};
+		return {bestSentence, bestSentenceCapturedWords, maxScoreSoFar};
 	}
 
 	Parser::Parser(const vector<Sentence>& sentences, const vector<CapturingSentence>& capturingSentences, const string& codeWhenNotUnderstood) :
@@ -45,7 +45,7 @@ namespace parser {
 
 	void Parser::parse(const vector<string>& words) const {
 		auto [bestSentence, scoreSentence] = getHighestScoreSentence(words);
-		auto [bestCapturingSentence, capturingGroup, scoreCapturingSentence] = getHighestScoreCapturingSentence(words);
+		auto [bestCapturingSentence, capturedWords, scoreCapturingSentence] = getHighestScoreCapturingSentence(words);
 
 		if (scoreSentence < minimumRequiredScore && scoreCapturingSentence < minimumRequiredScore) {
 			exec::execute(
@@ -58,12 +58,12 @@ namespace parser {
 			if (scoreSentence > scoreCapturingSentence)
 				bestSentence->exec(words);
 			else
-				bestCapturingSentence->exec(words, capturingGroup);
+				bestCapturingSentence->exec(words, capturedWords);
 		}
 		else if (bestSentence)
 			bestSentence->exec(words);
 		else if (bestCapturingSentence)
-			bestCapturingSentence->exec(words, capturingGroup);
+			bestCapturingSentence->exec(words, capturedWords);
 		else
 			exec::execute(
 				exec::buildArray(receivedWordsPyName, words) +

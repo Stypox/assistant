@@ -12,10 +12,10 @@ namespace parser {
 		minPointsWordInMiddle = -10,
 		pointsFoundAllWords = 8,
 		pointsExactMatch = 6,
-		pointsMissingCapturingGroup = -5;
+		pointsNoWordsCaptured = -5;
 	
 	constexpr const char* receivedWordsPyName = "received_words",
-		* capturingGroupPyName = "capturing_group",
+		* capturedWordsPyName = "captured_words",
 		* sentenceWordsPyName = "sentence_words",
 		* sentenceWordsBeforePyName = "sentence_words_before",
 		* sentenceWordsAfterPyName = "sentence_words_after";
@@ -41,7 +41,7 @@ namespace parser {
 		CapturingSentence(const std::vector<std::string>& wordsBefore, const std::vector<std::string> wordsAfter, const std::string& code);
 
 		std::pair<int, std::vector<std::string>> score(const std::vector<std::string>& compareWords) const;
-		void exec(const std::vector<std::string>& words, const std::vector<std::string>& capturingGroup) const;
+		void exec(const std::vector<std::string>& words, const std::vector<std::string>& capturedWords) const;
 	};
 }
 

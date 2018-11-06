@@ -102,7 +102,7 @@ namespace parser {
 			points += std::max(minPointsWordInMiddle, pointsWordsInMiddle * static_cast<int>(m_wordsAfter.rend() - word));
 		}
 		if (compareWord == compareWords.rend()) {
-			points += pointsMissingCapturingGroup;
+			points += pointsNoWordsCaptured;
 		}
 
 		return {points, {compareWords.begin(), compareWords.begin() + static_cast<int>(compareWords.rend() - compareWord)}, foundAllWords, exactMatch};
@@ -141,7 +141,7 @@ namespace parser {
 			points += std::max(minPointsWordInMiddle, pointsWordsInMiddle * static_cast<int>(m_wordsBefore.end() - word));
 		}
 		if (compareWord == compareWords.end()) {
-			points += pointsMissingCapturingGroup;
+			points += pointsNoWordsCaptured;
 			return {points, {}, foundAllWords, exactMatch};
 		}
 
@@ -156,7 +156,7 @@ namespace parser {
 
 		const auto& [pointsAfter, remainingWords, foundAllWordsAfter, exactMatchAfter] = scoreAfter(compareWords);
 		points += pointsAfter;
-		const auto& [pointsBefore, capturingGroup, foundAllWordsBefore, exactMatchBefore] = scoreBefore(remainingWords);
+		const auto& [pointsBefore, capturedWords, foundAllWordsBefore, exactMatchBefore] = scoreBefore(remainingWords);
 		points += pointsBefore;
 
 		if (foundAllWordsAfter && foundAllWordsBefore) {
@@ -165,9 +165,9 @@ namespace parser {
 				points += pointsExactMatch;
 		}
 
-		return {points, capturingGroup};
+		return {points, capturedWords};
 	}
-	void CapturingSentence::exec(const vector<string>& words, const vector<string>& capturingGroup) const {
+	void CapturingSentence::exec(const vector<string>& words, const vector<string>& capturedWords) const {
 		// for (auto&& w : m_wordsBefore)
 		// 	std::cout << w << " ";
 		// std::cout << "...";
@@ -175,7 +175,7 @@ namespace parser {
 		// 	std::cout << " " << w;
 		exec::execute(
 			exec::buildArray(receivedWordsPyName, words) +
-			exec::buildArray(capturingGroupPyName, capturingGroup) +
+			exec::buildArray(capturedWordsPyName, capturedWords) +
 			exec::buildArray(sentenceWordsBeforePyName, m_wordsBefore) +
 			exec::buildArray(sentenceWordsAfterPyName, m_wordsAfter) +
 			m_code);
