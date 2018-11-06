@@ -14,7 +14,7 @@ namespace exec {
 		"\t\tself.sentence_words_before = sentence_words_before\n"
 		"\t\tself.sentence_words_after = sentence_words_after\n"
 		"\t\tself.is_capturing_sentence = (sentence_words is None and sentence_words_before is not None and sentence_words_after is not None)\n"
-		"\t\tself.understood = (sentence_words is None and sentence_words_before is None and sentence_words_after is None)\n";
+		"\t\tself.understood = (sentence_words is not None or self.is_capturing_sentence)\n";
 	
 	constexpr const char* assistantResponseName = "assistant_response";
 
