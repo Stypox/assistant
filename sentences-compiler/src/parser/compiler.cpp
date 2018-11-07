@@ -25,11 +25,11 @@ namespace parser {
 		if (pretty) {
 			output << "namespace sentences_compiler_gen {\n\n";
 			for (size_t sectionPos = 0; sectionPos != m_sections.size(); ++sectionPos)
-				output << "string " << idObjectName << sectionPos + 1 << "{" << m_sections[sectionPos].cppIdStringLiteral() << "};\n"
-					<< "string " << codeObjectName << sectionPos + 1 << "{" << m_sections[sectionPos].cppCodeStringLiteral() << "};\n\n\n";
+				output << "std::string " << idObjectName << sectionPos + 1 << "{" << m_sections[sectionPos].cppIdStringLiteral() << "};\n"
+					<< "std::string " << codeObjectName << sectionPos + 1 << "{" << m_sections[sectionPos].cppCodeStringLiteral() << "};\n\n\n";
 			for (size_t sectionPos = 0; sectionPos != m_capturingSections.size(); ++sectionPos)
-				output << "string " << idCapturingObjectName << sectionPos + 1 << "{" << m_capturingSections[sectionPos].cppIdStringLiteral() << "};\n"
-					<< "string " << codeCapturingObjectName << sectionPos + 1 << "{" << m_capturingSections[sectionPos].cppCodeStringLiteral() << "};\n\n\n";
+				output << "std::string " << idCapturingObjectName << sectionPos + 1 << "{" << m_capturingSections[sectionPos].cppIdStringLiteral() << "};\n"
+					<< "std::string " << codeCapturingObjectName << sectionPos + 1 << "{" << m_capturingSections[sectionPos].cppCodeStringLiteral() << "};\n\n\n";
 
 			output << "parser::Parser " << parserObjectName << "{\n\t{";
 
@@ -55,11 +55,11 @@ namespace parser {
 		else {
 			output << "namespace sentences_compiler_gen {\n";
 			for (size_t sectionPos = 0; sectionPos != m_sections.size(); ++sectionPos)
-				output << "string " << idObjectName << sectionPos + 1 << "{" << m_sections[sectionPos].cppIdStringLiteral() << "};\n"
-					<< "string " << codeObjectName << sectionPos + 1 << "{" << m_sections[sectionPos].cppCodeStringLiteral() << "};\n";
+				output << "std::string " << idObjectName << sectionPos + 1 << "{" << m_sections[sectionPos].cppIdStringLiteral() << "};\n"
+					<< "std::string " << codeObjectName << sectionPos + 1 << "{" << m_sections[sectionPos].cppCodeStringLiteral() << "};\n";
 			for (size_t sectionPos = 0; sectionPos != m_capturingSections.size(); ++sectionPos)
-				output << "string " << idCapturingObjectName << sectionPos + 1 << "{" << m_capturingSections[sectionPos].cppIdStringLiteral() << "};\n"
-					<< "string " << codeCapturingObjectName << sectionPos + 1 << "{" << m_capturingSections[sectionPos].cppCodeStringLiteral() << "};\n";
+				output << "std::string " << idCapturingObjectName << sectionPos + 1 << "{" << m_capturingSections[sectionPos].cppIdStringLiteral() << "};\n"
+					<< "std::string " << codeCapturingObjectName << sectionPos + 1 << "{" << m_capturingSections[sectionPos].cppCodeStringLiteral() << "};\n";
 
 			output << "parser::Parser " << parserObjectName << "{{";
 
