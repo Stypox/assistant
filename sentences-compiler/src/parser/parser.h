@@ -15,6 +15,7 @@ namespace parser {
 		using Sentence = constructs::Sentence;
 		using CapturingSentence = constructs::CapturingSentence;
 		using OrWord = constructs::OrWord;
+		using Id = constructs::Id;
 		using Code = constructs::Code;
 
 		lexer::Stream m_ts;
@@ -23,7 +24,7 @@ namespace parser {
 		bool m_readNext = false;
 		
 		void																				sections();
-		std::optional<std::string>															id();
+		std::optional<Id>																	id();
 		std::optional<std::variant<Section, CapturingSection>>								section();
 		std::optional<std::variant<std::vector<Sentence>, std::vector<CapturingSentence>>>	sentences();
 		std::optional<std::variant<Sentence, CapturingSentence>>							sentence();

@@ -51,11 +51,11 @@ namespace parser {
 		if (Token token = m_ts.get(false); !token.empty()) // there are still tokens left after all has been processed. This means an unexpected token was read.
 			throw std::runtime_error("Grammar error:" + token.position() + ": expected sentence but got token \"" + token.str() + "\"");
 	}
-	optional<std::string> Parser::id() {
+	optional<Id> Parser::id() {
 		auto token = m_ts.get(m_readNext);
 
 		if (token & Token::lettersOrOther) {
-			std::string resId = token.str();
+			Id resId{token.str()};
 			token = m_ts.get(true);
 
 			if (token == ':') {

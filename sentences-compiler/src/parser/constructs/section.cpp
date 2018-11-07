@@ -6,7 +6,7 @@ namespace parser::constructs {
 	using std::pair;
 
 
-	Section::Section(const std::string& id, const vector<Sentence>& sentences, const Code& code) :
+	Section::Section(const Id& id, const vector<Sentence>& sentences, const Code& code) :
 		m_id{id}, m_sentences{sentences},
 		m_unfoldedSentences{}, m_code{code} {}
 	vector<vector<string>> Section::unfoldedSentences() const {
@@ -66,7 +66,7 @@ namespace parser::constructs {
 	}
 
 
-	CapturingSection::CapturingSection(const std::string& id, const vector<CapturingSentence>& sentences, const Code& code) :
+	CapturingSection::CapturingSection(const Id& id, const vector<CapturingSentence>& sentences, const Code& code) :
 		m_id{id}, m_sentences{sentences},
 		m_unfoldedSentences{}, m_code{code} {}
 	vector<pair<vector<string>, vector<string>>> CapturingSection::unfoldedSentences() const {

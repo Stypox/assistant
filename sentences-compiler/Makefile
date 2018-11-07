@@ -10,7 +10,7 @@ OBJECT_FILES = $(SRC)main.o \
 	$(SRC)app/application.o \
 	$(SRC)lexer/tokenizer.o $(SRC)lexer/token.o $(SRC)lexer/stream.o \
 	$(SRC)parser/parser.o $(SRC)parser/compiler.o \
-		$(SRC)parser/constructs/section.o $(SRC)parser/constructs/sentence.o $(SRC)parser/constructs/orword.o $(SRC)parser/constructs/code.o
+		$(SRC)parser/constructs/section.o $(SRC)parser/constructs/sentence.o $(SRC)parser/constructs/orword.o $(SRC)parser/constructs/id.o $(SRC)parser/constructs/code.o
 
 # executable
 $(EXECUTABLE): $(OBJECT_FILES)
@@ -45,6 +45,8 @@ $(SRC)parser/constructs/sentence.o: $(SRC)parser/constructs/sentence.cpp $(SRC)p
 	$(CXX) $(CXXFLAGS) -o $(SRC)parser/constructs/sentence.o -c $(SRC)parser/constructs/sentence.cpp
 $(SRC)parser/constructs/orword.o: $(SRC)parser/constructs/orword.cpp $(SRC)parser/constructs/orword.h
 	$(CXX) $(CXXFLAGS) -o $(SRC)parser/constructs/orword.o -c $(SRC)parser/constructs/orword.cpp
+$(SRC)parser/constructs/id.o: $(SRC)parser/constructs/id.cpp $(SRC)parser/constructs/id.h
+	$(CXX) $(CXXFLAGS) -o $(SRC)parser/constructs/id.o -c $(SRC)parser/constructs/id.cpp
 $(SRC)parser/constructs/code.o: $(SRC)parser/constructs/code.cpp $(SRC)parser/constructs/code.h
 	$(CXX) $(CXXFLAGS) -o $(SRC)parser/constructs/code.o -c $(SRC)parser/constructs/code.cpp
 
