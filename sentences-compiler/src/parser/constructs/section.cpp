@@ -19,13 +19,13 @@ namespace parser::constructs {
 		return m_unfoldedSentences;
 	}
 
-	std::string Section::cppSentencesList(const std::string& codeObjectName, bool pretty) const {
+	std::string Section::cppSentencesList(const std::string& idObjectName, const std::string& codeObjectName, bool pretty) const {
 		std::string result;
 		unfoldedSentences();
 
 		if (pretty) {
 			for (auto&& sentence : m_unfoldedSentences) {
-				result.append("\n\t\t{{");
+				result.append("\n\t\t{" + idObjectName + ", {");
 				for (auto&& word : sentence)
 					result.append("\"" + word + "\", ");
 				*(result.end() - 2) = '}'; // replace last ,
@@ -35,7 +35,7 @@ namespace parser::constructs {
 		}
 		else {
 			for (auto&& sentence : m_unfoldedSentences) {
-				result.append("{{");
+				result.append("{" + idObjectName + ",{");
 				for (auto&& word : sentence)
 					result.append("\"" + word + "\",");
 				result.back() = '}'; // replace last ,
@@ -49,6 +49,9 @@ namespace parser::constructs {
 	}
 	std::string Section::cppCodeStringLiteral() const {
 		return m_code.cppStringLiteral();
+	}
+	std::string Section::cppIdStringLiteral() const {
+		return m_id.cppStringLiteral();
 	}
 
 	std::ostream& operator<< (std::ostream& stream, const Section& section) {
@@ -79,17 +82,18 @@ namespace parser::constructs {
 		return m_unfoldedSentences;
 	}
 
-	std::string CapturingSection::cppSentencesList(const std::string& codeObjectName, bool pretty) const {
+	std::string CapturingSection::cppSentencesList(const std::string& idObjectName, const std::string& codeObjectName, bool pretty) const {
 		std::string result;
 		unfoldedSentences();
 
 		if (pretty) {
 			for (auto&& sentence : m_unfoldedSentences) {
+				result.append("\n\t\t{" + idObjectName + ", ");
 				if (sentence.first.empty()) {
-					result.append("\n\t\t{{}, ");
+					result.append("{},");
 				}
 				else {
-					result.append("\n\t\t{{");
+					result.append("{");
 					for (auto&& word : sentence.first)
 						result.append("\"" + word + "\", ");
 					*(result.end() - 2) = '}'; // replace last ,
@@ -112,11 +116,12 @@ namespace parser::constructs {
 		}
 		else {
 			for (auto&& sentence : m_unfoldedSentences) {
+				result.append("{" + idObjectName + ", ");
 				if (sentence.first.empty()) {
-					result.append("{{}");
+					result.append("{}");
 				}
 				else {
-					result.append("{{");
+					result.append("{");
 					for (auto&& word : sentence.first)
 						result.append("\"" + word + "\",");
 					result.back() = '}'; // replace last ,
@@ -142,6 +147,9 @@ namespace parser::constructs {
 	}
 	std::string CapturingSection::cppCodeStringLiteral() const {
 		return m_code.cppStringLiteral();
+	}
+	std::string CapturingSection::cppIdStringLiteral() const {
+		return m_id.cppStringLiteral();
 	}
 
 	std::ostream& operator<< (std::ostream& stream, const CapturingSection& section) {
