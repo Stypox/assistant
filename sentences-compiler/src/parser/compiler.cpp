@@ -5,8 +5,7 @@
 
 namespace parser {
 	Compiler::Compiler(const std::vector<std::istream*>& inputs) {
-		const auto& [codeWhenNotUnderstood, sections, capturingSections] = parse(inputs);
-		m_codeWhenNotUnderstood = codeWhenNotUnderstood;
+		const auto& [sections, capturingSections] = parse(inputs);
 		m_sections = sections;
 		m_capturingSections = capturingSections;
 	}

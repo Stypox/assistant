@@ -7,10 +7,12 @@ namespace lexer {
 	class Token {
 	public:
 		enum Type : char {
-			letters = 1,
-			grammar = 2,
-			code = 3,
-			include = 4,
+			otherValid = 1,
+			letters = 2,
+			lettersOrOther = 3,
+			grammar = 4,
+			code = 5,
+			include = 6,
 		};
 
 	private:
@@ -29,6 +31,7 @@ namespace lexer {
 		bool operator==(char ch) const;
 		bool operator!=(Type type) const;
 		bool operator!=(char ch) const;
+		bool operator&(Type type) const;
 
 		std::string position() const;
 	};

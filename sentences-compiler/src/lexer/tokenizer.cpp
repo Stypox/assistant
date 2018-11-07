@@ -15,9 +15,13 @@ namespace lexer {
 		return ((ch >= 'a' && ch <= 'z') ||
 				(ch >= 'A' && ch <= 'Z'));
 	}
+	bool isOtherValid(char ch) {
+		return ((ch >= '0' && ch <= '9') ||
+				(ch == '_'));
+	}
 	bool isGrammar(char ch) {
 		switch (ch) {
-			case ';': case '|': case '?': case '.':
+			case ':': case ';': case '|': case '?': case '.':
 				return true;
 			default:
 				return false;
@@ -41,16 +45,21 @@ namespace lexer {
 
 		auto readWord = [&]{
 			std::string word;
-			word.push_back(ch);
-			
-			ch = get();
-			while (isLetter(ch)) {
+			Token::Type type {0};
+
+			while (1) {
+				if (isLetter(ch))
+					type = static_cast<Token::Type>(type | Token::letters);
+				else if (isOtherValid(ch))
+					type = static_cast<Token::Type>(type | Token::otherValid);
+				else
+					break;
 				word.push_back(ch);
 				ch = get();
 			}
 
 			unget();
-			return word;
+			return std::make_pair(word, type);
 		};
 		auto readLine = [&]{
 			std::string line;
@@ -67,10 +76,13 @@ namespace lexer {
 		};
 
 		while (input) {
-			if (isLetter(ch))
-				tokenStream.push({Token::letters, readWord(), currentLine, currentChar});
-			else if (isGrammar(ch))
+			if (isLetter(ch) || isOtherValid(ch)) {
+				auto [word, type] = readWord();
+				tokenStream.push({type, word, currentLine, currentChar});
+			}
+			else if (isGrammar(ch)) {
 				tokenStream.push({Token::grammar, {ch}, currentLine, currentChar});
+			}
 			else if (ch == '\n') {
 				++currentLine;
 				currentChar = 0;

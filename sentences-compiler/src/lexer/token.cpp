@@ -35,6 +35,9 @@ namespace lexer {
 	bool Token::operator!=(char ch) const {
 		return m_type != Type::grammar || m_value.at(0) != ch;
 	}
+	bool Token::operator&(Type type) const {
+		return m_type & type;
+	}
 
 	std::string Token::position() const {
 		return (m_line == 0) ? (" end of file") : (std::to_string(m_line) + ":" + std::to_string(m_column));

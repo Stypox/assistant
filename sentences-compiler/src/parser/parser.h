@@ -18,24 +18,24 @@ namespace parser {
 		using Code = constructs::Code;
 
 		lexer::Stream m_ts;
-		Code m_codeWhenNotUnderstood;
 		std::vector<Section> m_sections;
 		std::vector<CapturingSection> m_capturingSections;
 		bool m_readNext = false;
 		
 		void																				sections();
+		std::optional<std::string>															id();
 		std::optional<std::variant<Section, CapturingSection>>								section();
 		std::optional<std::variant<std::vector<Sentence>, std::vector<CapturingSentence>>>	sentences();
 		std::optional<std::variant<Sentence, CapturingSentence>>							sentence();
 		std::tuple<std::vector<OrWord>, std::vector<OrWord>, bool>							words();
 		std::pair<std::optional<OrWord>, bool>												orWord();
-		std::optional<Code>																	code();
+		Code																				code();
 
 		void parse(std::istream& input);
 
-		friend std::tuple<Code, std::vector<Section>, std::vector<CapturingSection>> parse(const std::vector<std::istream*>& inputs);
+		friend std::tuple<std::vector<Section>, std::vector<CapturingSection>> parse(const std::vector<std::istream*>& inputs);
 	};
-	std::tuple<constructs::Code, std::vector<constructs::Section>, std::vector<constructs::CapturingSection>> parse(const std::vector<std::istream*>& inputs);
+	std::tuple<std::vector<constructs::Section>, std::vector<constructs::CapturingSection>> parse(const std::vector<std::istream*>& inputs);
 }
 
 #endif

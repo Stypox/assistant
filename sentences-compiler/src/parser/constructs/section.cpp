@@ -6,9 +6,9 @@ namespace parser::constructs {
 	using std::pair;
 
 
-	Section::Section(const vector<Sentence>& sentences, const Code& code) :
-		m_sentences{sentences}, m_unfoldedSentences{},
-		m_code{code} {}
+	Section::Section(const std::string& id, const vector<Sentence>& sentences, const Code& code) :
+		m_id{id}, m_sentences{sentences},
+		m_unfoldedSentences{}, m_code{code} {}
 	vector<vector<string>> Section::unfoldedSentences() const {
 		if (m_unfoldedSentences.empty()) {
 			for (auto&& sentence : m_sentences) {
@@ -52,7 +52,7 @@ namespace parser::constructs {
 	}
 
 	std::ostream& operator<< (std::ostream& stream, const Section& section) {
-		stream << "SECTION:";
+		stream << "SECTION \"" << section.m_id << "\":";
 		for (auto&& sentence : section.m_sentences)
 			stream << "\n" << sentence;
 		stream << "\nUNFOLDED:";
@@ -66,9 +66,9 @@ namespace parser::constructs {
 	}
 
 
-	CapturingSection::CapturingSection(const vector<CapturingSentence>& sentences, const Code& code) :
-		m_sentences{sentences}, m_unfoldedSentences{},
-		m_code{code} {}
+	CapturingSection::CapturingSection(const std::string& id, const vector<CapturingSentence>& sentences, const Code& code) :
+		m_id{id}, m_sentences{sentences},
+		m_unfoldedSentences{}, m_code{code} {}
 	vector<pair<vector<string>, vector<string>>> CapturingSection::unfoldedSentences() const {
 		if (m_unfoldedSentences.empty()) {
 			for (auto&& sentence : m_sentences) {
@@ -145,7 +145,7 @@ namespace parser::constructs {
 	}
 
 	std::ostream& operator<< (std::ostream& stream, const CapturingSection& section) {
-		stream << "SECTION (with capturing group):";
+		stream << "SECTION (with capturing group) \"" << section.m_id << "\":";
 		for (auto&& sentence : section.m_sentences)
 			stream << "\n" << sentence;
 		stream << "\nUNFOLDED:";

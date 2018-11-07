@@ -51,17 +51,37 @@ namespace parser {
 		if (Token token = m_ts.get(false); !token.empty()) // there are still tokens left after all has been processed. This means an unexpected token was read.
 			throw std::runtime_error("Grammar error:" + token.position() + ": expected sentence but got token \"" + token.str() + "\"");
 	}
+	optional<std::string> Parser::id() {
+		auto token = m_ts.get(m_readNext);
+
+		if (token & Token::lettersOrOther) {
+			std::string resId = token.str();
+			token = m_ts.get(true);
+
+			if (token == ':') {
+				m_readNext = true;
+				return resId;
+			}
+			else {
+				throw std::runtime_error{"Grammar error:" + token.position() + ": excepted ':' after \"" + resId + "\" token"};
+			}
+		}
+		else {
+			return {};
+		}
+	}
 	optional<variant<Section, CapturingSection>> Parser::section() {
-		auto resSentences = sentences();
-		if (resSentences.has_value()) {
+		auto resId = id();
+		if (resId.has_value()) {
+			auto resSentences = sentences();
+			if (!resSentences.has_value())
+				throw std::runtime_error{"Grammar error:" + m_ts.get(false).position() + ": missing sentences in section " + std::to_string(m_sections.size() + m_capturingSections.size() + 1)};
 			auto resCode = code();
-			if (!resCode.has_value())
-				throw std::runtime_error{"Grammar error:" + m_ts.get(false).position() + ": missing code after section " + std::to_string(m_sections.size() + m_capturingSections.size() + 1)};
 
 			if (std::holds_alternative<vector<Sentence>>(*resSentences)) // this is a normal section
-				return Section{std::get<vector<Sentence>>(*resSentences), *resCode};
+				return Section{*resId, std::get<vector<Sentence>>(*resSentences), resCode};
 			else // this section has capturing groups
-				return CapturingSection{std::get<vector<CapturingSentence>>(*resSentences), *resCode};
+				return CapturingSection{*resId, std::get<vector<CapturingSentence>>(*resSentences), resCode};
 		}
 		else {
 			// no sentence was read
@@ -177,28 +197,24 @@ namespace parser {
 			}
 		}
 	}
-	optional<Code> Parser::code() {
+	Code Parser::code() {
 		Code lines;
-		bool noCode = true;
 		
 		Token token = m_ts.get(m_readNext);
 		while (1) {
 			if (token == Token::code) {
-				lines += token.str() + "\n";
-				noCode = false;
+				lines.append(token.str());
+				lines += '\n';
 			}
 			else if (token == Token::include) {
 				// read code from file
-				lines += readAllFile(token.str(), token.position());
-				noCode = false;
+				lines.append(readAllFile(token.str(), token.position()));
 			}
 			else
 				break;
 			token = m_ts.get(true);
 		}
 
-		if (noCode)
-			return {};
 		m_readNext = false;
 		return lines;
 	}
@@ -206,24 +222,21 @@ namespace parser {
 	void Parser::parse(std::istream& input) {
 		m_ts = tokenize(input);
 
-		if (auto resCode = code(); resCode.has_value())
-			m_codeWhenNotUnderstood = *resCode;
 		sections();
 	}
 
-	tuple<Code, vector<Section>, vector<CapturingSection>> parse(const vector<std::istream*>& inputs) {
+	tuple<vector<Section>, vector<CapturingSection>> parse(const vector<std::istream*>& inputs) {
 		Parser parser;
 		for (auto&& input : inputs)
 			parser.parse(*input);
 
-		if (app::Application::args.getBool("verbose")) {	
-			std::cout << "CODE WHEN NOT UNDERSTOOD:\n" << parser.m_codeWhenNotUnderstood << "\n";
+		if (app::Application::args.getBool("verbose")) {
 			for (auto&& section : parser.m_sections)
 				std::cout << section << "\n";
 			for (auto&& section : parser.m_capturingSections)
 				std::cout << section << "\n";
 		}
 
-		return {parser.m_codeWhenNotUnderstood, parser.m_sections, parser.m_capturingSections};
+		return {parser.m_sections, parser.m_capturingSections};
 	}
 }
