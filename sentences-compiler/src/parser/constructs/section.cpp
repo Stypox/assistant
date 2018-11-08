@@ -1,9 +1,13 @@
 #include "section.h"
 
+#include <algorithm>
+#include <set>
+
 namespace parser::constructs {
 	using std::vector;
 	using std::string;
 	using std::pair;
+	using std::set;
 
 
 	Section::Section(const Id& id, const vector<Sentence>& sentences, const Code& code) :
@@ -15,6 +19,10 @@ namespace parser::constructs {
 				auto unfolded = sentence.unfolded();
 				m_unfoldedSentences.insert(m_unfoldedSentences.end(), unfolded.begin(), unfolded.end());
 			}
+
+			m_unfoldedSentences.erase(std::remove(m_unfoldedSentences.begin(), m_unfoldedSentences.end(), vector<string>{}), m_unfoldedSentences.end());
+			set<vector<string>> removedDuplicates{m_unfoldedSentences.begin(), m_unfoldedSentences.end()};
+			m_unfoldedSentences.assign(removedDuplicates.begin(), removedDuplicates.end());
 		}
 		return m_unfoldedSentences;
 	}
@@ -78,6 +86,10 @@ namespace parser::constructs {
 				auto unfolded = sentence.unfolded();
 				m_unfoldedSentences.insert(m_unfoldedSentences.end(), unfolded.begin(), unfolded.end());
 			}
+
+			m_unfoldedSentences.erase(std::remove(m_unfoldedSentences.begin(), m_unfoldedSentences.end(), pair<vector<string>, vector<string>>{{}, {}}), m_unfoldedSentences.end());
+			set<pair<vector<string>, vector<string>>> removedDuplicates{m_unfoldedSentences.begin(), m_unfoldedSentences.end()};
+			m_unfoldedSentences.assign(removedDuplicates.begin(), removedDuplicates.end());
 		}
 		return m_unfoldedSentences;
 	}
