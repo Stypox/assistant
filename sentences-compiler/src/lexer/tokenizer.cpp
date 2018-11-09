@@ -72,7 +72,7 @@ namespace lexer {
 		};
 		auto skipLine = [&]{
 			do ch = get();
-			while (ch != '\n');
+			while (ch != '\n' && input);
 			unget();
 		};
 
