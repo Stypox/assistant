@@ -15,14 +15,14 @@ namespace parser::constructs {
 		m_unfoldedSentences{}, m_code{code} {}
 	vector<vector<string>> Section::unfoldedSentences() const {
 		if (m_unfoldedSentences.empty()) {
+			set<vector<string>> removedDuplicates;
 			for (auto&& sentence : m_sentences) {
 				auto unfolded = sentence.unfolded();
-				m_unfoldedSentences.insert(m_unfoldedSentences.end(), unfolded.begin(), unfolded.end());
+				removedDuplicates.insert(unfolded.begin(), unfolded.end());
 			}
 
-			m_unfoldedSentences.erase(std::remove(m_unfoldedSentences.begin(), m_unfoldedSentences.end(), vector<string>{}), m_unfoldedSentences.end());
-			set<vector<string>> removedDuplicates{m_unfoldedSentences.begin(), m_unfoldedSentences.end()};
 			m_unfoldedSentences.assign(removedDuplicates.begin(), removedDuplicates.end());
+			m_unfoldedSentences.erase(std::remove(m_unfoldedSentences.begin(), m_unfoldedSentences.end(), vector<string>{}), m_unfoldedSentences.end());
 		}
 		return m_unfoldedSentences;
 	}
@@ -82,14 +82,14 @@ namespace parser::constructs {
 		m_unfoldedSentences{}, m_code{code} {}
 	vector<pair<vector<string>, vector<string>>> CapturingSection::unfoldedSentences() const {
 		if (m_unfoldedSentences.empty()) {
+			set<pair<vector<string>, vector<string>>> removedDuplicates;
 			for (auto&& sentence : m_sentences) {
 				auto unfolded = sentence.unfolded();
-				m_unfoldedSentences.insert(m_unfoldedSentences.end(), unfolded.begin(), unfolded.end());
+				removedDuplicates.insert(unfolded.begin(), unfolded.end());
 			}
 
-			m_unfoldedSentences.erase(std::remove(m_unfoldedSentences.begin(), m_unfoldedSentences.end(), pair<vector<string>, vector<string>>{{}, {}}), m_unfoldedSentences.end());
-			set<pair<vector<string>, vector<string>>> removedDuplicates{m_unfoldedSentences.begin(), m_unfoldedSentences.end()};
 			m_unfoldedSentences.assign(removedDuplicates.begin(), removedDuplicates.end());
+			m_unfoldedSentences.erase(std::remove(m_unfoldedSentences.begin(), m_unfoldedSentences.end(), pair<vector<string>, vector<string>>{{}, {}}), m_unfoldedSentences.end());
 		}
 		return m_unfoldedSentences;
 	}
