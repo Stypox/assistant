@@ -12,43 +12,43 @@ namespace parser {
 		* codeWhenInvalid = "invalid";
 
 	class ParsedSentenceBase {
-		std::string m_id, m_code;
+		const std::string m_id, m_code;
 	
 	public:
-		ParsedSentenceBase(std::string id, std::string code);
+		ParsedSentenceBase(const std::string& id, const std::string& code);
 	};
 
 	class ParsedSentence : public ParsedSentenceBase {
-		std::vector<std::string>
+		const std::vector<std::string>
 			m_insertedWords,
 			m_sentenceWords;
 		
 	public:
-		ParsedSentence(Sentence sentence, std::vector<std::string> insertedWords);
+		ParsedSentence(const Sentence& sentence, const std::vector<std::string>& insertedWords);
 	};
 
 	class ParsedCapturingSentence : public ParsedSentenceBase {
-		std::vector<std::string>
+		const std::vector<std::string>
 			m_insertedWords,
 			m_capturedWords,
 			m_sentenceWordsBefore,
 			m_sentenceWordsAfter;
 		
 	public:
-		ParsedCapturingSentence(CapturingSentence sentence, std::vector<std::string> insertedWords, std::vector<std::string> capturedWords);
+		ParsedCapturingSentence(const CapturingSentence& sentence, const std::vector<std::string>& insertedWords, const std::vector<std::string>& capturedWords);
 	};
 
 	class InvalidSentence : public ParsedSentenceBase {
-		std::vector<std::string>
+		const std::vector<std::string>
 			m_insertedWords;
 		
 	public:
-		InvalidSentence(std::vector<std::string> insertedWords);
+		InvalidSentence(const std::vector<std::string>& insertedWords);
 	};
 
-	std::unique_ptr<ParsedSentenceBase> makeParsed(Sentence sentence, std::vector<std::string> insertedWords);
-	std::unique_ptr<ParsedSentenceBase> makeParsed(CapturingSentence sentence, std::vector<std::string> insertedWords, std::vector<std::string> capturedWords);
-	std::unique_ptr<ParsedSentenceBase> makeParsed(std::vector<std::string> insertedWords);
+	std::unique_ptr<ParsedSentenceBase> makeParsed(const Sentence& sentence, const std::vector<std::string>& insertedWords);
+	std::unique_ptr<ParsedSentenceBase> makeParsed(const CapturingSentence& sentence, const std::vector<std::string>& insertedWords, const std::vector<std::string>& capturedWords);
+	std::unique_ptr<ParsedSentenceBase> makeParsed(const std::vector<std::string>& insertedWords);
 }
 
 #endif
