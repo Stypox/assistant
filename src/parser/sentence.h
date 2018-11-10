@@ -35,7 +35,6 @@ namespace parser {
 		Sentence(const std::string& id, const std::vector<std::string>& words, const std::string& code);
 
 		int score(const std::vector<std::string>& compareWords) const;
-		void exec(const std::vector<std::string>& words) const;
 
 		friend class ParsedSentence;
 	};
@@ -52,7 +51,6 @@ namespace parser {
 		CapturingSentence(const std::string& id, const std::vector<std::string>& wordsBefore, const std::vector<std::string> wordsAfter, const std::string& code);
 
 		std::pair<int, std::vector<std::string>> score(const std::vector<std::string>& compareWords) const;
-		void exec(const std::vector<std::string>& words, const std::vector<std::string>& capturedWords) const;
 
 		friend class ParsedCapturingSentence;
 	};

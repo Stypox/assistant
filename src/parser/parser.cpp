@@ -1,7 +1,5 @@
 #include "parser.h"
 
-#include "../exec/executer.h"
-
 namespace parser {
 	using std::string;
 	using std::vector;
@@ -43,27 +41,25 @@ namespace parser {
 	Parser::Parser(const vector<Sentence>& sentences, const vector<CapturingSentence>& capturingSentences, const string& codeWhenNotUnderstood) :
 		m_sentences{sentences}, m_capturingSentences{capturingSentences}, m_codeWhenNotUnderstood{codeWhenNotUnderstood} {}
 
-	void Parser::parse(const vector<string>& words) const {
+	std::unique_ptr<ParsedSentenceBase> Parser::parse(const vector<string>& words) const {
 		auto [bestSentence, scoreSentence] = getHighestScoreSentence(words);
 		auto [bestCapturingSentence, capturedWords, scoreCapturingSentence] = getHighestScoreCapturingSentence(words);
 
-		if (scoreSentence < minimumRequiredScore && scoreCapturingSentence < minimumRequiredScore) {
-			exec::execute(exec::addPredef(exec::buildAssistantResonse(exec::assistantResponseName, words) + m_codeWhenNotUnderstood));
-			return;
-		}
+		if (scoreSentence < minimumRequiredScore && scoreCapturingSentence < minimumRequiredScore)
+			return makeParsed(words);
 
 		if (bestSentence && bestCapturingSentence) {
 			if (scoreSentence > scoreCapturingSentence)
-				bestSentence->exec(words);
+				return makeParsed(*bestSentence, words);
 			else
-				bestCapturingSentence->exec(words, capturedWords);
+				return makeParsed(*bestCapturingSentence, words, capturedWords);
 		}
 		else if (bestSentence)
-			bestSentence->exec(words);
+			return makeParsed(*bestSentence, words);
 		else if (bestCapturingSentence)
-			bestCapturingSentence->exec(words, capturedWords);
+			return makeParsed(*bestCapturingSentence, words, capturedWords);
 		else
-			exec::execute(exec::addPredef(exec::buildAssistantResonse(exec::assistantResponseName, words) + m_codeWhenNotUnderstood));
+			return makeParsed(words);
 	}
 
 	void Parser::add(const Sentence& sentence) {

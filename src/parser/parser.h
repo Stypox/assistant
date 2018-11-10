@@ -19,7 +19,7 @@ namespace parser {
 	public:
 		Parser(const std::vector<Sentence>& sentences, const std::vector<CapturingSentence>& capturingSentences, const std::string& codeWhenNotUnderstood);
 		
-		void parse(const std::vector<std::string>& words) const;
+		std::unique_ptr<ParsedSentenceBase> parse(const std::vector<std::string>& words) const;
 
 		void add(const Sentence& sentence);
 		void add(const CapturingSentence& capturingSentence);

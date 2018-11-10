@@ -1,14 +1,9 @@
 #Makefile settings
 CXX = g++
 
-PY_CFLAGS = $(shell python3-config --cflags)
-PY_LDFLAGS = $(shell python3-config --ldflags)
-$(info $(PY_CFLAGS))
-$(info $(PY_LDFLAGS))
-
 CXXINCLUDE = -I../include/
-CXXFLAGS = -Wall -g -std=c++17 -fPIC $(CXXINCLUDE) $(PY_CFLAGS)
-CXXLIBS = $(PY_LDFLAGS)
+CXXFLAGS = -Wall -g -std=c++17 $(CXXINCLUDE)
+CXXLIBS = 
 SRC = ./src/
 SENTENCES_COMPILER = ./sentences-compiler/
 
@@ -21,8 +16,7 @@ endif
 
 EXECUTABLE = voice-assistant.exe
 OBJECT_FILES = $(SRC)main.o \
-	$(SRC)parser/parser.o $(SRC)parser/sentence.o $(SRC)parser/parsed_sentence.o \
-	$(SRC)exec/executer.o
+	$(SRC)parser/parser.o $(SRC)parser/sentence.o $(SRC)parser/parsed_sentence.o
 
 # executable
 $(EXECUTABLE): $(OBJECT_FILES)
@@ -41,14 +35,10 @@ $(SENTENCES_COMPILER)sentences-compiler.exe:
 # src/parser
 $(SRC)parser/parser.o: $(SRC)parser/parser.h $(SRC)parser/parser.cpp $(SRC)parser/sentence.o
 	$(CXX) $(CXXFLAGS) -o $(SRC)parser/parser.o -c $(SRC)parser/parser.cpp
-$(SRC)parser/sentence.o: $(SRC)parser/sentence.h $(SRC)parser/sentence.cpp $(SRC)exec/executer.o
+$(SRC)parser/sentence.o: $(SRC)parser/sentence.h $(SRC)parser/sentence.cpp $(SRC)parser/parsed_sentence.o
 	$(CXX) $(CXXFLAGS) -o $(SRC)parser/sentence.o -c $(SRC)parser/sentence.cpp
-$(SRC)parser/parsed_sentence.o: $(SRC)parser/parsed_sentence.h $(SRC)parser/parsed_sentence.cpp $(SRC)parser/sentence.o
+$(SRC)parser/parsed_sentence.o: $(SRC)parser/parsed_sentence.h $(SRC)parser/parsed_sentence.cpp
 	$(CXX) $(CXXFLAGS) -o $(SRC)parser/parsed_sentence.o -c $(SRC)parser/parsed_sentence.cpp
-
-# src/exec
-$(SRC)exec/executer.o: $(SRC)exec/executer.h $(SRC)exec/executer.cpp
-	$(CXX) $(CXXFLAGS) -o $(SRC)exec/executer.o -c $(SRC)exec/executer.cpp
 
 clean:
 	rm $(EXECUTABLE) $(OBJECT_FILES)

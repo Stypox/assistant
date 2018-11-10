@@ -3,8 +3,6 @@
 #include <algorithm>
 #include <iostream>
 
-#include "../exec/executer.h"
-
 namespace parser {
 	using std::string;
 	using std::vector;
@@ -58,11 +56,6 @@ namespace parser {
 		}
 
 		return points;
-	}
-	void Sentence::exec(const vector<string>& words) const {
-		// for (auto&& w : m_words)
-		// 	std::cout << w << " ";
-		exec::execute(exec::addPredef(exec::buildAssistantResonse(exec::assistantResponseName, words, m_words) + m_code));
 	}
 
 
@@ -165,13 +158,5 @@ namespace parser {
 		}
 
 		return {points, capturedWords};
-	}
-	void CapturingSentence::exec(const vector<string>& words, const vector<string>& capturedWords) const {
-		// for (auto&& w : m_wordsBefore)
-		// 	std::cout << w << " ";
-		// std::cout << "...";
-		// for (auto&& w : m_wordsAfter)
-		// 	std::cout << " " << w;
-		exec::execute(exec::addPredef(exec::buildAssistantResonse(exec::assistantResponseName, words, capturedWords, m_wordsBefore, m_wordsAfter) + m_code));
 	}
 }
