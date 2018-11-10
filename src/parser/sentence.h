@@ -6,6 +6,13 @@
 #include <tuple>
 
 namespace parser {
+	class Sentence;
+	class CapturingSentence;
+}
+
+#include "parsed_sentence.h"
+
+namespace parser {
 	constexpr int pointsAtBeginning = 0,
 		pointsFoundWord = 3,
 		pointsWordsInMiddle = -1,
@@ -29,6 +36,8 @@ namespace parser {
 
 		int score(const std::vector<std::string>& compareWords) const;
 		void exec(const std::vector<std::string>& words) const;
+
+		friend class ParsedSentence;
 	};
 
 	class CapturingSentence {
@@ -44,6 +53,8 @@ namespace parser {
 
 		std::pair<int, std::vector<std::string>> score(const std::vector<std::string>& compareWords) const;
 		void exec(const std::vector<std::string>& words, const std::vector<std::string>& capturedWords) const;
+
+		friend class ParsedCapturingSentence;
 	};
 }
 
