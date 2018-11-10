@@ -1,7 +1,7 @@
 #Makefile settings
 CXX = g++
 
-CXXINCLUDE = -I../include/
+CXXINCLUDE = -I./include/
 CXXFLAGS = -Wall -g -std=c++17 $(CXXINCLUDE)
 CXXLIBS = 
 SRC = ./src/
@@ -16,6 +16,7 @@ endif
 
 EXECUTABLE = voice-assistant.exe
 OBJECT_FILES = $(SRC)main.o \
+	$(SRC)app/application.o \
 	$(SRC)parser/parser.o $(SRC)parser/sentence.o $(SRC)parser/parsed_sentence.o
 
 # executable
@@ -23,8 +24,13 @@ $(EXECUTABLE): $(OBJECT_FILES)
 	$(CXX) $(CXXFLAGS) -o $(EXECUTABLE) $(OBJECT_FILES) $(CXXLIBS)
 
 # src/
-$(SRC)main.o: $(SRC)main.cpp $(SRC)parser/parser.o $(SENTENCES_COMPILER)sentences.cpp
+$(SRC)main.o: $(SRC)main.cpp $(SRC)parser/parser.o $(SRC)app/application.o
 	$(CXX) $(CXXFLAGS) -o $(SRC)main.o -c $(SRC)main.cpp
+
+# src/app
+$(SRC)app/application.o: $(SRC)app/application.h $(SRC)app/application.cpp $(SENTENCES_COMPILER)sentences.cpp
+	$(CXX) $(CXXFLAGS) -o $(SRC)app/application.o -c $(SRC)app/application.cpp
+
 
 # sentences-compiler/
 $(SENTENCES_COMPILER)sentences.cpp: $(SENTENCES_COMPILER)sentences-compiler.exe $(INPUT_FILES)
