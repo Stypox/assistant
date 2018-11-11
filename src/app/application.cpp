@@ -14,7 +14,7 @@ namespace app {
 		}, {
 
 		}, {
-			{"sentences", "replaces the precompiled sentences (format: defId,defCodeHex;id,word word,codeHex;id,word word ,word word,codeHex;...)", {"-s=", "--sentences="}},
+			{"sentences", "replaces the precompiled sentences (format: defId,defCodeHex;id,word-word,codeHex;id,word-word.word-word,codeHex;...)", {"-s=", "--sentences="}},
 			{"parse", "the sentence to be parsed (required, format: as chosen on startup)", {"-p=", "--parse="}, {}}
 		}
 	};
