@@ -14,8 +14,8 @@ namespace app {
 	public:
 		static stypox::ArgParser initialArgs;
 		static stypox::ArgParser currentArgs;
-		static std::unique_ptr<std::ostream> output;
-		static std::unique_ptr<std::ostream> logs;
+		static std::ostream* output;
+		static std::ostream* logs;
 
 		static int run(int argc, char const *argv[]);
 	};

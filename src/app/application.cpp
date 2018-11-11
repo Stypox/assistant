@@ -40,23 +40,29 @@ namespace app {
 			{"logs", "the file to save logs in (when openable) (stdout is valid)", {"-l=", "--logs="}}
 		}
 	};
-	std::unique_ptr<std::ostream> Application::output{};
-	std::unique_ptr<std::ostream> Application::logs{};
+	std::ostream* Application::output = nullptr;
+	std::ostream* Application::logs = nullptr;
 
+	void openFile(const std::string& filename, std::ostream*& file) {
+		if (filename == "stdout") {
+			file = &std::cout;
+		}
+		else {
+			auto openedFile = new std::ofstream{filename, std::ios::binary};
+			if (openedFile->is_open())
+				file = openedFile;
+			else {
+				delete openedFile;
+				file = nullptr;
+			}
+		}
+	}
 
 	bool Application::parseInitialArgs(int argc, char const *argv[]) {
 		try {
 			initialArgs.parse(argc, argv);
 			
-			if (std::string logsFilename = initialArgs.getText("logs"); logsFilename == "stdout") {
-				logs.reset(&std::cout);
-			}
-			else if (logsFilename != "") {
-				auto file = new std::ofstream{logsFilename, std::ios::binary};
-				if (file->is_open())
-					logs.reset(file);
-			}
-
+			openFile(initialArgs.getText("logs"), logs);
 			if (initialArgs.getBool("help")) {
 				std::cout << initialArgs.help();
 				return false;
@@ -65,21 +71,14 @@ namespace app {
 			initialArgs.validate();
 		}
 		catch (const std::runtime_error& e) {
-			if (logs.get() != nullptr)
+			if (logs)
 				*logs << "Error while parsing arguments: " << e.what();
 			return false;
 		}
-		
-		if (std::string outputFilename = initialArgs.getText("output"); outputFilename == "stdout") {
-			output.reset(&std::cout);
-		}
-		else {
-			auto file = new std::ofstream{outputFilename, std::ios::binary};
-			if (file->is_open())
-				output.reset(file);
-			else
-				return false;
-		}
+
+		openFile(initialArgs.getText("output"), output);
+		if (!output && logs)
+			*logs << "Error while parsing arguments: output file does not exist: " << initialArgs.getText("output");
 
 		return true;
 	}
