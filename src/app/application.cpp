@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <algorithm>
 
 namespace app {
 	const stypox::ArgParser Application::currentArgsInitializer{
@@ -82,12 +83,32 @@ namespace app {
 
 		return true;
 	}
+	std::vector<std::string> Application::getArgs() {
+		std::string line;
+		std::getline(std::cin, line);
+
+		std::vector<std::string> args;
+		auto begin = line.begin();
+		while (1) {
+			while (begin != line.end() && isspace(*begin))
+				++begin;
+			if (begin == line.end())
+				break;
+
+			auto found = std::find_if(begin, line.end(), isspace);
+			args.emplace_back(begin, found);
+
+			begin = found;
+		}
+
+		return args;
+	}
 
 
 	int Application::run(int argc, char const *argv[]) {
 		if (!parseInitialArgs(argc, argv))
 			return !initialArgs.getBool("help");
 		
-		
+		return 0;
 	}
 }

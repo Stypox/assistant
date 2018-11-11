@@ -8,6 +8,7 @@
 namespace app {
 	class Application {
 		static bool parseInitialArgs(int argc, char const *argv[]);
+		static std::vector<std::string> getArgs();
 		
 		static const stypox::ArgParser currentArgsInitializer;
 
