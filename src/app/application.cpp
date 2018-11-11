@@ -5,7 +5,7 @@
 
 namespace app {
 	stypox::ArgParser Application::currentArgsInitializer{
-		"",
+		"assistant",
 		{
 			{"help", "prints the help screen and exits", {"-?", "-h", "--help"}},
 			{"quit", "quit", {"-q", "--quit"}}
@@ -14,7 +14,8 @@ namespace app {
 		}, {
 
 		}, {
-			{"sentences", "replaces the precompiled sentences (format: defId,defCodeHex;id,word word,codeHex;id,word word ,word word,codeHex;...)", {"-s=", "--sentences="}}
+			{"sentences", "replaces the precompiled sentences (format: defId,defCodeHex;id,word word,codeHex;id,word word ,word word,codeHex;...)", {"-s=", "--sentences="}},
+			{"parse", "the sentence to be parsed (required, format: as chosen on startup)", {"-p=", "--parse="}, {}}
 		}
 	};
 
@@ -28,7 +29,13 @@ namespace app {
 
 		}, {
 			{"output", "the output file (defaults to stdout)", {"-o=", "--output="}, "stdout"},
-			{"encoding", "input encoding (values: 8bit (default), 2x8bit (= 16bit split in two 8bit))", {"-e=", "--encoding="}, "8bit", [](std::string s) { return s == "8bit" || s == "2x8bit"; }},
+			{
+				"encoding",
+				"input encoding (required, values: 8bithex (2 hexadecimal 0-f), 16bithex (4 hexadecimal 0-f))",
+				{"-e=", "--encoding="},
+				{},
+				[](std::string s) { return s == "8bithex" || s == "16bithex"; }
+			},
 			{"format", "output format (values: json (default))", {"-f=", "--format="}, "json", [](std::string s) { return s == "json"; }},
 			{"logs", "the file to save logs in (when openable) (stdout is valid)", {"-l=", "--logs="}}
 		}
