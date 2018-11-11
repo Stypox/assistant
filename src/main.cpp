@@ -1,23 +1,5 @@
-#include <iostream>
-#include <string>
-#include <sstream>
+#include "app/application.h"
 
-#include "parser/parser.h"
-
-#include "../sentences-compiler/sentences.cpp"
-
-int main() {
-	while (1) {
-		std::cout << "-";
-		std::string line;
-		std::getline(std::cin, line);
-		std::stringstream linestream;
-		linestream << line;
-		std::vector<std::string> words;
-		while (linestream >> line)
-			words.push_back(line);
-
-		sentences_compiler_gen::parser.parse(words);
-		std::cout << "\n";
-	}
+int main(int argc, char const *argv[]) {
+	return app::Application::run(argc, argv);
 }

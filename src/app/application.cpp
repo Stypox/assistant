@@ -4,7 +4,7 @@
 #include <fstream>
 
 namespace app {
-	stypox::ArgParser Application::currentArgsInitializer{
+	const stypox::ArgParser Application::currentArgsInitializer{
 		"assistant",
 		{
 			{"help", "prints the help screen and exits", {"-?", "-h", "--help"}},
@@ -40,6 +40,7 @@ namespace app {
 			{"logs", "the file to save logs in (when openable) (stdout is valid)", {"-l=", "--logs="}}
 		}
 	};
+	std::unique_ptr<std::ostream> Application::output{};
 	std::unique_ptr<std::ostream> Application::logs{};
 
 
