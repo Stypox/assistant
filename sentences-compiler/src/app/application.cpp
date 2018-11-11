@@ -9,9 +9,9 @@ namespace app {
 	stypox::ArgParser Application::args{
 		"sentences-compiler",
 		{
-			{"help", "prints the help screen", {"-?", "-h", "--help"}},
+			{"help", "prints the help screen and exits", {"-?", "-h", "--help"}},
 			{"pretty", "makes the output code prettier and human readable", {"-p", "--pretty"}},
-			{"verbose", "makes the program output more things", {"-v", "--verbose"}}
+			{"verbose", "will print (more) debug messages", {"-v", "--verbose"}}
 		}, {
 
 		}, {
