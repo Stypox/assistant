@@ -77,12 +77,30 @@ namespace app {
 	}
 
 	std::vector<std::string> splitAtSpaces(const std::string& str) {
+		// counts two or more spaces as only one, thus does not generate empty strings
 		std::vector<std::string> result;
 		auto begin = str.begin();
 
 		while (1) {
 			while (begin != str.end() && isspace(*begin))
 				++begin;
+			if (begin == str.end())
+				break;
+
+			auto found = std::find_if(begin, str.end(), isspace);
+			result.emplace_back(begin, found);
+
+			begin = found;
+		}
+
+		return result;
+	}
+	std::vector<std::string> splitEvery(const std::string& str, char ch) {
+		// counts N chars N chars, thus generating empty strings
+		std::vector<std::string> result;
+		auto begin = str.begin();
+
+		while (1) {
 			if (begin == str.end())
 				break;
 
@@ -208,14 +226,18 @@ namespace app {
 		while (1) {
 			parseCurrentArgs(getArgs());
 
+			// determine which parser to use
 			parser::Parser* parser;
+			std::unique_ptr<parser::Parser> nonDefaultParser = nullptr;
 			if (std::string sentences = currentArgs.getText("sentences"); sentences.empty()) {
 				parser = &sentences_compiler_gen::parser;
 			}
 			else {
 				// TODO
+				parser = nonDefaultParser.get();
 			}
 
+			// decode words
 			std::vector<std::string> words;
 			switch (encoding) {
 			case hex8bit:
@@ -226,16 +248,18 @@ namespace app {
 				break;
 			}
 
+			// parse sentence
 			std::unique_ptr<parser::ParsedSentenceBase> parsedSentence = parser->parse(words);
 			
+			// output sentence
+			if (logs)
+				parsedSentence->log(*logs);
 			switch (format) {
 			case json: {
 					
 				}
 				break;
 			}
-			if (logs)
-				parsedSentence->log(*logs);
 		}
 	}
 }
