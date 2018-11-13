@@ -217,15 +217,25 @@ namespace app {
 			}
 
 			std::vector<std::string> words;
-			if (encoding == hex8bit)
+			switch (encoding) {
+			case hex8bit:
 				words = parseWords(fromHexTo8bit(currentArgs.getText("parse")));
-			else {
+				break;
+			case hex16bit:
 				// TODO
+				break;
 			}
+
+			std::unique_ptr<parser::ParsedSentenceBase> parsedSentence = parser->parse(words);
 			
-			auto res = parser->parse(words);
+			switch (format) {
+			case json: {
+					
+				}
+				break;
+			}
 			if (logs)
-				res->log(*logs);
+				parsedSentence->log(*logs);
 		}
 	}
 }
