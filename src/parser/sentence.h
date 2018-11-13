@@ -28,9 +28,9 @@ namespace parser {
 		* sentenceWordsAfterPyName = "sentence_words_after";
 
 	class Sentence {
-		const std::string& m_id;
+		const std::string m_id;
 		const std::vector<std::string> m_words;
-		const std::string& m_code;
+		const std::string m_code;
 	public:
 		Sentence(const std::string& id, const std::vector<std::string>& words, const std::string& code);
 
@@ -40,10 +40,10 @@ namespace parser {
 	};
 
 	class CapturingSentence {
-		const std::string& m_id;
+		const std::string m_id;
 		const std::vector<std::string> m_wordsBefore;
 		const std::vector<std::string> m_wordsAfter;
-		const std::string& m_code;
+		const std::string m_code;
 
 		std::tuple<int, std::vector<std::string>, bool, bool> scoreBefore(const std::vector<std::string>& compareWords) const;
 		std::tuple<int, std::vector<std::string>, bool, bool> scoreAfter(const std::vector<std::string>& compareWords) const;
