@@ -75,6 +75,7 @@ namespace app {
 			}
 		}
 	}
+
 	std::vector<std::string> splitAtSpaces(const std::string& str) {
 		std::vector<std::string> result;
 		auto begin = str.begin();
@@ -153,7 +154,6 @@ namespace app {
 		else
 			return ch - 'a' + 10;
 	}
-
 	std::string Application::fromHexTo8bit(const std::string& hex) {
 		if (hex.size() % 2 != 0) {
 			if (logs)
@@ -186,7 +186,7 @@ namespace app {
 	std::vector<std::string> Application::parseWords(std::string sentence) {
 		std::replace_if(sentence.begin(), sentence.end(), [](const char& ch) {
 			switch (ch) {
-			case '\'': case '\"': case '(': case ')':
+			case '\'': case '"': case '(': case ')':
 			case '[': case ']': case ',': case ':':
 			case ';': case '.': case '-': case '_':
 			case '!': case '?': case '\\': case '/':
@@ -196,7 +196,6 @@ namespace app {
 			}
 		},
 		' ');
-		'"\""';
 
 		return splitAtSpaces(sentence);
 	}
@@ -220,14 +219,13 @@ namespace app {
 			std::vector<std::string> words;
 			if (encoding == hex8bit)
 				words = parseWords(fromHexTo8bit(currentArgs.getText("parse")));
-				auto res = parser->parse(words);
-				if (logs)
-					res->log(*logs);
 			else {
 				// TODO
 			}
-
 			
+			auto res = parser->parse(words);
+			if (logs)
+				res->log(*logs);
 		}
 	}
 }
