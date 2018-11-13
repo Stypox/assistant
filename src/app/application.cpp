@@ -101,13 +101,13 @@ namespace app {
 		auto begin = str.begin();
 
 		while (1) {
-			if (begin == str.end())
+			if (begin >= str.end())
 				break;
 
-			auto found = std::find_if(begin, str.end(), isspace);
+			auto found = std::find(begin, str.end(), ch);
 			result.emplace_back(begin, found);
 
-			begin = found;
+			begin = found + 1;
 		}
 
 		return result;
