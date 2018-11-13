@@ -7,10 +7,24 @@
 
 namespace app {
 	class Application {
-		static bool parseInitialArgs(int argc, char const *argv[]);
+		enum Encoding : char {
+			hex8bit,
+			hex16bit,
+		};
+		static Encoding toEncoding(const std::string& str);
+		enum Format : char {
+			json,
+		};
+		static Format toFormat(const std::string& str);
+
+		static void parseInitialArgs(int argc, char const *argv[]);
+		static void parseCurrentArgs(const std::vector<std::string>& args);
 		static std::vector<std::string> getArgs();
-		
-		static const stypox::ArgParser currentArgsInitializer;
+
+		static std::string fromHexTo8bit(const std::string& hex);
+		static std::wstring fromHexTo16bit(const std::string& hex);
+
+		static std::vector<std::string> parseWords(std::string sentence);
 
 	public:
 		static stypox::ArgParser initialArgs;
