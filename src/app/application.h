@@ -5,6 +5,8 @@
 #include <memory>
 #include <ostream>
 
+#include "../parser/parser.h"
+
 namespace app {
 	class Application {
 		enum Encoding : char {
@@ -25,6 +27,7 @@ namespace app {
 		static std::wstring fromHexTo16bit(const std::string& hex);
 
 		static std::vector<std::string> parseWords(std::string sentence);
+		static std::unique_ptr<parser::Parser> parseSentences(const std::string& sentences);
 
 	public:
 		static stypox::ArgParser initialArgs;

@@ -4,7 +4,6 @@
 #include <fstream>
 #include <algorithm>
 
-#include "../parser/parser.h"
 #include "../../sentences-compiler/sentences.cpp"
 
 namespace app {
@@ -53,7 +52,7 @@ namespace app {
 		}, {
 
 		}, {
-			{"sentences", "replaces the precompiled sentences (format: defId,defCodeHex;id,word-word,codeHex;id,word-word.word-word,codeHex;...)", {"-s=", "--sentences="}},
+			{"sentences", "replaces the precompiled sentences (format: invalidId,invalidCodeHex;id,word-word,codeHex;id,word-word,word-word,codeHex;...)", {"-s=", "--sentences="}},
 			{"parse", "the sentence to be parsed (required, format: as chosen on startup)", {"-p=", "--parse="}, {}}
 		},
 		false
@@ -217,6 +216,37 @@ namespace app {
 
 		return splitAtSpaces(sentence);
 	}
+	std::unique_ptr<parser::Parser> Application::parseSentences(const std::string& sentences) {
+		auto splitSentences = splitEvery(sentences, ';');
+		
+		auto firstSectionSplit = splitEvery(splitSentences[0], ',');
+		if (firstSectionSplit.size() != 2) {
+			if (logs)
+				*logs << "Invalid sentences: " << sentences
+					<< "\nAt section 1: \n" << splitSentences[0] << "\n";
+			exit(1);
+		}
+		std::string invalidId = firstSectionSplit[0];
+		std::string invalidCode = fromHexTo8bit(firstSectionSplit[1]);
+
+		std::vector<parser::Sentence> resSentences;
+		std::vector<parser::CapturingSentence> resCapturingSentences;
+		for (auto section = splitSentences.begin() + 1; section != splitSentences.end(); ++section) {
+			auto sectionSplit = splitEvery(*section, ',');
+			if (sectionSplit.size() == 3)
+				resSentences.emplace_back(sectionSplit[0], splitEvery(sectionSplit[1], '-'), fromHexTo8bit(sectionSplit[2]));
+			else if (sectionSplit.size() == 4)
+				resCapturingSentences.emplace_back(sectionSplit[0], splitEvery(sectionSplit[1], '-'), splitEvery(sectionSplit[2], '-'), fromHexTo8bit(sectionSplit[3]));
+			else {
+				if (logs)
+					*logs << "Invalid sentences: " << sentences
+						<< "\nAt section " << section - splitSentences.begin() + 1 << ": " << *section;
+				exit(1);
+			}
+		}
+
+		return std::unique_ptr<parser::Parser>{new parser::Parser{resSentences, resCapturingSentences, invalidCode}};
+	}
 
 	int Application::run(int argc, char const *argv[]) {
 		parseInitialArgs(argc, argv);
@@ -233,7 +263,7 @@ namespace app {
 				parser = &sentences_compiler_gen::parser;
 			}
 			else {
-				// TODO
+				nonDefaultParser = parseSentences(sentences);
 				parser = nonDefaultParser.get();
 			}
 
