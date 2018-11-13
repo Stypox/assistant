@@ -13,7 +13,7 @@ namespace parser {
 		ParsedSentenceBase{sentence.m_id, sentence.m_code}, m_insertedWords{insertedWords},
 		m_sentenceWords{sentence.m_words} {}
 	void ParsedSentence::log(std::ostream& stream) {
-		stream << "* Capturing sentence: (ID=" << m_id << ")\n* Inserted: ";
+		stream << "* Normal sentence: (ID=" << m_id << ")\n* Inserted: ";
 		for (auto&& word : m_insertedWords)
 			stream << word << ",";
 		stream << "\n* Sentence: ";
