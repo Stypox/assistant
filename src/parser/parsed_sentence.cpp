@@ -42,8 +42,8 @@ namespace parser {
 		stream << "\n* Code:\n" << m_code << "\n\n";
 	}
 
-	InvalidSentence::InvalidSentence(const vector<string>& insertedWords) :
-		ParsedSentenceBase{idWhenInvalid, codeWhenInvalid}, m_insertedWords{insertedWords} {}
+	InvalidSentence::InvalidSentence(const string& id, const string& code, const vector<string>& insertedWords) :
+		ParsedSentenceBase{id, code}, m_insertedWords{insertedWords} {}
 	void InvalidSentence::log(std::ostream& stream) {
 		stream << "* Invalid sentence: (ID=" << m_id << ")\n* Inserted: ";
 		for (auto&& word : m_insertedWords)
@@ -62,9 +62,9 @@ namespace parser {
 		ptr.reset(new ParsedCapturingSentence{sentence, insertedWords, capturedWords});
 		return ptr;
 	}
-	unique_ptr<ParsedSentenceBase> makeParsed(const vector<string>& insertedWords) {
+	unique_ptr<ParsedSentenceBase> makeParsed(const string& id, const string& code, const vector<string>& insertedWords) {
 		unique_ptr<ParsedSentenceBase> ptr{};
-		ptr.reset(new InvalidSentence{insertedWords});
+		ptr.reset(new InvalidSentence{id, code, insertedWords});
 		return ptr;
 	}
 }

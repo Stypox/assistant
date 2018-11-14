@@ -9,9 +9,6 @@
 #include "sentence.h"
 
 namespace parser {
-	constexpr const char* idWhenInvalid= "",
-		* codeWhenInvalid = "invalid";
-
 	class ParsedSentenceBase {
 	protected:
 		const std::string m_id, m_code;
@@ -49,13 +46,13 @@ namespace parser {
 			m_insertedWords;
 		
 	public:
-		InvalidSentence(const std::vector<std::string>& insertedWords);
+		InvalidSentence(const std::string& id, const std::string& code, const std::vector<std::string>& insertedWords);
 		void log(std::ostream& stream);
 	};
 
 	std::unique_ptr<ParsedSentenceBase> makeParsed(const Sentence& sentence, const std::vector<std::string>& insertedWords);
 	std::unique_ptr<ParsedSentenceBase> makeParsed(const CapturingSentence& sentence, const std::vector<std::string>& insertedWords, const std::vector<std::string>& capturedWords);
-	std::unique_ptr<ParsedSentenceBase> makeParsed(const std::vector<std::string>& insertedWords);
+	std::unique_ptr<ParsedSentenceBase> makeParsed(const std::string& id, const std::string& code, const std::vector<std::string>& insertedWords);
 }
 
 #endif

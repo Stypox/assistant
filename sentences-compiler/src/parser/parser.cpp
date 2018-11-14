@@ -63,7 +63,7 @@ namespace parser {
 				return resId;
 			}
 			else {
-				throw std::runtime_error{"Grammar error:" + token.position() + ": excepted ':' after \"" + resId + "\" token"};
+				throw std::runtime_error{"Grammar error:" + token.position() + ": excepted ':' but got " + token.str() + " after \"" + resId + "\" token"};
 			}
 		}
 		else {
@@ -222,10 +222,17 @@ namespace parser {
 	void Parser::parse(std::istream& input) {
 		m_ts = tokenize(input);
 
+		auto resId = id();
+		if (resId.has_value())
+			m_idWhenInvalid = *resId;
+		else
+			throw std::runtime_error("Grammar error:" + m_ts.get(false).position() + ": expected id for invalid sentences");
+		m_codeWhenInvalid = code();
+
 		sections();
 	}
 
-	tuple<vector<Section>, vector<CapturingSection>> parse(const vector<std::istream*>& inputs) {
+	tuple<vector<Section>, vector<CapturingSection>, Id, Code> parse(const vector<std::istream*>& inputs) {
 		Parser parser;
 		for (auto&& input : inputs)
 			parser.parse(*input);
@@ -237,6 +244,6 @@ namespace parser {
 				std::cout << section << "\n";
 		}
 
-		return {parser.m_sections, parser.m_capturingSections};
+		return {parser.m_sections, parser.m_capturingSections, parser.m_idWhenInvalid, parser.m_codeWhenInvalid};
 	}
 }

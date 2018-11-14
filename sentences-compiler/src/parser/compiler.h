@@ -5,9 +5,10 @@
 
 namespace parser {
 	class Compiler {
-		constructs::Code m_codeWhenNotUnderstood;
 		std::vector<constructs::Section> m_sections;
 		std::vector<constructs::CapturingSection> m_capturingSections;
+		constructs::Id m_idWhenInvalid;
+		constructs::Code m_codeWhenInvalid;
 	public:
 		Compiler(const std::vector<std::istream*>& inputs);
 

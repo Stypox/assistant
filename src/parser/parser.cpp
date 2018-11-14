@@ -38,15 +38,16 @@ namespace parser {
 		return {bestSentence, bestSentenceCapturedWords, maxScoreSoFar};
 	}
 
-	Parser::Parser(const vector<Sentence>& sentences, const vector<CapturingSentence>& capturingSentences, const string& codeWhenNotUnderstood) :
-		m_sentences{sentences}, m_capturingSentences{capturingSentences}, m_codeWhenNotUnderstood{codeWhenNotUnderstood} {}
+	Parser::Parser(const vector<Sentence>& sentences, const vector<CapturingSentence>& capturingSentences, const string& idWhenInvalid, const string& codeWhenInvalid) :
+		m_sentences{sentences}, m_capturingSentences{capturingSentences},
+		m_idWhenInvalid{idWhenInvalid}, m_codeWhenInvalid{codeWhenInvalid} {}
 
 	std::unique_ptr<ParsedSentenceBase> Parser::parse(const vector<string>& words) const {
 		auto [bestSentence, scoreSentence] = getHighestScoreSentence(words);
 		auto [bestCapturingSentence, capturedWords, scoreCapturingSentence] = getHighestScoreCapturingSentence(words);
 
 		if (scoreSentence < minimumRequiredScore && scoreCapturingSentence < minimumRequiredScore)
-			return makeParsed(words);
+			return makeParsed(m_idWhenInvalid, m_codeWhenInvalid, words);
 
 		if (bestSentence && bestCapturingSentence) {
 			if (scoreSentence > scoreCapturingSentence)
@@ -59,7 +60,7 @@ namespace parser {
 		else if (bestCapturingSentence)
 			return makeParsed(*bestCapturingSentence, words, capturedWords);
 		else
-			return makeParsed(words);
+			return makeParsed(m_idWhenInvalid, m_codeWhenInvalid, words);
 	}
 
 	void Parser::add(const Sentence& sentence) {

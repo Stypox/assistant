@@ -52,7 +52,7 @@ namespace app {
 		}, {
 
 		}, {
-			{"sentences", "replaces the precompiled sentences (format: invalidId,invalidCodeHex;id,word-word,codeHex;id,word-word,word-word,codeHex;...)", {"-s=", "--sentences="}},
+			{"sentences", "replaces the precompiled sentences (format: idWhenInvalid,codeWhenInvalidHex;id,word-word,codeHex;id,word-word,word-word,codeHex;...)", {"-s=", "--sentences="}},
 			{"parse", "the sentence to be parsed (required, format: as chosen on startup)", {"-p=", "--parse="}, {}}
 		},
 		false
@@ -226,8 +226,8 @@ namespace app {
 					<< "\nAt section 1: \n" << splitSentences[0] << "\n";
 			exit(1);
 		}
-		std::string invalidId = firstSectionSplit[0];
-		std::string invalidCode = fromHexTo8bit(firstSectionSplit[1]);
+		std::string idWhenInvalid = firstSectionSplit[0];
+		std::string codeWhenInvalid = fromHexTo8bit(firstSectionSplit[1]);
 
 		std::vector<parser::Sentence> resSentences;
 		std::vector<parser::CapturingSentence> resCapturingSentences;
@@ -245,7 +245,7 @@ namespace app {
 			}
 		}
 
-		return std::unique_ptr<parser::Parser>{new parser::Parser{resSentences, resCapturingSentences, invalidCode}};
+		return std::unique_ptr<parser::Parser>{new parser::Parser{resSentences, resCapturingSentences, idWhenInvalid, codeWhenInvalid}};
 	}
 
 	int Application::run(int argc, char const *argv[]) {
