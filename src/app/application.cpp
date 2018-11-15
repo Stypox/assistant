@@ -273,7 +273,7 @@ namespace app {
 			std::vector<std::string> insertedWords;
 			switch (encoding) {
 			case hex8bit:
-				insertedWords = parseWords(fromHexTo8bit(currentArgs.getText("parse")));
+				insertedWords = parseWords(fromHexTo8bit(currentArgs.getText("inserted")));
 				break;
 			case hex16bit:
 				// TODO
