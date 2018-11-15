@@ -13,13 +13,13 @@ namespace parser {
 		std::vector<CapturingSentence> m_capturingSentences;
 		const std::string m_idWhenInvalid, m_codeWhenInvalid;
 
-		std::pair<const Sentence*, int> getHighestScoreSentence(const std::vector<std::string>& words) const;
-		std::tuple<const CapturingSentence*, std::vector<std::string>, int> getHighestScoreCapturingSentence(const std::vector<std::string>& words) const;
+		std::pair<const Sentence*, int> getHighestScoreSentence(const std::vector<std::string>& insertedWords) const;
+		std::tuple<const CapturingSentence*, std::vector<std::string>, int> getHighestScoreCapturingSentence(const std::vector<std::string>& insertedWords) const;
 
 	public:
 		Parser(const std::vector<Sentence>& sentences, const std::vector<CapturingSentence>& capturingSentences, const std::string& idWhenInvalid, const std::string& codeWhenInvalid);
 		
-		std::unique_ptr<ParsedSentenceBase> parse(const std::vector<std::string>& words) const;
+		std::unique_ptr<ParsedSentenceBase> parse(const std::vector<std::string>& insertedWords) const;
 
 		void add(const Sentence& sentence);
 		void add(const CapturingSentence& capturingSentence);

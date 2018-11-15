@@ -269,11 +269,11 @@ namespace app {
 				parser = nonDefaultParser.get();
 			}
 
-			// decode words
-			std::vector<std::string> words;
+			// decode inserted words
+			std::vector<std::string> insertedWords;
 			switch (encoding) {
 			case hex8bit:
-				words = parseWords(fromHexTo8bit(currentArgs.getText("parse")));
+				insertedWords = parseWords(fromHexTo8bit(currentArgs.getText("parse")));
 				break;
 			case hex16bit:
 				// TODO
@@ -281,7 +281,7 @@ namespace app {
 			}
 
 			// parse sentence
-			std::unique_ptr<parser::ParsedSentenceBase> parsedSentence = parser->parse(words);
+			std::unique_ptr<parser::ParsedSentenceBase> parsedSentence = parser->parse(insertedWords);
 			
 			// output sentence
 			if (logs)

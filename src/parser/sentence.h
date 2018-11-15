@@ -34,7 +34,7 @@ namespace parser {
 	public:
 		Sentence(const std::string& id, const std::vector<std::string>& words, const std::string& code);
 
-		int score(const std::vector<std::string>& compareWords) const;
+		int score(const std::vector<std::string>& insertedWords) const;
 
 		friend class ParsedSentence;
 	};
@@ -45,12 +45,12 @@ namespace parser {
 		const std::vector<std::string> m_wordsAfter;
 		const std::string m_code;
 
-		std::tuple<int, std::vector<std::string>, bool, bool> scoreBefore(const std::vector<std::string>& compareWords) const;
-		std::tuple<int, std::vector<std::string>, bool, bool> scoreAfter(const std::vector<std::string>& compareWords) const;
+		std::tuple<int, std::vector<std::string>, bool, bool> scoreBefore(const std::vector<std::string>& insertedWords) const;
+		std::tuple<int, std::vector<std::string>, bool, bool> scoreAfter(const std::vector<std::string>& insertedWords) const;
 	public:
 		CapturingSentence(const std::string& id, const std::vector<std::string>& wordsBefore, const std::vector<std::string> wordsAfter, const std::string& code);
 
-		std::pair<int, std::vector<std::string>> score(const std::vector<std::string>& compareWords) const;
+		std::pair<int, std::vector<std::string>> score(const std::vector<std::string>& insertedWords) const;
 
 		friend class ParsedCapturingSentence;
 	};
