@@ -201,18 +201,20 @@ namespace app {
 	}
 
 	std::vector<std::string> Application::parseWords(std::string sentence) {
-		std::replace_if(sentence.begin(), sentence.end(), [](const char& ch) {
-			switch (ch) {
-			case '\'': case '"': case '(': case ')':
-			case '[': case ']': case ',': case ':':
-			case ';': case '.': case '-': case '_':
-			case '!': case '?': case '\\': case '/':
-				return true;
-			default:
-				return false;
+		for (auto&& ch : sentence) {
+			if (ch >= 'A' && ch <= 'Z') {
+				ch -= ('A' - 'a');
 			}
-		},
-		' ');
+			else {
+				switch (ch) {
+				case '\'': case '"': case '(': case ')':
+				case '[': case ']': case ',': case ':':
+				case ';': case '.': case '-': case '_':
+				case '!': case '?': case '\\': case '/':
+					ch = ' ';
+				}
+			}
+		}
 
 		return splitAtSpaces(sentence);
 	}
