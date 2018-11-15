@@ -53,7 +53,7 @@ namespace app {
 
 		}, {
 			{"sentences", "replaces the precompiled sentences (format: idWhenInvalid,codeWhenInvalidHex;id,word-word,codeHex;id,word-word,word-word,codeHex;...)", {"-s=", "--sentences="}},
-			{"parse", "the sentence to be parsed (required, format: as chosen on startup)", {"-p=", "--parse="}, {}}
+			{"inserted", "inserted words (required, format: as chosen on startup)", {"-i=", "--inserted="}, {}}
 		},
 		false
 	};
