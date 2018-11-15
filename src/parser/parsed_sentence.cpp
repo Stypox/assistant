@@ -4,6 +4,57 @@ namespace parser {
 	using std::vector;
 	using std::string;
 	using std::unique_ptr;
+
+
+	void escapeJson(const string& str, std::ostream& output) {
+		for (auto&& ch : str) {
+			switch (ch) {
+			case '"':
+				output << "\\\"";
+				break;
+			case '\\':
+				output << "\\\\";
+				break;
+			case '\b':
+				output << "\\b";
+				break;
+			case '\f':
+				output << "\\f";
+				break;
+			case '\n':
+				output << "\\n";
+				break;
+			case '\r':
+				output << "\\r";
+				break;
+			case '\t':
+				output << "\\t";
+				break;
+			default:
+				if (ch >= 0x00 && ch <= 0x1f) {
+					string chAsInt = std::to_string(ch);
+					output << "\\u" << string(4 - chAsInt.size(), '0') << chAsInt;
+				}
+				else {
+					output << ch;
+				}
+			}
+		}
+	}
+	void wordsToJson(const vector<string>& words, std::ostream& output) {
+		output << "[";
+		if (!words.empty()) {
+			output << "\"";
+			escapeJson(words[0], output);
+			output << "\"";
+			for (auto word = words.begin() + 1; word != words.end(); ++word) {
+				output << ",\"";
+				escapeJson(*word, output);
+				output << "\"";
+			}
+		}
+		output << "]";
+	}
 	
 
 	ParsedSentenceBase::ParsedSentenceBase(const string& id, const string& code) :
@@ -12,43 +63,75 @@ namespace parser {
 	ParsedSentence::ParsedSentence(const Sentence& sentence, const vector<string>& insertedWords) :
 		ParsedSentenceBase{sentence.m_id, sentence.m_code}, m_insertedWords{insertedWords},
 		m_sentenceWords{sentence.m_words} {}
-	void ParsedSentence::log(std::ostream& stream) {
-		stream << "* Normal sentence: (ID=" << m_id << ")\n* Inserted: ";
+	
+	void ParsedSentence::json(std::ostream& output) {
+		output << "{\"type\":\"normal\",\"id\":\"" << m_id << "\",\"inserted_words\":";
+		wordsToJson(m_insertedWords, output);
+		output << ",\"sentence_words\":";
+		wordsToJson(m_sentenceWords, output);
+		output << ",\"code\":\"";
+		escapeJson(m_code, output);
+		output << "\"}";
+	}
+	void ParsedSentence::log(std::ostream& output) {
+		output << "* Normal sentence: (ID=" << m_id << ")\n* Inserted: ";
 		for (auto&& word : m_insertedWords)
-			stream << word << ",";
-		stream << "\n* Sentence: ";
+			output << word << ",";
+		output << "\n* Sentence: ";
 		for (auto&& word : m_sentenceWords)
-			stream << word << ",";
-		stream << "\n* Code:\n" << m_code << "\n\n";
+			output << word << ",";
+		output << "\n* Code:\n" << m_code << "\n\n";
 	}
 
 	ParsedCapturingSentence::ParsedCapturingSentence(const CapturingSentence& sentence, const vector<string>& insertedWords, const vector<string>& capturedWords) :
 		ParsedSentenceBase{sentence.m_id, sentence.m_code}, m_insertedWords{insertedWords},
 		m_capturedWords{capturedWords}, m_sentenceWordsBefore{sentence.m_wordsBefore},
 		m_sentenceWordsAfter{sentence.m_wordsAfter} {}
-	void ParsedCapturingSentence::log(std::ostream& stream) {
-		stream << "* Capturing sentence: (ID=" << m_id << ")\n* Inserted: ";
+
+	void ParsedCapturingSentence::json(std::ostream& output) {
+		output << "{\"type\":\"capturing\",\"id\":\"" << m_id << "\",\"inserted_words\":";
+		wordsToJson(m_insertedWords, output);
+		output << ",\"captured_words\":";
+		wordsToJson(m_capturedWords, output);
+		output << ",\"sentence_words_before\":";
+		wordsToJson(m_sentenceWordsBefore, output);
+		output << ",\"sentence_words_after\":";
+		wordsToJson(m_sentenceWordsAfter, output);
+		output << ",\"code\":\"";
+		escapeJson(m_code, output);
+		output << "\"}";
+	}
+	void ParsedCapturingSentence::log(std::ostream& output) {
+		output << "* Capturing sentence: (ID=" << m_id << ")\n* Inserted: ";
 		for (auto&& word : m_insertedWords)
-			stream << word << ",";
-		stream << "\n* Captured: ";
+			output << word << ",";
+		output << "\n* Captured: ";
 		for (auto&& word : m_capturedWords)
-			stream << word << ",";
-		stream << "\n* Sentence before: ";
+			output << word << ",";
+		output << "\n* Sentence before: ";
 		for (auto&& word : m_sentenceWordsBefore)
-			stream << word << ",";
-		stream << "\n* Sentence after: ";
+			output << word << ",";
+		output << "\n* Sentence after: ";
 		for (auto&& word : m_sentenceWordsAfter)
-			stream << word << ",";
-		stream << "\n* Code:\n" << m_code << "\n\n";
+			output << word << ",";
+		output << "\n* Code:\n" << m_code << "\n\n";
 	}
 
 	InvalidSentence::InvalidSentence(const string& id, const string& code, const vector<string>& insertedWords) :
 		ParsedSentenceBase{id, code}, m_insertedWords{insertedWords} {}
-	void InvalidSentence::log(std::ostream& stream) {
-		stream << "* Invalid sentence: (ID=" << m_id << ")\n* Inserted: ";
+
+	void InvalidSentence::json(std::ostream& output) {
+		output << "{\"type\":\"invalid\",\"id\":\"" << m_id << "\",\"inserted_words\":";
+		wordsToJson(m_insertedWords, output);
+		output << ",\"code\":\"";
+		escapeJson(m_code, output);
+		output << "\"}";
+	}
+	void InvalidSentence::log(std::ostream& output) {
+		output << "* Invalid sentence: (ID=" << m_id << ")\n* Inserted: ";
 		for (auto&& word : m_insertedWords)
-			stream << word << ",";
-		stream << "\n* Code:\n" << m_code << "\n\n";
+			output << word << ",";
+		output << "\n* Code:\n" << m_code << "\n\n";
 	}
 
 	

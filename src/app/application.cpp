@@ -287,9 +287,8 @@ namespace app {
 			if (logs)
 				parsedSentence->log(*logs);
 			switch (format) {
-			case json: {
-					
-				}
+			case json:
+				parsedSentence->json(*output);
 				break;
 			}
 		}

@@ -16,7 +16,8 @@ namespace parser {
 	public:
 		ParsedSentenceBase(const std::string& id, const std::string& code);
 
-		virtual void log(std::ostream& stream) = 0;
+		virtual void json(std::ostream& output) = 0;
+		virtual void log(std::ostream& output) = 0;
 	};
 
 	class ParsedSentence : public ParsedSentenceBase {
@@ -26,7 +27,9 @@ namespace parser {
 		
 	public:
 		ParsedSentence(const Sentence& sentence, const std::vector<std::string>& insertedWords);
-		void log(std::ostream& stream);
+
+		void json(std::ostream& output) override;
+		void log(std::ostream& output) override;
 	};
 
 	class ParsedCapturingSentence : public ParsedSentenceBase {
@@ -38,7 +41,9 @@ namespace parser {
 		
 	public:
 		ParsedCapturingSentence(const CapturingSentence& sentence, const std::vector<std::string>& insertedWords, const std::vector<std::string>& capturedWords);
-		void log(std::ostream& stream);
+
+		void json(std::ostream& output) override;
+		void log(std::ostream& output) override;
 	};
 
 	class InvalidSentence : public ParsedSentenceBase {
@@ -47,7 +52,9 @@ namespace parser {
 		
 	public:
 		InvalidSentence(const std::string& id, const std::string& code, const std::vector<std::string>& insertedWords);
-		void log(std::ostream& stream);
+
+		void json(std::ostream& output) override;
+		void log(std::ostream& output) override;
 	};
 
 	std::unique_ptr<ParsedSentenceBase> makeParsed(const Sentence& sentence, const std::vector<std::string>& insertedWords);
