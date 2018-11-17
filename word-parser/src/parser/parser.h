@@ -1,5 +1,5 @@
-#ifndef _ASSISTANT_PARSER_PARSER_H_
-#define _ASSISTANT_PARSER_PARSER_H_
+#ifndef _WORD_PARSER_PARSER_PARSER_H_
+#define _WORD_PARSER_PARSER_PARSER_H_
 
 #include "sentence.h"
 

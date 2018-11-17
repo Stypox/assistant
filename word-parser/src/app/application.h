@@ -1,5 +1,5 @@
-#ifndef _ASSISTANT_APP_APPLICATION_H_
-#define _ASSISTANT_APP_APPLICATION_H_
+#ifndef _WORD_PARSER_APP_APPLICATION_H_
+#define _WORD_PARSER_APP_APPLICATION_H_
 
 #include <argparser.h>
 #include <memory>

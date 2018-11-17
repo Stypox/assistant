@@ -22,7 +22,7 @@ namespace app {
 
 
 	stypox::ArgParser Application::initialArgs{
-		"assistant",
+		"word-parser",
 		{
 			{"help", "prints the help screen and exits", {"-?", "-h", "--help"}}
 		}, {
@@ -43,7 +43,7 @@ namespace app {
 		}
 	};
 	stypox::ArgParser Application::currentArgs{
-		"assistant",
+		"word-parser",
 		{
 			{"help", "prints the help screen and exits", {"-?", "-h", "--help"}},
 			{"quit", "quit", {"-q", "--quit"}}

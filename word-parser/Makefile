@@ -1,11 +1,11 @@
 #Makefile settings
 CXX = g++
 
-CXXINCLUDE = -I./include/
+CXXINCLUDE = -I../include/
 CXXFLAGS = -Wall -g -std=c++17 $(CXXINCLUDE)
 CXXLIBS = 
 SRC = ./src/
-SENTENCES_COMPILER = ./sentences-compiler/
+SENTENCES_COMPILER = ../sentences-compiler/
 
 INPUT_CONTAINS_SPACES = $(findstring $(NULL) ,$(input))
 INPUT_FILES := $(if $(INPUT_CONTAINS_SPACES),,$(subst :, ,$(input)))
@@ -14,7 +14,7 @@ $(warning input contains spaces. input files will be compiled even if they are u
 .PHONY: $(SENTENCES_COMPILER)sentences.cpp
 endif
 
-EXECUTABLE = assistant.exe
+EXECUTABLE = word-parser.exe
 OBJECT_FILES = $(SRC)main.o \
 	$(SRC)app/application.o \
 	$(SRC)parser/parser.o $(SRC)parser/sentence.o $(SRC)parser/parsed_sentence.o

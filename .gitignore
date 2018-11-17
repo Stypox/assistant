@@ -1,10 +1,4 @@
 .vscode/
 
-*.exe
-*.o
-
-GPATH
-GTAGS
-GRTAGS
 sentences-compiler/sentences.cpp
 sentences-compiler/sentences.txt
