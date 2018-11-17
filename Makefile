@@ -14,7 +14,7 @@ $(warning input contains spaces. input files will be compiled even if they are u
 .PHONY: $(SENTENCES_COMPILER)sentences.cpp
 endif
 
-EXECUTABLE = voice-assistant.exe
+EXECUTABLE = assistant.exe
 OBJECT_FILES = $(SRC)main.o \
 	$(SRC)app/application.o \
 	$(SRC)parser/parser.o $(SRC)parser/sentence.o $(SRC)parser/parsed_sentence.o

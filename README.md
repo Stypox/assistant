@@ -1,3 +1,3 @@
-# voice-assistant
+# Assistant
 
-A completely configurable offline voice assistant.
+A completely configurable offline assistant that can recognize sentences.
