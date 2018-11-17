@@ -4,7 +4,7 @@
 #include <fstream>
 #include <algorithm>
 
-#include "../../sentences-compiler/sentences.cpp"
+#include "../../sentences.cpp"
 
 namespace app {
 	Application::Encoding Application::toEncoding(const std::string& str) {

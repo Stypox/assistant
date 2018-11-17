@@ -11,7 +11,7 @@ INPUT_CONTAINS_SPACES = $(findstring $(NULL) ,$(input))
 INPUT_FILES := $(if $(INPUT_CONTAINS_SPACES),,$(subst :, ,$(input)))
 ifeq ($(INPUT_FILES),)
 $(warning input contains spaces. input files will be compiled even if they are up-to-date)
-.PHONY: $(SENTENCES_COMPILER)sentences.cpp
+.PHONY: sentences.cpp
 endif
 
 EXECUTABLE = word-parser.exe
@@ -28,13 +28,13 @@ $(SRC)main.o: $(SRC)main.cpp $(SRC)parser/parser.o $(SRC)app/application.o
 	$(CXX) $(CXXFLAGS) -o $(SRC)main.o -c $(SRC)main.cpp
 
 # src/app
-$(SRC)app/application.o: $(SRC)app/application.h $(SRC)app/application.cpp $(SENTENCES_COMPILER)sentences.cpp
+$(SRC)app/application.o: $(SRC)app/application.h $(SRC)app/application.cpp sentences.cpp
 	$(CXX) $(CXXFLAGS) -o $(SRC)app/application.o -c $(SRC)app/application.cpp
 
 
 # sentences-compiler/
-$(SENTENCES_COMPILER)sentences.cpp: $(SENTENCES_COMPILER)sentences-compiler.exe $(INPUT_FILES)
-	$(SENTENCES_COMPILER)sentences-compiler.exe --input="$(input)" --output=$(SENTENCES_COMPILER)sentences.cpp -l=c++ -v
+sentences.cpp: $(SENTENCES_COMPILER)sentences-compiler.exe $(INPUT_FILES)
+	$(SENTENCES_COMPILER)sentences-compiler.exe --input="$(input)" --output=sentences.cpp -l=c++ -v
 $(SENTENCES_COMPILER)sentences-compiler.exe:
 	cd $(SENTENCES_COMPILER) && make
 
