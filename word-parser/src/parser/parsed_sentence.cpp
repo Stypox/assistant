@@ -71,7 +71,7 @@ namespace parser {
 		wordsToJson(m_sentenceWords, output);
 		output << ",\"code\":\"";
 		escapeJson(m_code, output);
-		output << "\"}";
+		output << "\"}\n";
 	}
 	void ParsedSentence::log(std::ostream& output) {
 		output << "* Normal sentence: (ID=" << m_id << ")\n* Inserted: ";
@@ -99,7 +99,7 @@ namespace parser {
 		wordsToJson(m_sentenceWordsAfter, output);
 		output << ",\"code\":\"";
 		escapeJson(m_code, output);
-		output << "\"}";
+		output << "\"}\n";
 	}
 	void ParsedCapturingSentence::log(std::ostream& output) {
 		output << "* Capturing sentence: (ID=" << m_id << ")\n* Inserted: ";
@@ -125,7 +125,7 @@ namespace parser {
 		wordsToJson(m_insertedWords, output);
 		output << ",\"code\":\"";
 		escapeJson(m_code, output);
-		output << "\"}";
+		output << "\"}\n";
 	}
 	void InvalidSentence::log(std::ostream& output) {
 		output << "* Invalid sentence: (ID=" << m_id << ")\n* Inserted: ";

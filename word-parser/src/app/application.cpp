@@ -132,14 +132,14 @@ namespace app {
 		}
 		catch (const std::runtime_error& e) {
 			if (logs)
-				*logs << "Error while parsing initial arguments: " << e.what();
+				*logs << "Error while parsing initial arguments: " << e.what() << std::flush;
 			exit(1);
 		}
 
 		openFile(initialArgs.getText("output"), output, nonDefualtOutput);
 		if (!output) {
 			if (logs)
-				*logs << "Error while parsing initial arguments: output file does not exist: " << initialArgs.getText("output");
+				*logs << "Error while parsing initial arguments: output file does not exist: " << initialArgs.getText("output") << std::flush;
 			exit(1);
 		}
 	}
@@ -160,7 +160,7 @@ namespace app {
 		}
 		catch (const std::runtime_error& e) {
 			if (logs)
-				*logs << "Error while parsing current arguments: " << e.what();
+				*logs << "Error while parsing current arguments: " << e.what() << std::flush;
 			exit(1);
 		}
 	}
@@ -180,7 +180,7 @@ namespace app {
 	std::string Application::fromHexTo8bit(const std::string& hex) {
 		if (hex.size() % 2 != 0) {
 			if (logs)
-				*logs << "Malformed 8bit hexadecimal\n";
+				*logs << "Malformed 8bit hexadecimal\n" << std::flush;
 			exit(1);
 		}
 
@@ -194,7 +194,7 @@ namespace app {
 	std::wstring Application::fromHexTo16bit(const std::string& hex) {
 		if (hex.size() % 4 != 0) {
 			if (logs)
-				*logs << "Malformed 16bit hexadecimal\n";
+				*logs << "Malformed 16bit hexadecimal\n" << std::flush;
 			exit(1);
 		}
 
@@ -231,7 +231,7 @@ namespace app {
 		if (firstSectionSplit.size() != 2) {
 			if (logs)
 				*logs << "Invalid sentences: " << sentences
-					<< "\nAt section 1: \n" << splitSentences[0] << "\n";
+					<< "\nAt section 1: \n" << splitSentences[0] << "\n" << std::flush;
 			exit(1);
 		}
 		std::string idWhenInvalid = firstSectionSplit[0];
@@ -248,7 +248,7 @@ namespace app {
 			else {
 				if (logs)
 					*logs << "Invalid sentences: " << sentences
-						<< "\nAt section " << section - splitSentences.begin() + 1 << ": " << *section;
+						<< "\nAt section " << section - splitSentences.begin() + 1 << ": " << *section << std::flush;
 				exit(1);
 			}
 		}
@@ -290,11 +290,14 @@ namespace app {
 			std::unique_ptr<parser::ParsedSentenceBase> parsedSentence = parser->parse(insertedWords);
 			
 			// output sentence
-			if (logs)
+			if (logs){
 				parsedSentence->log(*logs);
+				logs->flush();
+			}
 			switch (format) {
 			case json:
 				parsedSentence->json(*output);
+				output->flush();
 				break;
 			}
 		}
