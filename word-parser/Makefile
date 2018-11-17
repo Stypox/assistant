@@ -9,7 +9,7 @@ SENTENCES_COMPILER = ../sentences-compiler/
 
 INPUT_CONTAINS_SPACES = $(findstring $(NULL) ,$(input))
 INPUT_FILES := $(if $(INPUT_CONTAINS_SPACES),,$(subst :, ,$(input)))
-ifeq ($(INPUT_FILES),)
+ifneq ($(INPUT_CONTAINS_SPACES),)
 $(warning input contains spaces. input files will be compiled even if they are up-to-date)
 .PHONY: sentences.cpp
 endif
