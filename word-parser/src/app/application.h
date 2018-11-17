@@ -19,6 +19,11 @@ namespace app {
 		};
 		static Format toFormat(const std::string& str);
 
+
+		static std::unique_ptr<std::ostream> nonDefualtOutput;
+		static std::unique_ptr<std::ostream> nonDefaultLogs;
+
+
 		static void parseInitialArgs(int argc, char const *argv[]);
 		static void parseCurrentArgs(const std::vector<std::string>& args);
 		static std::vector<std::string> getArgs();

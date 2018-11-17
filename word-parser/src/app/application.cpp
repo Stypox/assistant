@@ -21,6 +21,10 @@ namespace app {
 	}
 
 
+	std::unique_ptr<std::ostream> Application::nonDefualtOutput = nullptr;
+	std::unique_ptr<std::ostream> Application::nonDefaultLogs = nullptr;
+
+
 	stypox::ArgParser Application::initialArgs{
 		"word-parser",
 		{
@@ -60,16 +64,18 @@ namespace app {
 	std::ostream* Application::output = nullptr;
 	std::ostream* Application::logs = nullptr;
 
-	void openFile(const std::string& filename, std::ostream*& file) {
+
+	void openFile(const std::string& filename, std::ostream*& file, std::unique_ptr<std::ostream>& nonDefaultFile) {
 		if (filename == "stdout") {
 			file = &std::cout;
 		}
 		else {
-			auto openedFile = new std::ofstream{filename, std::ios::binary};
-			if (openedFile->is_open())
-				file = openedFile;
+			std::unique_ptr<std::ofstream> openedFile{new std::ofstream{filename, std::ios::binary}};
+			if (openedFile->is_open()) {
+				nonDefaultFile = std::move(openedFile);
+				file = nonDefaultFile.get();
+			}
 			else {
-				delete openedFile;
 				file = nullptr;
 			}
 		}
@@ -116,7 +122,7 @@ namespace app {
 		try {
 			initialArgs.parse(argc, argv);
 			
-			openFile(initialArgs.getText("logs"), logs);
+			openFile(initialArgs.getText("logs"), logs, nonDefaultLogs);
 			if (initialArgs.getBool("help")) {
 				std::cout << initialArgs.help();
 				exit(0);
@@ -130,7 +136,7 @@ namespace app {
 			exit(1);
 		}
 
-		openFile(initialArgs.getText("output"), output);
+		openFile(initialArgs.getText("output"), output, nonDefualtOutput);
 		if (!output) {
 			if (logs)
 				*logs << "Error while parsing initial arguments: output file does not exist: " << initialArgs.getText("output");
