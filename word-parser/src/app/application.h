@@ -1,7 +1,7 @@
 #ifndef _WORD_PARSER_APP_APPLICATION_H_
 #define _WORD_PARSER_APP_APPLICATION_H_
 
-#include <argparser.h>
+#include <arg-parser/argparser.h>
 #include <memory>
 #include <ostream>
 

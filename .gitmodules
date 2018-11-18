@@ -1,0 +1,3 @@
+[submodule "include/arg-parser"]
+	path = include/arg-parser
+	url = https://gitlab.com/Stypox/arg-parser

@@ -1,7 +1,7 @@
 #ifndef _SENTENCES_COMPILER_APP_APPLICATION_H_
 #define _SENTENCES_COMPILER_APP_APPLICATION_H_
 
-#include <argparser.h>
+#include <arg-parser/argparser.h>
 
 namespace app {
 	class Application {
