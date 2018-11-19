@@ -16,15 +16,16 @@ namespace parser {
 	}
 
 	void Compiler::toCpp(std::ostream& output) {
-		bool pretty = app::Application::args.getBool("pretty");
+		constexpr std::string_view
+			sectionIdObjectName =		"id_of_section_",
+			idCapturingObjectName =		"id_of_capturing_section_",
+			sectionIdWhenInvalidName =	"id_when_invalid_section",
+			codeObjectName =			"code_of_section_",
+			codeCapturingObjectName =	"code_of_capturing_section_",
+			codeWhenInvalidName =		"code_when_invalid",
+			parserObjectName =			"parser";
 
-		constexpr std::string_view sectionIdObjectName = "id_of_section_";
-		constexpr std::string_view idCapturingObjectName = "id_of_capturing_section_";
-		constexpr std::string_view sectionIdWhenInvalidName = "id_when_invalid_section";
-		constexpr std::string_view codeObjectName = "code_of_section_";
-		constexpr std::string_view codeCapturingObjectName = "code_of_capturing_section_";
-		constexpr std::string_view codeWhenInvalidName = "code_when_invalid";
-		constexpr std::string_view parserObjectName = "parser";
+		bool pretty = app::Application::args.getBool("pretty");
 
 		if (pretty) {
 			output << "namespace sentences_compiler_gen {\n\n";
