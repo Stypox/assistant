@@ -20,12 +20,6 @@ namespace parser {
 		pointsFoundAllWords = 8,
 		pointsExactMatch = 6,
 		pointsNoWordsCaptured = -5;
-	
-	constexpr const char* receivedWordsPyName = "received_words",
-		* capturedWordsPyName = "captured_words",
-		* sentenceWordsPyName = "sentence_words",
-		* sentenceWordsBeforePyName = "sentence_words_before",
-		* sentenceWordsAfterPyName = "sentence_words_after";
 
 	class Sentence {
 		const std::string m_sectionId, m_sentenceId;		
