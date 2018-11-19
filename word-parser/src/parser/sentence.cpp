@@ -10,9 +10,9 @@ namespace parser {
 	using std::pair;
 
 
-	Sentence::Sentence(const string& id, const vector<string>& words, const string& code) :
-		m_id{id}, m_words{words},
-		m_code{code} {}
+	Sentence::Sentence(const string& sectionId, const string& sentenceId, const vector<string>& words, const string& code) :
+		m_sectionId{sectionId}, m_sentenceId{sentenceId},
+		m_words{words}, m_code{code} {}
 
 	int Sentence::score(const vector<string>& insertedWords) const {
 		int points = pointsAtBeginning;
@@ -139,9 +139,10 @@ namespace parser {
 		return {points, {insertedWords.begin() + static_cast<int>(insertedWord - insertedWords.begin()), insertedWords.end()}, foundAllWords, exactMatch};
 	}
 
-	CapturingSentence::CapturingSentence(const string& id, const vector<string>& wordsBefore, const vector<string> wordsAfter, const string& code) :
-		m_id{id}, m_wordsBefore{wordsBefore},
-		m_wordsAfter{wordsAfter}, m_code{code} {}
+	CapturingSentence::CapturingSentence(const string& sectionId, const string& sentenceId, const vector<string>& wordsBefore, const vector<string> wordsAfter, const string& code) :
+		m_sectionId{sectionId}, m_sentenceId{sentenceId},
+		m_wordsBefore{wordsBefore}, m_wordsAfter{wordsAfter},
+		m_code{code} {}
 
 	pair<int, vector<string>> CapturingSentence::score(const vector<string>& insertedWords) const {
 		int points = pointsAtBeginning;

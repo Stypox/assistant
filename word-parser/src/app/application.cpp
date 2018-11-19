@@ -56,7 +56,7 @@ namespace app {
 		}, {
 
 		}, {
-			{"sentences", "replaces the precompiled sentences (format: idWhenInvalid,codeWhenInvalidHex;id,word-word,codeHex;id,word-word,word-word,codeHex;...)", {"-s=", "--sentences="}},
+			{"sentences", "replaces the precompiled sentences (format: sectionIdWhenInvalid,codeWhenInvalidHex;sectionId,sentenceId,word-word,codeHex;sectionId,sentenceId,word-word,word-word,codeHex;...)", {"-s=", "--sentences="}},
 			{"inserted", "inserted words (required, format: as chosen on startup)", {"-i=", "--inserted="}, {}}
 		},
 		false
@@ -174,6 +174,8 @@ namespace app {
 	unsigned int fromHex(char ch) {
 		if (ch >= '0' && ch <= '9')
 			return ch - '0';
+		else if (ch >= 'A' && ch <= 'Z')
+			return ch - 'A' + 10;
 		else
 			return ch - 'a' + 10;
 	}
@@ -241,10 +243,10 @@ namespace app {
 		std::vector<parser::CapturingSentence> resCapturingSentences;
 		for (auto section = splitSentences.begin() + 1; section != splitSentences.end(); ++section) {
 			auto sectionSplit = splitEvery(*section, ',');
-			if (sectionSplit.size() == 3)
-				resSentences.emplace_back(sectionSplit[0], splitEvery(sectionSplit[1], '-'), fromHexTo8bit(sectionSplit[2]));
-			else if (sectionSplit.size() == 4)
-				resCapturingSentences.emplace_back(sectionSplit[0], splitEvery(sectionSplit[1], '-'), splitEvery(sectionSplit[2], '-'), fromHexTo8bit(sectionSplit[3]));
+			if (sectionSplit.size() == 4)
+				resSentences.emplace_back(sectionSplit[0], sectionSplit[1], splitEvery(sectionSplit[2], '-'), fromHexTo8bit(sectionSplit[3]));
+			else if (sectionSplit.size() == 5)
+				resCapturingSentences.emplace_back(sectionSplit[0], sectionSplit[1], splitEvery(sectionSplit[2], '-'), splitEvery(sectionSplit[3], '-'), fromHexTo8bit(sectionSplit[4]));
 			else {
 				if (logs)
 					*logs << "Invalid sentences: " << sentences

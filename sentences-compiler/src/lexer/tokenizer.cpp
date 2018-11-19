@@ -22,7 +22,8 @@ namespace lexer {
 	}
 	bool isGrammar(char ch) {
 		switch (ch) {
-			case ':': case ';': case '|': case '?': case '.':
+			case ':': case ';': case '|': case '?':
+			case '.': case '<': case '>':
 				return true;
 			default:
 				return false;

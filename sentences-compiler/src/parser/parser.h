@@ -23,15 +23,16 @@ namespace parser {
 
 		std::vector<Section> m_sections;
 		std::vector<CapturingSection> m_capturingSections;
-		Id m_idWhenInvalid;
+		Id m_sectionIdWhenInvalid;
 		Code m_codeWhenInvalid;
 
 		
 		void																				sections();
-		std::optional<Id>																	id();
 		std::optional<std::variant<Section, CapturingSection>>								section();
+		std::optional<Id>																	sectionId();
 		std::optional<std::variant<std::vector<Sentence>, std::vector<CapturingSentence>>>	sentences();
 		std::optional<std::variant<Sentence, CapturingSentence>>							sentence();
+		std::optional<Id>																	sentenceId();
 		std::tuple<std::vector<OrWord>, std::vector<OrWord>, bool>							words();
 		std::pair<std::optional<OrWord>, bool>												orWord();
 		Code																				code();

@@ -51,40 +51,40 @@ namespace parser {
 		if (Token token = m_ts.get(false); !token.empty()) // there are still tokens left after all has been processed. This means an unexpected token was read.
 			throw std::runtime_error("Grammar error:" + token.position() + ": expected sentence but got token \"" + token.str() + "\"");
 	}
-	optional<Id> Parser::id() {
-		auto token = m_ts.get(m_readNext);
-
-		if (token & Token::lettersOrOther) {
-			Id resId{token.str()};
-			token = m_ts.get(true);
-
-			if (token == ':') {
-				m_readNext = true;
-				return resId;
-			}
-			else {
-				throw std::runtime_error{"Grammar error:" + token.position() + ": excepted ':' but got " + token.str() + " after \"" + resId + "\" token"};
-			}
-		}
-		else {
-			return {};
-		}
-	}
 	optional<variant<Section, CapturingSection>> Parser::section() {
-		auto resId = id();
-		if (resId.has_value()) {
+		auto resSectionId = sectionId();
+		if (resSectionId.has_value()) {
 			auto resSentences = sentences();
 			if (!resSentences.has_value())
 				throw std::runtime_error{"Grammar error:" + m_ts.get(false).position() + ": missing sentences in section " + std::to_string(m_sections.size() + m_capturingSections.size() + 1)};
 			auto resCode = code();
 
 			if (std::holds_alternative<vector<Sentence>>(*resSentences)) // this is a normal section
-				return Section{*resId, std::get<vector<Sentence>>(*resSentences), resCode};
+				return Section{*resSectionId, std::get<vector<Sentence>>(*resSentences), resCode};
 			else // this section has capturing groups
-				return CapturingSection{*resId, std::get<vector<CapturingSentence>>(*resSentences), resCode};
+				return CapturingSection{*resSectionId, std::get<vector<CapturingSentence>>(*resSentences), resCode};
 		}
 		else {
 			// no sentence was read
+			return {};
+		}
+	}
+	optional<Id> Parser::sectionId() {
+		auto token = m_ts.get(m_readNext);
+
+		if (token & Token::lettersOrOther) {
+			Id resSectionId{token.str()};
+			token = m_ts.get(true);
+
+			if (token == ':') {
+				m_readNext = true;
+				return resSectionId;
+			}
+			else {
+				throw std::runtime_error{"Grammar error:" + token.position() + ": excepted ':' but got " + token.str() + " after \"" + resSectionId + "\" token"};
+			}
+		}
+		else {
 			return {};
 		}
 	}
@@ -112,19 +112,47 @@ namespace parser {
 			throw std::runtime_error{"Grammar error:" + m_ts.get(false).position() + ": sentences with and without capturing groups in the same section are not allowed"};
 	}
 	optional<variant<Sentence, CapturingSentence>> Parser::sentence() {
+		auto resSentenceId = sentenceId();
+
 		auto [resOrWordsBefore, resOrWordsAfter, hasCapturingGroup] = words();
-		if (resOrWordsBefore.empty() && resOrWordsAfter.empty()) // no sentence was read
-			return {};
+		if (resOrWordsBefore.empty() && resOrWordsAfter.empty()) { // no sentence was read
+			if (resSentenceId.has_value())
+				throw std::runtime_error{"Grammar error:" + m_ts.get(false).position() + ": expected sentence after sentence-id"};
+			else
+				return {};
+		}
 
 		if (Token token = m_ts.get(m_readNext); token == ';') {
 			m_readNext = true;
 			if (hasCapturingGroup) // this sentence contains a capturing group
-				return CapturingSentence{resOrWordsBefore, resOrWordsAfter};
+				return CapturingSentence{resOrWordsBefore, resOrWordsAfter, resSentenceId};
 			else // this sentence does not contain a capturing group
-				return Sentence{resOrWordsBefore};
+				return Sentence{resOrWordsBefore, resSentenceId};
 		}
 		else {
 			throw std::runtime_error{"Grammar error:" + token.position() + ": excepted ';' but got \"" + token.str() + "\" at the end of sentence"};
+		}
+	}
+	optional<Id> Parser::sentenceId() {
+		Token token = m_ts.get(m_readNext);
+		if (token != '<') {
+			m_readNext = false;
+			return {};
+		}
+		
+		token = m_ts.get(true);
+		if (token & Token::lettersOrOther) {
+			Id resSentenceId {token.str()};
+
+			token = m_ts.get(true);
+			if (token != '>')
+				throw std::runtime_error("Grammar error:" + token.position() + ": expected '>' but got token \"" + token.str() + "\" to complete sentence-id");
+			
+			m_readNext = true;
+			return resSentenceId;
+		}
+		else {
+			throw std::runtime_error("Grammar error:" + token.position() + ": expected sentence-id but got token \"" + token.str() + "\" after '<' token");
 		}
 	}
 	tuple<vector<OrWord>, vector<OrWord>, bool> Parser::words() {
@@ -222,11 +250,11 @@ namespace parser {
 	void Parser::parse(std::istream& input) {
 		m_ts = tokenize(input);
 
-		auto resId = id();
-		if (resId.has_value())
-			m_idWhenInvalid = *resId;
+		auto resSectionId = sectionId();
+		if (resSectionId.has_value())
+			m_sectionIdWhenInvalid = *resSectionId;
 		else
-			throw std::runtime_error("Grammar error:" + m_ts.get(false).position() + ": expected id for invalid sentences");
+			throw std::runtime_error("Grammar error:" + m_ts.get(false).position() + ": expected section-id for invalid sentences");
 		m_codeWhenInvalid = code();
 
 		sections();
@@ -244,6 +272,6 @@ namespace parser {
 				std::cout << section << "\n";
 		}
 
-		return {parser.m_sections, parser.m_capturingSections, parser.m_idWhenInvalid, parser.m_codeWhenInvalid};
+		return {parser.m_sections, parser.m_capturingSections, parser.m_sectionIdWhenInvalid, parser.m_codeWhenInvalid};
 	}
 }

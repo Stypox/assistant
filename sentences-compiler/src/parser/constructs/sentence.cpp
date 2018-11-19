@@ -6,38 +6,47 @@ namespace parser::constructs {
 	using std::pair;
 
 
-	Sentence::Sentence(const vector<OrWord>& orWords) :
-		m_orWords{orWords} {}
-	vector<vector<string>> Sentence::unfolded() const {
-		return parser::constructs::unfolded(m_orWords.begin(), m_orWords.end());
+	Sentence::Sentence(const vector<OrWord>& orWords, const std::optional<Id>& id) :
+		m_id{id.has_value() ? *id : Id{}}, m_orWords{orWords} {}
+	vector<UnfoldedSentence> Sentence::unfolded() const {
+		auto unfoldedSentence = parser::constructs::unfolded(m_orWords.begin(), m_orWords.end());
+
+		vector<UnfoldedSentence> sentences;
+		sentences.reserve(unfoldedSentence.size());
+
+		for (auto&& sentence : unfoldedSentence)
+			sentences.emplace_back(m_id, std::move(sentence));
+		
+		return sentences;
 	}
 
 	std::ostream& operator<< (std::ostream& stream, const Sentence& sentence) {
-		stream << " -";
+		stream << " <" << sentence.m_id << ">";
 		for (auto&& orWord : sentence.m_orWords)
 			stream << " " << orWord;
 		return stream;
 	}
 
 
-	CapturingSentence::CapturingSentence(const vector<OrWord>& orWordsBefore, const vector<OrWord>& orWordsAfter) :
-		m_orWordsBefore{orWordsBefore}, m_orWordsAfter{orWordsAfter} {}
-	vector<pair<vector<string>, vector<string>>> CapturingSentence::unfolded() const {
-		auto unfoldedSentencesBefore = parser::constructs::unfolded(m_orWordsBefore.begin(), m_orWordsBefore.end());
-		auto unfoldedSentencesAfter = parser::constructs::unfolded(m_orWordsAfter.begin(), m_orWordsAfter.end());
+	CapturingSentence::CapturingSentence(const vector<OrWord>& orWordsBefore, const vector<OrWord>& orWordsAfter, const std::optional<Id>& id) :
+		m_id{id.has_value() ? *id : Id{}}, m_orWordsBefore{orWordsBefore},
+		m_orWordsAfter{orWordsAfter} {}
+	vector<UnfoldedCapturingSentence> CapturingSentence::unfolded() const {
+		auto unfoldedSentenceBefore = parser::constructs::unfolded(m_orWordsBefore.begin(), m_orWordsBefore.end());
+		auto unfoldedSentenceAfter = parser::constructs::unfolded(m_orWordsAfter.begin(), m_orWordsAfter.end());
 
-		vector<pair<vector<string>, vector<string>>> sentences;
-		sentences.reserve(unfoldedSentencesBefore.size() * unfoldedSentencesAfter.size());
+		vector<UnfoldedCapturingSentence> sentences;
+		sentences.reserve(unfoldedSentenceBefore.size() * unfoldedSentenceAfter.size());
 
-		for (auto&& sentenceBefore : unfoldedSentencesBefore)
-			for (auto&& sentenceAfter : unfoldedSentencesAfter)
-				sentences.emplace_back(sentenceBefore, sentenceAfter);
+		for (auto&& sentenceBefore : unfoldedSentenceBefore)
+			for (auto&& sentenceAfter : unfoldedSentenceAfter)
+				sentences.emplace_back(m_id, std::move(sentenceBefore), std::move(sentenceAfter));
 		
 		return sentences;
 	}
 
 	std::ostream& operator<< (std::ostream& stream, const CapturingSentence& sentence) {
-		stream << " *";
+		stream << " <" << sentence.m_id << ">";
 		for (auto&& orWord : sentence.m_orWordsBefore)
 			stream << " " << orWord;
 		stream << " ...";

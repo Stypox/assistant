@@ -13,13 +13,13 @@ namespace parser::constructs {
 	class Section {
 		Id m_id;
 		std::vector<Sentence> m_sentences;
-		mutable std::vector<std::vector<std::string>> m_unfoldedSentences;
+		mutable std::vector<UnfoldedSentence> m_unfoldedSentences;
 		Code m_code;
 	public:
 		Section(const Id& id, const std::vector<Sentence>& sentences, const Code& code);
-		std::vector<std::vector<std::string>> unfoldedSentences() const;
+		std::vector<UnfoldedSentence> unfoldedSentences() const;
 
-		std::string cppSentencesList(const std::string& idObjectName, const std::string& codeObjectName, bool pretty) const;
+		std::string cppSentencesList(const std::string& sectionIdObjectName, const std::string& codeObjectName, bool pretty) const;
 		std::string cppIdStringLiteral() const;
 		std::string cppCodeStringLiteral() const;
 
@@ -29,13 +29,13 @@ namespace parser::constructs {
 	class CapturingSection {
 		Id m_id;
 		std::vector<CapturingSentence> m_sentences;
-		mutable std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> m_unfoldedSentences;
+		mutable std::vector<UnfoldedCapturingSentence> m_unfoldedSentences;
 		Code m_code;
 	public:
 		CapturingSection(const Id& id, const std::vector<CapturingSentence>& sentences, const Code& code);
-		std::vector<std::pair<std::vector<std::string>, std::vector<std::string>>> unfoldedSentences() const;
+		std::vector<UnfoldedCapturingSentence> unfoldedSentences() const;
 
-		std::string cppSentencesList(const std::string& idObjectName, const std::string& codeObjectName, bool pretty) const;
+		std::string cppSentencesList(const std::string& sectionIdObjectName, const std::string& codeObjectName, bool pretty) const;
 		std::string cppIdStringLiteral() const;
 		std::string cppCodeStringLiteral() const;
 
