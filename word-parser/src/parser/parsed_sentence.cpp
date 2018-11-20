@@ -66,7 +66,7 @@ namespace parser {
 	
 	void ParsedSentence::json(std::ostream& output) {
 		output << "{\"type\":\"normal\",\"section_id\":\"" << m_sectionId <<
-			",\"sentence_id\":\"" << m_sentenceId << "\",\"inserted_words\":";
+			"\",\"sentence_id\":\"" << m_sentenceId << "\",\"inserted_words\":";
 		wordsToJson(m_insertedWords, output);
 		output << ",\"sentence_words\":";
 		wordsToJson(m_sentenceWords, output);
@@ -91,7 +91,7 @@ namespace parser {
 
 	void ParsedCapturingSentence::json(std::ostream& output) {
 		output << "{\"type\":\"capturing\",\"section_id\":\"" << m_sectionId <<
-			",\"sentence_id\":\"" << m_sentenceId << "\",\"inserted_words\":";
+			"\",\"sentence_id\":\"" << m_sentenceId << "\",\"inserted_words\":";
 		wordsToJson(m_insertedWords, output);
 		output << ",\"captured_words\":";
 		wordsToJson(m_capturedWords, output);
