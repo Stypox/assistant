@@ -7,22 +7,27 @@
 #include "../../sentences.cpp"
 
 namespace app {
-	Application::Encoding Application::toEncoding(const std::string& str) {
+	using std::string;
+	using std::vector;
+	using std::unique_ptr;
+	using std::pair;
+
+	Application::Encoding Application::toEncoding(const string& str) {
 		if (str == "8bithex")
 			return hex8bit;
 		else if (str == "16bithex")
 			return hex16bit;
 		return Encoding{-1};
 	}
-	Application::Format Application::toFormat(const std::string& str) {
+	Application::Format Application::toFormat(const string& str) {
 		if (str == "json")
 			return json;
 		return Format{-1};
 	}
 
 
-	std::unique_ptr<std::ostream> Application::nonDefualtOutput = nullptr;
-	std::unique_ptr<std::ostream> Application::nonDefaultLogs = nullptr;
+	unique_ptr<std::ostream> Application::nonDefualtOutput = nullptr;
+	unique_ptr<std::ostream> Application::nonDefaultLogs = nullptr;
 
 
 	stypox::ArgParser Application::initialArgs{
@@ -40,9 +45,9 @@ namespace app {
 				"input encoding (required, values: 8bithex (2 hexadecimal 0-f), 16bithex (4 hexadecimal 0-f))",
 				{"-e=", "--encoding="},
 				{},
-				[](std::string s) { return s == "8bithex" || s == "16bithex"; }
+				[](string s) { return s == "8bithex" || s == "16bithex"; }
 			},
-			{"format", "output format (values: json (default))", {"-f=", "--format="}, "json", [](std::string s) { return s == "json"; }},
+			{"format", "output format (values: json (default))", {"-f=", "--format="}, "json", [](string s) { return s == "json"; }},
 			{"logs", "the file to save logs in (when openable) (stdout is valid)", {"-l=", "--logs="}}
 		}
 	};
@@ -65,12 +70,12 @@ namespace app {
 	std::ostream* Application::logs = nullptr;
 
 
-	void openFile(const std::string& filename, std::ostream*& file, std::unique_ptr<std::ostream>& nonDefaultFile) {
+	void openFile(const string& filename, std::ostream*& file, unique_ptr<std::ostream>& nonDefaultFile) {
 		if (filename == "stdout") {
 			file = &std::cout;
 		}
 		else {
-			std::unique_ptr<std::ofstream> openedFile{new std::ofstream{filename, std::ios::binary}};
+			unique_ptr<std::ofstream> openedFile{new std::ofstream{filename, std::ios::binary}};
 			if (openedFile->is_open()) {
 				nonDefaultFile = std::move(openedFile);
 				file = nonDefaultFile.get();
@@ -81,9 +86,9 @@ namespace app {
 		}
 	}
 
-	std::vector<std::string> splitAtSpaces(const std::string& str) {
+	vector<string> splitAtSpaces(const string& str) {
 		// counts two or more spaces as only one, thus does not generate empty strings
-		std::vector<std::string> result;
+		vector<string> result;
 		auto begin = str.begin();
 
 		while (1) {
@@ -100,9 +105,9 @@ namespace app {
 
 		return result;
 	}
-	std::vector<std::string> splitEvery(const std::string& str, char ch) {
+	vector<string> splitEvery(const string& str, char ch) {
 		// counts N chars N chars, thus generating empty strings
-		std::vector<std::string> result;
+		vector<string> result;
 		auto begin = str.begin();
 
 		while (1) {
@@ -143,7 +148,7 @@ namespace app {
 			exit(1);
 		}
 	}
-	void Application::parseCurrentArgs(const std::vector<std::string>& args) {
+	void Application::parseCurrentArgs(const vector<string>& args) {
 		try {
 			currentArgs.reset();
 			currentArgs.parse(args);
@@ -164,8 +169,8 @@ namespace app {
 			exit(1);
 		}
 	}
-	std::vector<std::string> Application::getArgs() {
-		std::string line;
+	vector<string> Application::getArgs() {
+		string line;
 		std::getline(std::cin, line);
 
 		return splitAtSpaces(line);
@@ -179,21 +184,21 @@ namespace app {
 		else
 			return ch - 'a' + 10;
 	}
-	std::string Application::fromHexTo8bit(const std::string& hex) {
+	string Application::fromHexTo8bit(const string& hex) {
 		if (hex.size() % 2 != 0) {
 			if (logs)
 				*logs << "Malformed 8bit hexadecimal\n" << std::flush;
 			exit(1);
 		}
 
-		std::string result;
+		string result;
 		result.reserve(hex.size() / 2);
 		for (size_t pos = 0; pos < hex.size(); pos += 2)
 			result.push_back(16*fromHex(hex[pos]) + fromHex(hex[pos + 1]));
 
 		return result;
 	}
-	std::wstring Application::fromHexTo16bit(const std::string& hex) {
+	std::wstring Application::fromHexTo16bit(const string& hex) {
 		if (hex.size() % 4 != 0) {
 			if (logs)
 				*logs << "Malformed 16bit hexadecimal\n" << std::flush;
@@ -208,25 +213,27 @@ namespace app {
 		return result;
 	}
 
-	std::vector<std::string> Application::parseWords(std::string sentence) {
+	pair<vector<string>, vector<string>> Application::parseWords(string sentence) {
 		for (auto&& ch : sentence) {
-			if (ch >= 'A' && ch <= 'Z') {
-				ch -= ('A' - 'a');
-			}
-			else {
-				switch (ch) {
-				case '"': case '(': case ')': case '[':
-				case ']': case ',': case ':': case ';':
-				case '.': case '-': case '_': case '!':
-				case '?': case '\\': case '/':
-					ch = ' ';
-				}
+			switch (ch) {
+			case '"': case '(': case ')': case '[':
+			case ']': case ',': case ':': case ';':
+			case '.': case '-': case '_': case '!':
+			case '?': case '\\': case '/':
+				ch = ' ';
 			}
 		}
+		auto insertedWords = splitAtSpaces(sentence);
 
-		return splitAtSpaces(sentence);
+		for (auto&& ch : sentence) {
+			if (ch >= 'A' && ch <= 'Z')
+				ch -= ('A' - 'a');
+		}
+		auto wordsLowercase = splitAtSpaces(sentence);
+
+		return {insertedWords, wordsLowercase};
 	}
-	std::unique_ptr<parser::Parser> Application::parseSentences(const std::string& sentences) {
+	unique_ptr<parser::Parser> Application::parseSentences(const string& sentences) {
 		auto splitSentences = splitEvery(sentences, ';');
 		
 		auto firstSectionSplit = splitEvery(splitSentences[0], ',');
@@ -236,11 +243,11 @@ namespace app {
 					<< "\nAt section 1: \n" << splitSentences[0] << "\n" << std::flush;
 			exit(1);
 		}
-		std::string idWhenInvalid = firstSectionSplit[0];
-		std::string codeWhenInvalid = fromHexTo8bit(firstSectionSplit[1]);
+		string idWhenInvalid = firstSectionSplit[0];
+		string codeWhenInvalid = fromHexTo8bit(firstSectionSplit[1]);
 
-		std::vector<parser::Sentence> resSentences;
-		std::vector<parser::CapturingSentence> resCapturingSentences;
+		vector<parser::Sentence> resSentences;
+		vector<parser::CapturingSentence> resCapturingSentences;
 		for (auto section = splitSentences.begin() + 1; section != splitSentences.end(); ++section) {
 			auto sectionSplit = splitEvery(*section, ',');
 			if (sectionSplit.size() == 4)
@@ -255,7 +262,7 @@ namespace app {
 			}
 		}
 
-		return std::unique_ptr<parser::Parser>{new parser::Parser{resSentences, resCapturingSentences, idWhenInvalid, codeWhenInvalid}};
+		return unique_ptr<parser::Parser>{new parser::Parser{resSentences, resCapturingSentences, idWhenInvalid, codeWhenInvalid}};
 	}
 
 	int Application::run(int argc, char const *argv[]) {
@@ -268,8 +275,8 @@ namespace app {
 
 			// determine which parser to use
 			parser::Parser* parser;
-			std::unique_ptr<parser::Parser> nonDefaultParser = nullptr;
-			if (std::string sentences = currentArgs.getText("sentences"); sentences.empty()) {
+			unique_ptr<parser::Parser> nonDefaultParser = nullptr;
+			if (string sentences = currentArgs.getText("sentences"); sentences.empty()) {
 				parser = &sentences_compiler_gen::parser;
 			}
 			else {
@@ -278,18 +285,22 @@ namespace app {
 			}
 
 			// decode inserted words
-			std::vector<std::string> insertedWords;
+			vector<string> insertedWords, insertedWordsLowercase;
 			switch (encoding) {
-			case hex8bit:
-				insertedWords = parseWords(fromHexTo8bit(currentArgs.getText("inserted")));
+			case hex8bit: {
+				auto words = parseWords(fromHexTo8bit(currentArgs.getText("inserted")));
+				insertedWords = words.first;
+				insertedWordsLowercase = words.second;
 				break;
-			case hex16bit:
+			}
+			case hex16bit: {
 				// TODO
 				break;
 			}
+			}
 
 			// parse sentence
-			std::unique_ptr<parser::ParsedSentenceBase> parsedSentence = parser->parse(insertedWords);
+			unique_ptr<parser::ParsedSentenceBase> parsedSentence = parser->parse(insertedWords, insertedWordsLowercase);
 			
 			// output sentence
 			if (logs){

@@ -31,7 +31,7 @@ namespace app {
 		static std::string fromHexTo8bit(const std::string& hex);
 		static std::wstring fromHexTo16bit(const std::string& hex);
 
-		static std::vector<std::string> parseWords(std::string sentence);
+		static std::pair<std::vector<std::string>, std::vector<std::string>> parseWords(std::string sentence);
 		static std::unique_ptr<parser::Parser> parseSentences(const std::string& sentences);
 
 	public:

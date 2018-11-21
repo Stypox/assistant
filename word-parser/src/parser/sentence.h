@@ -39,12 +39,12 @@ namespace parser {
 		const std::vector<std::string> m_wordsAfter;
 		const std::string m_code;
 
-		std::tuple<int, std::vector<std::string>, bool, bool> scoreBefore(const std::vector<std::string>& insertedWords) const;
-		std::tuple<int, std::vector<std::string>, bool, bool> scoreAfter(const std::vector<std::string>& insertedWords) const;
+		std::tuple<int, size_t, bool, bool> scoreBefore(const std::vector<std::string>& insertedWords) const;
+		std::tuple<int, size_t, bool, bool> scoreAfter(const std::vector<std::string>& insertedWords) const;
 	public:
 		CapturingSentence(const std::string& sectionId, const std::string& sentenceId, const std::vector<std::string>& wordsBefore, const std::vector<std::string> wordsAfter, const std::string& code);
 
-		std::pair<int, std::vector<std::string>> score(const std::vector<std::string>& insertedWords) const;
+		std::tuple<int, size_t, size_t> score(const std::vector<std::string>& insertedWords) const;
 
 		friend class ParsedCapturingSentence;
 	};

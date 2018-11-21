@@ -21,30 +21,31 @@ namespace parser {
 
 		return {bestSentence, maxScoreSoFar};
 	}
-	tuple<const CapturingSentence*, vector<string>, int> Parser::getHighestScoreCapturingSentence(const vector<string>& insertedWords) const {
+	tuple<const CapturingSentence*, size_t, size_t, int> Parser::getHighestScoreCapturingSentence(const vector<string>& insertedWords) const {
 		const CapturingSentence* bestSentence = nullptr;
-		vector<string> bestSentenceCapturedWords;
+		size_t bestSentenceCapturedWordsBegin, bestSentenceCapturedWordsEnd;
 		int maxScoreSoFar = std::numeric_limits<int>::min();
 
 		for (auto&& sentence : m_capturingSentences) {
-			const auto& [score, capturedWords] = sentence.score(insertedWords);
+			const auto& [score, capturedWordsBegin, capturedWordsEnd] = sentence.score(insertedWords);
 			if (score > maxScoreSoFar) {
 				maxScoreSoFar = score;
 				bestSentence = &sentence;
-				bestSentenceCapturedWords = capturedWords;
+				bestSentenceCapturedWordsBegin = capturedWordsBegin;
+				bestSentenceCapturedWordsEnd = capturedWordsEnd;
 			}
 		}
 
-		return {bestSentence, bestSentenceCapturedWords, maxScoreSoFar};
+		return {bestSentence, bestSentenceCapturedWordsBegin, bestSentenceCapturedWordsEnd, maxScoreSoFar};
 	}
 
 	Parser::Parser(const vector<Sentence>& sentences, const vector<CapturingSentence>& capturingSentences, const string& idWhenInvalid, const string& codeWhenInvalid) :
 		m_sentences{sentences}, m_capturingSentences{capturingSentences},
 		m_idWhenInvalid{idWhenInvalid}, m_codeWhenInvalid{codeWhenInvalid} {}
 
-	std::unique_ptr<ParsedSentenceBase> Parser::parse(const vector<string>& insertedWords) const {
-		auto [bestSentence, scoreSentence] = getHighestScoreSentence(insertedWords);
-		auto [bestCapturingSentence, capturedWords, scoreCapturingSentence] = getHighestScoreCapturingSentence(insertedWords);
+	std::unique_ptr<ParsedSentenceBase> Parser::parse(const vector<string>& insertedWords, const vector<string>& insertedWordsLowercase) const {
+		auto [bestSentence, scoreSentence] = getHighestScoreSentence(insertedWordsLowercase);
+		auto [bestCapturingSentence, capturedWordsBegin, capturedWordsEnd, scoreCapturingSentence] = getHighestScoreCapturingSentence(insertedWordsLowercase);
 
 		if (scoreSentence < minimumRequiredScore && scoreCapturingSentence < minimumRequiredScore)
 			return makeParsed(m_idWhenInvalid, m_codeWhenInvalid, insertedWords);
@@ -53,12 +54,12 @@ namespace parser {
 			if (scoreSentence > scoreCapturingSentence)
 				return makeParsed(*bestSentence, insertedWords);
 			else
-				return makeParsed(*bestCapturingSentence, insertedWords, capturedWords);
+				return makeParsed(*bestCapturingSentence, insertedWords, vector<string>{insertedWords.begin() + capturedWordsBegin, insertedWords.begin() + capturedWordsEnd});
 		}
 		else if (bestSentence)
 			return makeParsed(*bestSentence, insertedWords);
 		else if (bestCapturingSentence)
-			return makeParsed(*bestCapturingSentence, insertedWords, capturedWords);
+			return makeParsed(*bestCapturingSentence, insertedWords, vector<string>{insertedWords.begin() + capturedWordsBegin, insertedWords.begin() + capturedWordsEnd});
 		else
 			return makeParsed(m_idWhenInvalid, m_codeWhenInvalid, insertedWords);
 	}

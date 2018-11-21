@@ -59,9 +59,9 @@ namespace parser {
 	}
 
 
-	tuple<int, vector<string>, bool, bool> CapturingSentence::scoreBefore(const vector<string>& insertedWords) const {
+	tuple<int, size_t, bool, bool> CapturingSentence::scoreBefore(const vector<string>& insertedWords) const {
 		if (m_wordsAfter.empty())
-			return {0, insertedWords, true, true};
+			return {0, insertedWords.size(), true, true};
 
 		int points = 0;
 		bool foundAllWords = true,
@@ -96,11 +96,11 @@ namespace parser {
 			points += pointsNoWordsCaptured;
 		}
 
-		return {points, {insertedWords.begin(), insertedWords.begin() + static_cast<int>(insertedWords.rend() - insertedWord)}, foundAllWords, exactMatch};
+		return {points, insertedWords.rend() - insertedWord, foundAllWords, exactMatch};
 	}
-	tuple<int, vector<string>, bool, bool> CapturingSentence::scoreAfter(const vector<string>& insertedWords) const {
+	tuple<int, size_t, bool, bool> CapturingSentence::scoreAfter(const vector<string>& insertedWords) const {
 		if (m_wordsBefore.empty())
-			return {0, insertedWords, true, true};
+			return {0, 0, true, true};
 
 		int points = 0;
 		bool foundAllWords = true,
@@ -136,7 +136,7 @@ namespace parser {
 			return {points, {}, foundAllWords, exactMatch};
 		}
 
-		return {points, {insertedWords.begin() + static_cast<int>(insertedWord - insertedWords.begin()), insertedWords.end()}, foundAllWords, exactMatch};
+		return {points, insertedWord - insertedWords.begin(), foundAllWords, exactMatch};
 	}
 
 	CapturingSentence::CapturingSentence(const string& sectionId, const string& sentenceId, const vector<string>& wordsBefore, const vector<string> wordsAfter, const string& code) :
@@ -144,12 +144,12 @@ namespace parser {
 		m_wordsBefore{wordsBefore}, m_wordsAfter{wordsAfter},
 		m_code{code} {}
 
-	pair<int, vector<string>> CapturingSentence::score(const vector<string>& insertedWords) const {
+	tuple<int, size_t, size_t> CapturingSentence::score(const vector<string>& insertedWords) const {
 		int points = pointsAtBeginning;
 
-		const auto& [pointsAfter, remainingWords, foundAllWordsAfter, exactMatchAfter] = scoreAfter(insertedWords);
+		const auto& [pointsAfter, capturedWordsBegin, foundAllWordsAfter, exactMatchAfter] = scoreAfter(insertedWords);
 		points += pointsAfter;
-		const auto& [pointsBefore, capturedWords, foundAllWordsBefore, exactMatchBefore] = scoreBefore(remainingWords);
+		const auto& [pointsBefore, capturedWordsEnd, foundAllWordsBefore, exactMatchBefore] = scoreBefore(vector<string>{insertedWords.begin() + capturedWordsBegin, insertedWords.end()});
 		points += pointsBefore;
 
 		if (foundAllWordsAfter && foundAllWordsBefore) {
@@ -158,6 +158,6 @@ namespace parser {
 				points += pointsExactMatch;
 		}
 
-		return {points, capturedWords};
+		return {points, capturedWordsBegin, capturedWordsBegin + capturedWordsEnd};
 	}
 }
