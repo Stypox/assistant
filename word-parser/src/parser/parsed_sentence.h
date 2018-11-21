@@ -12,9 +12,11 @@ namespace parser {
 	class ParsedSentenceBase {
 	protected:
 		const std::string m_sectionId, m_code;
+		const std::vector<std::string>
+			m_insertedWords;
 	
 	public:
-		ParsedSentenceBase(const std::string& sectionId, const std::string& code);
+		ParsedSentenceBase(const std::string& sectionId, const std::vector<std::string>& insertedWords, const std::string& code);
 
 		virtual void json(std::ostream& output) = 0;
 		virtual void log(std::ostream& output) = 0;
@@ -23,7 +25,6 @@ namespace parser {
 	class ParsedSentence : public ParsedSentenceBase {
 		const std::string m_sentenceId;
 		const std::vector<std::string>
-			m_insertedWords,
 			m_sentenceWords;
 		
 	public:
@@ -36,7 +37,6 @@ namespace parser {
 	class ParsedCapturingSentence : public ParsedSentenceBase {
 		const std::string m_sentenceId;
 		const std::vector<std::string>
-			m_insertedWords,
 			m_capturedWords,
 			m_sentenceWordsBefore,
 			m_sentenceWordsAfter;
@@ -49,9 +49,6 @@ namespace parser {
 	};
 
 	class InvalidSentence : public ParsedSentenceBase {
-		const std::vector<std::string>
-			m_insertedWords;
-		
 	public:
 		InvalidSentence(const std::string& sectionId, const std::string& code, const std::vector<std::string>& insertedWords);
 

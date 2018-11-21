@@ -57,12 +57,13 @@ namespace parser {
 	}
 	
 
-	ParsedSentenceBase::ParsedSentenceBase(const string& sectionId, const string& code) :
-		m_sectionId{sectionId}, m_code{code} {}
+	ParsedSentenceBase::ParsedSentenceBase(const string& sectionId, const std::vector<std::string>& insertedWords, const string& code) :
+		m_sectionId{sectionId}, m_code{code},
+		m_insertedWords{insertedWords} {}
 
 	ParsedSentence::ParsedSentence(const Sentence& sentence, const vector<string>& insertedWords) :
-		ParsedSentenceBase{sentence.m_sectionId, sentence.m_code}, m_sentenceId{sentence.m_sentenceId},
-		m_insertedWords{insertedWords}, m_sentenceWords{sentence.m_words} {}
+		ParsedSentenceBase{sentence.m_sectionId, insertedWords, sentence.m_code}, m_sentenceId{sentence.m_sentenceId},
+		m_sentenceWords{sentence.m_words} {}
 	
 	void ParsedSentence::json(std::ostream& output) {
 		output << "{\"type\":\"normal\",\"section_id\":\"" << m_sectionId <<
@@ -85,9 +86,9 @@ namespace parser {
 	}
 
 	ParsedCapturingSentence::ParsedCapturingSentence(const CapturingSentence& sentence, const vector<string>& insertedWords, const vector<string>& capturedWords) :
-		ParsedSentenceBase{sentence.m_sectionId, sentence.m_code}, m_sentenceId{sentence.m_sentenceId},
-		m_insertedWords{insertedWords}, m_capturedWords{capturedWords},
-		m_sentenceWordsBefore{sentence.m_wordsBefore}, m_sentenceWordsAfter{sentence.m_wordsAfter} {}
+		ParsedSentenceBase{sentence.m_sectionId, insertedWords, sentence.m_code}, m_sentenceId{sentence.m_sentenceId},
+		m_capturedWords{capturedWords}, m_sentenceWordsBefore{sentence.m_wordsBefore},
+		m_sentenceWordsAfter{sentence.m_wordsAfter} {}
 
 	void ParsedCapturingSentence::json(std::ostream& output) {
 		output << "{\"type\":\"capturing\",\"section_id\":\"" << m_sectionId <<
@@ -120,7 +121,7 @@ namespace parser {
 	}
 
 	InvalidSentence::InvalidSentence(const string& sectionId, const string& code, const vector<string>& insertedWords) :
-		ParsedSentenceBase{sectionId, code}, m_insertedWords{insertedWords} {}
+		ParsedSentenceBase{sectionId, insertedWords, code} {}
 
 	void InvalidSentence::json(std::ostream& output) {
 		output << "{\"type\":\"invalid\",\"section_id\":\"" << m_sectionId <<
