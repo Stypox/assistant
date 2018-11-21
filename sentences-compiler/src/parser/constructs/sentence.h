@@ -11,9 +11,13 @@
 #include "id.h"
 
 namespace parser::constructs {
-	using UnfoldedSentence = std::tuple<Id, std::vector<std::string>>;
-	using UnfoldedCapturingSentence = std::tuple<Id, std::vector<std::string>, std::vector<std::string>>;
+	class Sentence;
+	class CapturingSentence;
+}
 
+#include "unfolded.h"
+
+namespace parser::constructs {
 	class Sentence {
 		Id m_id;
 		std::vector<OrWord> m_orWords;

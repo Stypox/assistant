@@ -17,7 +17,6 @@ namespace parser::constructs {
 		Code m_code;
 	public:
 		Section(const Id& id, const std::vector<Sentence>& sentences, const Code& code);
-		std::vector<UnfoldedSentence> unfoldedSentences() const;
 
 		std::string cppSentencesList(const std::string& sectionIdObjectName, const std::string& codeObjectName, bool pretty) const;
 		std::string cppIdStringLiteral() const;
@@ -33,7 +32,6 @@ namespace parser::constructs {
 		Code m_code;
 	public:
 		CapturingSection(const Id& id, const std::vector<CapturingSentence>& sentences, const Code& code);
-		std::vector<UnfoldedCapturingSentence> unfoldedSentences() const;
 
 		std::string cppSentencesList(const std::string& sectionIdObjectName, const std::string& codeObjectName, bool pretty) const;
 		std::string cppIdStringLiteral() const;

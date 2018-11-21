@@ -9,10 +9,10 @@ namespace parser {
 
 	Compiler::Compiler(const std::vector<std::istream*>& inputs) {
 		const auto& [sections, capturingSections, idWhenInvalid, codeWhenInvalid] = parse(inputs);
-		m_sections = sections;
-		m_capturingSections = capturingSections;
-		m_idWhenInvalid = idWhenInvalid;
-		m_codeWhenInvalid = codeWhenInvalid;
+		m_sections = std::move(sections);
+		m_capturingSections = std::move(capturingSections);
+		m_idWhenInvalid = std::move(idWhenInvalid);
+		m_codeWhenInvalid = std::move(codeWhenInvalid);
 	}
 
 	void Compiler::toCpp(std::ostream& output) {

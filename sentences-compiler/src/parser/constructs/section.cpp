@@ -13,32 +13,15 @@ namespace parser::constructs {
 
 	Section::Section(const Id& id, const vector<Sentence>& sentences, const Code& code) :
 		m_id{id}, m_sentences{sentences},
-		m_unfoldedSentences{}, m_code{code} {}
-	vector<UnfoldedSentence> Section::unfoldedSentences() const {
-		if (m_unfoldedSentences.empty()) {
-			auto comp = [](const UnfoldedSentence& a, const UnfoldedSentence& b) { return get<1>(a) < get<1>(b); };
-			set<UnfoldedSentence, decltype(comp)> removedDuplicates{comp};
-			for (auto&& sentence : m_sentences) {
-				auto unfolded = sentence.unfolded();
-				removedDuplicates.insert(unfolded.begin(), unfolded.end());
-			}
-
-			m_unfoldedSentences.assign(removedDuplicates.begin(), removedDuplicates.end());
-			m_unfoldedSentences.erase(
-				std::remove_if(m_unfoldedSentences.begin(), m_unfoldedSentences.end(), [](const UnfoldedSentence& a) { return get<1>(a).empty(); }),
-				m_unfoldedSentences.end());
-		}
-		return m_unfoldedSentences;
-	}
+		m_unfoldedSentences{unfolded(sentences)}, m_code{code} {}
 
 	std::string Section::cppSentencesList(const std::string& sectionIdObjectName, const std::string& codeObjectName, bool pretty) const {
 		std::string result;
-		unfoldedSentences();
 
 		if (pretty) {
 			for (auto&& sentence : m_unfoldedSentences) {
-				result.append("\n\t\t{" + sectionIdObjectName + ", " + get<0>(sentence).cppStringLiteral() + ", {");
-				for (auto&& word : get<1>(sentence))
+				result.append("\n\t\t{" + sectionIdObjectName + ", " + sentence.id.cppStringLiteral() + ", {");
+				for (auto&& word : sentence.words)
 					result.append("\"" + word + "\", ");
 				*(result.end() - 2) = '}'; // replace last ,
 				*(result.end() - 1) = ',';
@@ -47,8 +30,8 @@ namespace parser::constructs {
 		}
 		else {
 			for (auto&& sentence : m_unfoldedSentences) {
-				result.append("{" + sectionIdObjectName + "," + get<0>(sentence).cppStringLiteral() + ",{");
-				for (auto&& word : get<1>(sentence))
+				result.append("{" + sectionIdObjectName + "," + sentence.id.cppStringLiteral() + ",{");
+				for (auto&& word : sentence.words)
 					result.append("\"" + word + "\",");
 				result.back() = '}'; // replace last ,
 				result.append("," + codeObjectName + "},");
@@ -71,9 +54,9 @@ namespace parser::constructs {
 		for (auto&& sentence : section.m_sentences)
 			stream << "\n" << sentence;
 		stream << "\nUNFOLDED:";
-		for (auto&& sentence : section.unfoldedSentences()) {
-			stream << "\n <" << get<0>(sentence) << ">";
-			for (auto&& word : get<1>(sentence))
+		for (auto&& sentence : section.m_unfoldedSentences) {
+			stream << "\n <" << sentence.id << ">";
+			for (auto&& word : sentence.words)
 				stream << " " << word;
 		}
 		stream << "\nCODE:\n" << section.m_code;
@@ -83,48 +66,31 @@ namespace parser::constructs {
 
 	CapturingSection::CapturingSection(const Id& id, const vector<CapturingSentence>& sentences, const Code& code) :
 		m_id{id}, m_sentences{sentences},
-		m_unfoldedSentences{}, m_code{code} {}
-	vector<UnfoldedCapturingSentence> CapturingSection::unfoldedSentences() const {
-		if (m_unfoldedSentences.empty()) {
-			auto comp = [](const UnfoldedCapturingSentence& a, const UnfoldedCapturingSentence& b) { return std::make_pair(get<1>(a), get<1>(b)) < std::make_pair(get<2>(a), get<2>(b)); };
-			set<UnfoldedCapturingSentence, decltype(comp)> removedDuplicates{comp};
-			for (auto&& sentence : m_sentences) {
-				auto unfolded = sentence.unfolded();
-				removedDuplicates.insert(unfolded.begin(), unfolded.end());
-			}
-
-			m_unfoldedSentences.assign(removedDuplicates.begin(), removedDuplicates.end());
-			m_unfoldedSentences.erase(
-				std::remove_if(m_unfoldedSentences.begin(), m_unfoldedSentences.end(), [](const UnfoldedCapturingSentence& a) { return get<0>(a).empty() && get<1>(a).empty(); }),
-				m_unfoldedSentences.end());
-		}
-		return m_unfoldedSentences;
-	}
+		m_unfoldedSentences{unfolded(sentences)}, m_code{code} {}
 
 	std::string CapturingSection::cppSentencesList(const std::string& sectionIdObjectName, const std::string& codeObjectName, bool pretty) const {
 		std::string result;
-		unfoldedSentences();
 
 		if (pretty) {
 			for (auto&& sentence : m_unfoldedSentences) {
-				result.append("\n\t\t{" + sectionIdObjectName + ", " + get<0>(sentence).cppStringLiteral() + ", ");
-				if (get<1>(sentence).empty()) {
+				result.append("\n\t\t{" + sectionIdObjectName + ", " + sentence.id.cppStringLiteral() + ", ");
+				if (sentence.wordsBefore.empty()) {
 					result.append("{},");
 				}
 				else {
 					result.append("{");
-					for (auto&& word : get<1>(sentence))
+					for (auto&& word : sentence.wordsBefore)
 						result.append("\"" + word + "\", ");
 					*(result.end() - 2) = '}'; // replace last ,
 					*(result.end() - 1) = ',';
 				}
 
-				if (get<2>(sentence).empty()) {
+				if (sentence.wordsAfter.empty()) {
 					result.append(" {},");
 				}
 				else {
 					result.append(" {");
-					for (auto&& word : get<2>(sentence))
+					for (auto&& word : sentence.wordsAfter)
 						result.append("\"" + word + "\", ");
 					*(result.end() - 2) = '}'; // replace last ,
 					*(result.end() - 1) = ',';
@@ -135,23 +101,23 @@ namespace parser::constructs {
 		}
 		else {
 			for (auto&& sentence : m_unfoldedSentences) {
-				result.append("{" + sectionIdObjectName + "," + get<0>(sentence).cppStringLiteral() + ",");
-				if (get<1>(sentence).empty()) {
+				result.append("{" + sectionIdObjectName + "," + sentence.id.cppStringLiteral() + ",");
+				if (sentence.wordsBefore.empty()) {
 					result.append("{}");
 				}
 				else {
 					result.append("{");
-					for (auto&& word : get<1>(sentence))
+					for (auto&& word : sentence.wordsBefore)
 						result.append("\"" + word + "\",");
 					result.back() = '}'; // replace last ,
 				}
 
-				if (get<2>(sentence).empty()) {
+				if (sentence.wordsAfter.empty()) {
 					result.append(",{}");
 				}
 				else {
 					result.append(",{");
-					for (auto&& word : get<2>(sentence))
+					for (auto&& word : sentence.wordsAfter)
 						result.append("\"" + word + "\",");
 					result.back() = '}'; // replace last ,
 				}
@@ -176,12 +142,12 @@ namespace parser::constructs {
 		for (auto&& sentence : section.m_sentences)
 			stream << "\n" << sentence;
 		stream << "\nUNFOLDED:";
-		for (auto&& sentence : section.unfoldedSentences()) {
-			stream << "\n *";
-			for (auto&& word : get<1>(sentence))
+		for (auto&& sentence : section.m_unfoldedSentences) {
+			stream << "\n <" << sentence.id << ">";
+			for (auto&& word : sentence.wordsBefore)
 				stream << " " << word;
 			stream << " ...";
-			for (auto&& word : get<2>(sentence))
+			for (auto&& word : sentence.wordsAfter)
 				stream << " " << word;
 		}
 		stream << "\nCODE:\n" << section.m_code;
