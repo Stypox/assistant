@@ -8,7 +8,10 @@ namespace parser::constructs {
 		return words < other.words;
 	}
 	bool UnfoldedCapturingSentence::operator<(const UnfoldedCapturingSentence& other) const {
-		return std::lexicographical_compare(wordsBefore.begin(), wordsBefore.end(), wordsAfter.begin(), wordsAfter.end());
+		if (wordsBefore == other.wordsBefore)
+			return wordsAfter < other.wordsAfter;
+		else
+			return wordsBefore < other.wordsBefore;
 	}
 
 	std::vector<UnfoldedSentence> unfolded(const std::vector<Sentence>& sentences) {
