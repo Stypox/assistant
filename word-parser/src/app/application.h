@@ -31,8 +31,8 @@ namespace app {
 		static std::string fromHexTo8bit(const std::string& hex);
 		static std::wstring fromHexTo16bit(const std::string& hex);
 
-		static std::pair<std::vector<std::string>, std::vector<std::string>> parseWords(std::string sentence);
-		static std::unique_ptr<parser::Parser> parseSentences(const std::string& sentences);
+		static std::pair<std::vector<std::string>, std::vector<std::string>> extractWords(std::string input);
+		static std::unique_ptr<parser::Parser> generateParser(const std::string& customSentences);
 
 	public:
 		static stypox::ArgParser initialArgs;

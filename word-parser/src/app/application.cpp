@@ -213,8 +213,8 @@ namespace app {
 		return result;
 	}
 
-	pair<vector<string>, vector<string>> Application::parseWords(string sentence) {
-		for (auto&& ch : sentence) {
+	pair<vector<string>, vector<string>> Application::extractWords(string input) {
+		for (auto&& ch : input) {
 			switch (ch) {
 			case '"': case '(': case ')': case '[':
 			case ']': case ',': case ':': case ';':
@@ -223,41 +223,41 @@ namespace app {
 				ch = ' ';
 			}
 		}
-		auto insertedWords = splitAtSpaces(sentence);
+		auto insertedWords = splitAtSpaces(input);
 
-		for (auto&& ch : sentence) {
+		for (auto&& ch : input) {
 			if (ch >= 'A' && ch <= 'Z')
 				ch -= ('A' - 'a');
 		}
-		auto wordsLowercase = splitAtSpaces(sentence);
+		auto insertedWordsLowercase = splitAtSpaces(input);
 
-		return {insertedWords, wordsLowercase};
+		return {insertedWords, insertedWordsLowercase};
 	}
-	unique_ptr<parser::Parser> Application::parseSentences(const string& sentences) {
-		auto splitSentences = splitEvery(sentences, ';');
+	unique_ptr<parser::Parser> Application::generateParser(const string& input) {
+		auto sentences = splitEvery(input, ';');
 		
-		auto firstSectionSplit = splitEvery(splitSentences[0], ',');
-		if (firstSectionSplit.size() != 2) {
+		auto sentence0Split = splitEvery(sentences[0], ',');
+		if (sentence0Split.size() != 2) {
 			if (logs)
-				*logs << "Invalid sentences: " << sentences
-					<< "\nAt section 1: \n" << splitSentences[0] << "\n" << std::flush;
+				*logs << "Invalid sentences: " << input
+					<< "\nAt section 1: \n" << sentences[0] << "\n" << std::flush;
 			exit(1);
 		}
-		string idWhenInvalid = firstSectionSplit[0];
-		string codeWhenInvalid = fromHexTo8bit(firstSectionSplit[1]);
+		string idWhenInvalid = sentence0Split[0];
+		string codeWhenInvalid = fromHexTo8bit(sentence0Split[1]);
 
 		vector<parser::Sentence> resSentences;
 		vector<parser::CapturingSentence> resCapturingSentences;
-		for (auto section = splitSentences.begin() + 1; section != splitSentences.end(); ++section) {
-			auto sectionSplit = splitEvery(*section, ',');
-			if (sectionSplit.size() == 4)
-				resSentences.emplace_back(sectionSplit[0], sectionSplit[1], splitEvery(sectionSplit[2], '-'), fromHexTo8bit(sectionSplit[3]));
-			else if (sectionSplit.size() == 5)
-				resCapturingSentences.emplace_back(sectionSplit[0], sectionSplit[1], splitEvery(sectionSplit[2], '-'), splitEvery(sectionSplit[3], '-'), fromHexTo8bit(sectionSplit[4]));
+		for (auto sentence = sentences.begin() + 1; sentence != sentences.end(); ++sentence) {
+			auto sentenceSplit = splitEvery(*sentence, ',');
+			if (sentenceSplit.size() == 4)
+				resSentences.emplace_back(sentenceSplit[0], sentenceSplit[1], splitEvery(sentenceSplit[2], '-'), fromHexTo8bit(sentenceSplit[3]));
+			else if (sentenceSplit.size() == 5)
+				resCapturingSentences.emplace_back(sentenceSplit[0], sentenceSplit[1], splitEvery(sentenceSplit[2], '-'), splitEvery(sentenceSplit[3], '-'), fromHexTo8bit(sentenceSplit[4]));
 			else {
 				if (logs)
-					*logs << "Invalid sentences: " << sentences
-						<< "\nAt section " << section - splitSentences.begin() + 1 << ": " << *section << std::flush;
+					*logs << "Invalid sentences: " << input
+						<< "\nAt section " << sentence - sentences.begin() + 1 << ": " << *sentence << std::flush;
 				exit(1);
 			}
 		}
@@ -280,7 +280,7 @@ namespace app {
 				parser = &sentences_compiler_gen::parser;
 			}
 			else {
-				nonDefaultParser = parseSentences(sentences);
+				nonDefaultParser = generateParser(sentences);
 				parser = nonDefaultParser.get();
 			}
 
@@ -288,7 +288,7 @@ namespace app {
 			vector<string> insertedWords, insertedWordsLowercase;
 			switch (encoding) {
 			case hex8bit: {
-				auto words = parseWords(fromHexTo8bit(currentArgs.getText("inserted")));
+				auto words = extractWords(fromHexTo8bit(currentArgs.getText("inserted")));
 				insertedWords = words.first;
 				insertedWordsLowercase = words.second;
 				break;
@@ -299,17 +299,17 @@ namespace app {
 			}
 			}
 
-			// parse sentence
-			unique_ptr<parser::ParsedSentenceBase> parsedSentence = parser->parse(insertedWords, insertedWordsLowercase);
+			// parse inserted words
+			unique_ptr<parser::ParsedSentenceBase> parsedInput = parser->parse(insertedWords, insertedWordsLowercase);
 			
-			// output sentence
+			// output parsed input
 			if (logs){
-				parsedSentence->log(*logs);
+				parsedInput->log(*logs);
 				logs->flush();
 			}
 			switch (format) {
 			case json:
-				parsedSentence->json(*output);
+				parsedInput->json(*output);
 				output->flush();
 				break;
 			}
