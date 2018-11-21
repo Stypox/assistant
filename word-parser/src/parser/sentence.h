@@ -15,8 +15,8 @@ namespace parser {
 namespace parser {
 	constexpr int pointsAtBeginning = 0,
 		pointsFoundWord = 3,
-		pointsWordsInMiddle = -1,
-		minPointsWordInMiddle = -10,
+		pointsUnrecognizedWord = -1,
+		minPointsUnrecognizedWords = -10,
 		pointsFoundAllWords = 8,
 		pointsExactMatch = 6,
 		pointsNoWordsCaptured = -5;

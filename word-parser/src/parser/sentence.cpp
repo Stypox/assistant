@@ -33,7 +33,7 @@ namespace parser {
 
 				if (foundWord != insertedWord) {
 					exactMatch = false;
-					points += std::max(minPointsWordInMiddle, pointsWordsInMiddle * static_cast<int>(foundWord - insertedWord));
+					points += std::max(minPointsUnrecognizedWords, pointsUnrecognizedWord * static_cast<int>(foundWord - insertedWord));
 				}
 
 				insertedWord = foundWord + 1;
@@ -45,7 +45,7 @@ namespace parser {
 		}
 		else if (insertedWord != insertedWords.end()) {
 			exactMatch = false;
-			points += std::max(minPointsWordInMiddle, pointsWordsInMiddle * static_cast<int>(insertedWords.end() - insertedWord));
+			points += std::max(minPointsUnrecognizedWords, pointsUnrecognizedWord * static_cast<int>(insertedWords.end() - insertedWord));
 		}
 
 		if (foundAllWords) {
@@ -80,7 +80,7 @@ namespace parser {
 
 				if (foundWord != insertedWord) {
 					exactMatch = false;
-					points += std::max(minPointsWordInMiddle, pointsWordsInMiddle * static_cast<int>(foundWord - insertedWord));
+					points += std::max(minPointsUnrecognizedWords, pointsUnrecognizedWord * static_cast<int>(foundWord - insertedWord));
 				}
 
 				insertedWord = foundWord + 1;
@@ -118,7 +118,7 @@ namespace parser {
 
 				if (foundWord != insertedWord) {
 					exactMatch = false;
-					points += std::max(minPointsWordInMiddle, pointsWordsInMiddle * static_cast<int>(foundWord - insertedWord));
+					points += std::max(minPointsUnrecognizedWords, pointsUnrecognizedWord * static_cast<int>(foundWord - insertedWord));
 				}
 
 				insertedWord = foundWord + 1;
