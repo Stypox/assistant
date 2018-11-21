@@ -16,7 +16,6 @@ namespace parser::constructs {
 		Id id;
 		std::vector<std::string> words;
 
-		UnfoldedSentence(const Id& _id, std::vector<std::string>&& _words);
 		bool operator<(const UnfoldedSentence& other) const;
 	};
 
@@ -25,7 +24,6 @@ namespace parser::constructs {
 		std::vector<std::string> wordsBefore;
 		std::vector<std::string> wordsAfter;
 
-		UnfoldedCapturingSentence(const Id& _id, std::vector<std::string>&& _wordsBefore, std::vector<std::string>&& _wordsAfter);
 		bool operator<(const UnfoldedCapturingSentence& other) const;
 	};
 

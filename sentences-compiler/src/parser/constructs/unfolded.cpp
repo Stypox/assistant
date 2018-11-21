@@ -4,15 +4,9 @@
 #include <algorithm>
 
 namespace parser::constructs {
-	UnfoldedSentence::UnfoldedSentence(const Id& id, std::vector<std::string>&& words) :
-		id{id}, words{words} {}
 	bool UnfoldedSentence::operator<(const UnfoldedSentence& other) const {
 		return words < other.words;
 	}
-
-	UnfoldedCapturingSentence::UnfoldedCapturingSentence(const Id& id, std::vector<std::string>&& wordsBefore, std::vector<std::string>&& wordsAfter) :
-		id{id}, wordsBefore{wordsBefore},
-		wordsAfter{wordsAfter} {}
 	bool UnfoldedCapturingSentence::operator<(const UnfoldedCapturingSentence& other) const {
 		return std::lexicographical_compare(wordsBefore.begin(), wordsBefore.end(), wordsAfter.begin(), wordsAfter.end());
 	}

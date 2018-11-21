@@ -15,7 +15,7 @@ namespace parser::constructs {
 		sentences.reserve(unfoldedSentence.size());
 
 		for (auto&& sentence : unfoldedSentence)
-			sentences.emplace_back(m_id, std::move(sentence));
+			sentences.push_back({m_id, sentence});
 		
 		return sentences;
 	}
@@ -40,7 +40,7 @@ namespace parser::constructs {
 
 		for (auto&& sentenceBefore : unfoldedSentenceBefore)
 			for (auto&& sentenceAfter : unfoldedSentenceAfter)
-				sentences.emplace_back(m_id, std::move(sentenceBefore), std::move(sentenceAfter));
+				sentences.push_back({m_id, sentenceBefore, sentenceAfter});
 		
 		return sentences;
 	}
