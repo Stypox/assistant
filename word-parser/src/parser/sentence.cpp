@@ -41,8 +41,7 @@ namespace parser {
 		}
 
 		if (word != m_words.end()) {
-			exactMatch = false;
-			points += std::max(minPointsWordInMiddle, pointsWordsInMiddle * static_cast<int>(m_words.end() - word));
+			foundAllWords = false;
 		}
 		else if (insertedWord != insertedWords.end()) {
 			exactMatch = false;
@@ -89,8 +88,7 @@ namespace parser {
 		}
 
 		if (word != m_wordsAfter.rend()) {
-			exactMatch = false;
-			points += std::max(minPointsWordInMiddle, pointsWordsInMiddle * static_cast<int>(m_wordsAfter.rend() - word));
+			foundAllWords = false;
 		}
 		if (insertedWord == insertedWords.rend()) {
 			points += pointsNoWordsCaptured;
@@ -128,8 +126,7 @@ namespace parser {
 		}
 
 		if (word != m_wordsBefore.end()) {
-			exactMatch = false;
-			points += std::max(minPointsWordInMiddle, pointsWordsInMiddle * static_cast<int>(m_wordsBefore.end() - word));
+			foundAllWords = false;
 		}
 		if (insertedWord == insertedWords.end()) {
 			points += pointsNoWordsCaptured;
