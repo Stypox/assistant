@@ -265,7 +265,7 @@ namespace parser {
 		for (auto&& input : inputs)
 			parser.parse(*input);
 
-		if (app::Application::args.getBool("verbose")) {
+		if (app::Application::verbose) {
 			for (auto&& section : parser.m_sections)
 				std::cout << section << "\n";
 			for (auto&& section : parser.m_capturingSections)

@@ -1,7 +1,7 @@
 #ifndef _WORD_PARSER_APP_APPLICATION_H_
 #define _WORD_PARSER_APP_APPLICATION_H_
 
-#include <arg-parser/argparser.h>
+#include <stypox/argparser.h>
 #include <memory>
 #include <ostream>
 
@@ -9,23 +9,18 @@
 
 namespace app {
 	class Application {
+	public:
 		enum Encoding : char {
 			hex8bit,
 			hex16bit,
 		};
-		static Encoding toEncoding(const std::string& str);
 		enum Format : char {
 			json,
 		};
-		static Format toFormat(const std::string& str);
 
-
-		static std::unique_ptr<std::ostream> nonDefualtOutput;
-		static std::unique_ptr<std::ostream> nonDefaultLogs;
-
-
+	private:
 		static void parseInitialArgs(int argc, char const *argv[]);
-		static void parseCurrentArgs(const std::vector<std::string>& args);
+		static std::pair<std::string, std::string> parseCurrentArgs(const std::vector<std::string>& cliArgs);
 		static std::vector<std::string> getArgs();
 
 		static std::string fromHexTo8bit(const std::string& hex);
@@ -35,10 +30,13 @@ namespace app {
 		static std::unique_ptr<parser::Parser> generateParser(const std::string& customSentences);
 
 	public:
-		static stypox::ArgParser initialArgs;
-		static stypox::ArgParser currentArgs;
-		static std::ostream* output;
-		static std::ostream* logs;
+		static std::unique_ptr<std::ostream> nonDefualtOutput;
+		static std::unique_ptr<std::ostream> nonDefaultLogs;
+
+		static bool help;
+		static std::ostream* output, * logs;
+		static Encoding encoding;
+		static Format format;
 
 		static int run(int argc, char const *argv[]);
 	};

@@ -1,6 +1,6 @@
 #Makefile settings
 CXX = g++
-CXXINCLUDE = -I../include/
+CXXINCLUDE = -I../libs/arg-parser/include
 CXXFLAGS = -Wall -g -std=c++17 $(CXXINCLUDE)
 CXXLIBS = -lstdc++fs
 SRC = ./src/

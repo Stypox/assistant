@@ -11,80 +11,71 @@ namespace app {
 	using std::vector;
 	using std::unique_ptr;
 	using std::pair;
-
-	Application::Encoding Application::toEncoding(const string& str) {
-		if (str == "8bithex")
-			return hex8bit;
-		else if (str == "16bithex")
-			return hex16bit;
-		return Encoding{-1};
-	}
-	Application::Format Application::toFormat(const string& str) {
-		if (str == "json")
-			return json;
-		return Format{-1};
-	}
+	using stypox::args;
 
 
 	unique_ptr<std::ostream> Application::nonDefualtOutput = nullptr;
 	unique_ptr<std::ostream> Application::nonDefaultLogs = nullptr;
 
-
-	stypox::ArgParser Application::initialArgs{
-		"word-parser",
-		{
-			{"help", "prints the help screen and exits", {"-?", "-h", "--help"}}
-		}, {
-
-		}, {
-
-		}, {
-			{"output", "the output file (defaults to stdout)", {"-o=", "--output="}, "stdout"},
-			{
-				"encoding",
-				"input encoding (required, values: 8bithex (2 hexadecimal 0-f), 16bithex (4 hexadecimal 0-f))",
-				{"-e=", "--encoding="},
-				{},
-				[](string s) { return s == "8bithex" || s == "16bithex"; }
-			},
-			{"format", "output format (values: json (default))", {"-f=", "--format="}, "json", [](string s) { return s == "json"; }},
-			{"logs", "the file to save logs in (when openable) (stdout is valid)", {"-l=", "--logs="}}
-		}
-	};
-	stypox::ArgParser Application::currentArgs{
-		"word-parser",
-		{
-			{"help", "prints the help screen and exits", {"-?", "-h", "--help"}},
-			{"quit", "quit", {"-q", "--quit"}}
-		}, {
-
-		}, {
-
-		}, {
-			{"sentences", "replaces the precompiled sentences (format: sectionIdWhenInvalid,codeWhenInvalidHex;sectionId,sentenceId,word-word,codeHex;sectionId,sentenceId,word-word,word-word,codeHex;...)", {"-s=", "--sentences="}},
-			{"inserted", "inserted words (required, format: as chosen on startup)", {"-i=", "--inserted="}, {}}
-		},
-		false
-	};
-	std::ostream* Application::output = nullptr;
-	std::ostream* Application::logs = nullptr;
+	bool Application::help = false;
+	std::ostream* Application::output = &std::cout,
+		* Application::logs = nullptr;
+	Application::Encoding Application::encoding;
+	Application::Format Application::format = Application::json;
 
 
-	void openFile(const string& filename, std::ostream*& file, unique_ptr<std::ostream>& nonDefaultFile) {
+	std::ostream* openFile(const string& filename, unique_ptr<std::ostream>& nonDefaultFile) {
 		if (filename == "stdout") {
-			file = &std::cout;
+			return &std::cout;
 		}
 		else {
 			unique_ptr<std::ofstream> openedFile{new std::ofstream{filename, std::ios::binary}};
 			if (openedFile->is_open()) {
 				nonDefaultFile = std::move(openedFile);
-				file = nonDefaultFile.get();
+				return nonDefaultFile.get();
 			}
 			else {
-				file = nullptr;
+				return nullptr;
 			}
 		}
 	}
+
+	stypox::ArgParser initialArgParser{
+		std::make_tuple(
+			stypox::SwitchOption{"help", Application::help, args("-?", "-h", "--help"), "prints the help screen and exits"},
+			stypox::ManualOption{"output", Application::output, args("-o=", "--output="),
+				"the output file (defaults to stdout)", [&](const std::string_view& s) {
+				std::ostream* output = openFile(string{s}, Application::nonDefualtOutput);
+				if (!output) throw std::runtime_error{"Invalid output file \"" + string{s} + "\""};
+				return output;
+			}},
+			stypox::ManualOption{"logs", Application::logs, args("-l=", "--logs="),
+				"the file to save logs in (when openable) (stdout is valid)",
+				[&](const std::string_view& s) {
+				return openFile(string{s}, Application::nonDefaultLogs);
+			}},
+			stypox::ManualOption{"encoding", Application::encoding, args("-e=", "--encoding="),
+				"input encoding (values: hex8bit (2 hexadecimal 0-f), hex16bit (4 hexadecimal 0-f))",
+				[](const std::string_view& s) {
+				if (s == "hex8bit")
+					return Application::hex8bit;
+				else if (s == "hex16bit")
+					return Application::hex16bit;
+				else
+					throw std::runtime_error{"Invalid encoding \"" + string{s} + "\""};
+			}, true},
+			stypox::ManualOption{"format", Application::format, args("-f=", "--format="),
+				"output format (values: json (default))",
+				[](const std::string_view& s) {
+				if (s == "json")
+					return Application::json;
+				else
+					throw std::runtime_error{"Invalid format \"" + string{s} + "\""};
+			}}
+		),
+		"word-parser"
+	};
+	
 
 	vector<string> splitAtSpaces(const string& str) {
 		// counts two or more spaces as only one, thus does not generate empty strings
@@ -125,49 +116,62 @@ namespace app {
 
 	void Application::parseInitialArgs(int argc, char const *argv[]) {
 		try {
-			initialArgs.parse(argc, argv);
+			initialArgParser.parse(argc, argv);
 			
-			openFile(initialArgs.getText("logs"), logs, nonDefaultLogs);
-			if (initialArgs.getBool("help")) {
-				std::cout << initialArgs.help();
+			if (help) {
+				std::cout << initialArgParser.help();
 				exit(0);
 			}
 			
-			initialArgs.validate();
+			initialArgParser.validate();
 		}
 		catch (const std::runtime_error& e) {
 			if (logs)
 				*logs << "Error while parsing initial arguments: " << e.what() << std::flush;
 			exit(1);
 		}
-
-		openFile(initialArgs.getText("output"), output, nonDefualtOutput);
-		if (!output) {
-			if (logs)
-				*logs << "Error while parsing initial arguments: output file does not exist: " << initialArgs.getText("output") << std::flush;
-			exit(1);
-		}
 	}
-	void Application::parseCurrentArgs(const vector<string>& args) {
+	pair<string, string> Application::parseCurrentArgs(const vector<string>& cliArgs) {
+		static bool currentHelp = false,
+			currentQuit = false;
+		static string inserted{},
+			parserSentences{};
+
+		static stypox::ArgParser currentArgParser{
+			std::make_tuple(
+				stypox::SwitchOption{"help", currentHelp, args("-?", "-h", "--help"), "prints the help screen and exits"},
+				stypox::SwitchOption{"quit", currentQuit, args("-q", "--quit"), "quit"},
+				stypox::Option{"sentences", parserSentences, args("-s=", "--sentences="),
+					"replaces the precompiled sentences (format: sectionIdWhenInvalid,codeWhenInvalidHex;sectionId,sentenceId,word-word,codeHex;sectionId,sentenceId,word-word,word-word,codeHex;...)"},
+				stypox::Option{"inserted", inserted, args("-i=", "--inserted="), "inserted words (required, format: as chosen on startup)", true}
+			),
+			"word-parser"
+		};
+
+		// default values for the parser
+		parserSentences = "";
+		currentArgParser.reset();
+
 		try {
-			currentArgs.reset();
-			currentArgs.parse(args);
+			currentArgParser.parse(cliArgs.begin(), cliArgs.end(), false);
 
-			if (currentArgs.getBool("help")) {
-				std::cout << currentArgs.help();
+			if (currentHelp) {
+				std::cout << currentArgParser.help();
 				exit(0);
 			}
-			else if (currentArgs.getBool("quit")) {
+			else if (currentQuit) {
 				exit(0);
 			}
 
-			currentArgs.validate();
+			currentArgParser.validate();
 		}
 		catch (const std::runtime_error& e) {
 			if (logs)
 				*logs << "Error while parsing current arguments: " << e.what() << std::flush;
 			exit(1);
 		}
+
+		return {inserted, parserSentences};
 	}
 	vector<string> Application::getArgs() {
 		string line;
@@ -268,19 +272,17 @@ namespace app {
 	int Application::run(int argc, char const *argv[]) {
 		parseInitialArgs(argc, argv);
 		
-		const Encoding encoding = toEncoding(initialArgs.getText("encoding"));
-		const Format format = toFormat(initialArgs.getText("format"));
 		while (1) {
-			parseCurrentArgs(getArgs());
+			auto [inserted, parserSentences] = parseCurrentArgs(getArgs());
 
 			// determine which parser to use
 			parser::Parser* parser;
 			unique_ptr<parser::Parser> nonDefaultParser = nullptr;
-			if (string sentences = currentArgs.getText("sentences"); sentences.empty()) {
+			if (parserSentences.empty()) {
 				parser = &sentences_compiler_gen::parser;
 			}
 			else {
-				nonDefaultParser = generateParser(sentences);
+				nonDefaultParser = generateParser(parserSentences);
 				parser = nonDefaultParser.get();
 			}
 
@@ -288,7 +290,7 @@ namespace app {
 			vector<string> insertedWords, insertedWordsLowercase;
 			switch (encoding) {
 			case hex8bit: {
-				auto words = extractWords(fromHexTo8bit(currentArgs.getText("inserted")));
+				auto words = extractWords(fromHexTo8bit(inserted));
 				insertedWords = words.first;
 				insertedWordsLowercase = words.second;
 				break;

@@ -6,31 +6,34 @@
 #include "../parser/compiler.h"
 
 namespace app {
-	stypox::ArgParser Application::args{
-		"sentences-compiler",
-		{
-			{"help", "prints the help screen and exits", {"-?", "-h", "--help"}},
-			{"pretty", "makes the output code prettier and human readable", {"-p", "--pretty"}},
-			{"verbose", "will print (more) debug messages", {"-v", "--verbose"}}
-		}, {
+	bool Application::help = false,
+		Application::pretty = false,
+		Application::verbose = false;
+	std::string Application::input{},
+		Application::output{},
+		Application::language{"c++"};
 
-		}, {
-
-		}, {
-			{"input", "the input file(s) for compilation, separated by ':' (required)", {"-i=", "--input="}, {}},
-			{"output", "the output file for compilation (required)", {"-o=", "--output="}, {}},
-			{"language", "the language targeted at compilation (values: c++ (default))", {"-l=", "--language="}, "c++", [](std::string s) { return s == "c++"; }},
-		}
+	using stypox::args;
+	stypox::ArgParser argParser{
+		std::make_tuple(
+			stypox::SwitchOption{"help", Application::help, args("-?", "-h", "--help"), "prints the help screen and exits"},
+			stypox::SwitchOption{"pretty", Application::pretty, args("-p", "--pretty"), "makes the output code prettier and human readable"},
+			stypox::SwitchOption{"verbose", Application::verbose, args("-v", "--verbose"), "will print (more) debug messages"},
+			stypox::Option{"input", Application::input, args("-i=", "--input="), "the input file(s) for compilation, separated by ':' (required)", true},
+			stypox::Option{"output", Application::output, args("-o=", "--output="), "the output file for compilation (required)", true},
+			stypox::Option{"language", Application::language, args("-l=", "--language="), "the language targeted at compilation (values: c++ (default))"}
+		),
+		"sentences-compiler by Stypox"
 	};
 
 	int Application::run(int argc, char const *argv[]) {
 		try {
-			args.parse(argc, argv);
-			if (args.getBool("help")) {
-				std::cout << args.help();
+			argParser.parse(argc, argv);
+			if (help) {
+				std::cout << argParser.help();
 				return 0;
 			}
-			args.validate();
+			argParser.validate();
 		}
 		catch (const std::runtime_error& e) {
 			std::cout << "Error while parsing arguments: " << e.what();
@@ -40,26 +43,25 @@ namespace app {
 		try {
 			std::vector<std::istream*> inputs;
 
-			std::string filenames = args.getText("input");
-			auto begin = filenames.begin();
+			auto begin = input.begin();
 			while (1) {
-				auto end = std::find(begin, filenames.end(), ':');
-				std::ifstream* file = new std::ifstream{filenames.substr(begin - filenames.begin(), end - begin), std::ios::binary};
+				auto end = std::find(begin, input.end(), ':');
+				std::ifstream* file = new std::ifstream{input.substr(begin - input.begin(), end - begin), std::ios::binary};
 				if (!file->is_open())
-					throw std::runtime_error{"No such input file: " + filenames.substr(begin - filenames.begin(), end - begin)};
+					throw std::runtime_error{"No such input file: " + input.substr(begin - input.begin(), end - begin)};
 				inputs.push_back(file);
 
-				if (end == filenames.end())
+				if (end == input.end())
 					break;					
 				begin = end + 1;
 			}
 
-			std::ofstream outputFile{args.getText("output"), std::ios::binary};
+			std::ofstream outputFile{output, std::ios::binary};
 			if (!outputFile.is_open())
-				throw std::runtime_error{"No such output file: " + args.getText("output")};
+				throw std::runtime_error{"No such output file: " + output};
 
 			parser::Compiler compiler{inputs};
-			if (auto lang = args.getText("language"); lang == "c++")
+			if (language == "c++")
 				compiler.toCpp(outputFile);
 		}
 		catch (const std::runtime_error& e) {
