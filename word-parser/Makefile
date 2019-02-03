@@ -47,4 +47,4 @@ $(SRC)parser/parsed_sentence.o: $(SRC)parser/parsed_sentence.h $(SRC)parser/pars
 	$(CXX) $(CXXFLAGS) -o $(SRC)parser/parsed_sentence.o -c $(SRC)parser/parsed_sentence.cpp
 
 clean:
-	rm $(EXECUTABLE) $(OBJECT_FILES)
+	rm sentences.cpp $(EXECUTABLE) $(OBJECT_FILES)
