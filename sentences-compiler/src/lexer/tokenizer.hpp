@@ -3,7 +3,7 @@
 
 #include <istream>
 
-#include "stream.h"
+#include "stream.hpp"
 
 namespace lexer {
 	Stream tokenize(std::istream& input);

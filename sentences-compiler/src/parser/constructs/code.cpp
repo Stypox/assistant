@@ -1,4 +1,4 @@
-#include "code.h"
+#include "code.hpp"
 
 namespace parser::constructs {
 	std::string Code::cppStringLiteral() const {

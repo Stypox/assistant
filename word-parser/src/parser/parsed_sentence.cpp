@@ -1,4 +1,4 @@
-#include "parsed_sentence.h"
+#include "parsed_sentence.hpp"
 
 namespace parser {
 	using std::vector;

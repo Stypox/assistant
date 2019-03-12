@@ -1,7 +1,7 @@
 #ifndef _SENTENCES_COMPILER_APP_APPLICATION_H_
 #define _SENTENCES_COMPILER_APP_APPLICATION_H_
 
-#include <stypox/argparser.h>
+#include <stypox/argparser.hpp>
 
 namespace app {
 	class Application {

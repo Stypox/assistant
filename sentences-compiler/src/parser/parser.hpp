@@ -5,8 +5,8 @@
 #include <variant>
 #include <filesystem>
 
-#include "../lexer/stream.h"
-#include "constructs/section.h"
+#include "../lexer/stream.hpp"
+#include "constructs/section.hpp"
 
 namespace parser {
 	class Parser {

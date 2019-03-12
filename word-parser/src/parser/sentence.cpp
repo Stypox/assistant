@@ -1,4 +1,4 @@
-#include "sentence.h"
+#include "sentence.hpp"
 
 #include <algorithm>
 #include <iostream>

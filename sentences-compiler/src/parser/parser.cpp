@@ -1,10 +1,10 @@
-#include "parser.h"
+#include "parser.hpp"
 
 #include <fstream>
 #include <iostream>
 
-#include "../lexer/tokenizer.h"
-#include "../app/application.h"
+#include "../lexer/tokenizer.hpp"
+#include "../app/application.hpp"
 
 using namespace lexer;
 using namespace parser::constructs;

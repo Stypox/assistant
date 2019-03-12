@@ -7,15 +7,15 @@
 #include <optional>
 #include <tuple>
 
-#include "orword.h"
-#include "id.h"
+#include "orword.hpp"
+#include "id.hpp"
 
 namespace parser::constructs {
 	class Sentence;
 	class CapturingSentence;
 }
 
-#include "unfolded.h"
+#include "unfolded.hpp"
 
 namespace parser::constructs {
 	class Sentence {

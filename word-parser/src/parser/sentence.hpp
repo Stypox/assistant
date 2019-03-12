@@ -10,7 +10,7 @@ namespace parser {
 	class CapturingSentence;
 }
 
-#include "parsed_sentence.h"
+#include "parsed_sentence.hpp"
 
 namespace parser {
 	constexpr int pointsAtBeginning = 0,

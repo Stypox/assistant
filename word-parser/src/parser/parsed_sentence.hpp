@@ -6,7 +6,7 @@
 #include <memory>
 #include <ostream>
 
-#include "sentence.h"
+#include "sentence.hpp"
 
 namespace parser {
 	class ParsedSentenceBase {

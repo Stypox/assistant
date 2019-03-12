@@ -1,7 +1,7 @@
 #ifndef _WORD_PARSER_PARSER_PARSER_H_
 #define _WORD_PARSER_PARSER_PARSER_H_
 
-#include "sentence.h"
+#include "sentence.hpp"
 
 #include <tuple>
 

@@ -5,9 +5,9 @@
 #include <string>
 #include <ostream>
 
-#include "id.h"
-#include "code.h"
-#include "sentence.h"
+#include "id.hpp"
+#include "code.hpp"
+#include "sentence.hpp"
 
 namespace parser::constructs {
 	class Section {

@@ -1,9 +1,9 @@
-#include "application.h"
+#include "application.hpp"
 
 #include <iostream>
 #include <fstream>
 
-#include "../parser/compiler.h"
+#include "../parser/compiler.hpp"
 
 namespace app {
 	bool Application::help = false,

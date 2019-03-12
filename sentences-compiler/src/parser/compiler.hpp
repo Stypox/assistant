@@ -1,7 +1,7 @@
 #ifndef _SENTENCES_COMPILER_PARSER_COMPILER_H_
 #define _SENTENCES_COMPILER_PARSER_COMPILER_H_
 
-#include "constructs/section.h"
+#include "constructs/section.hpp"
 
 namespace parser {
 	class Compiler {

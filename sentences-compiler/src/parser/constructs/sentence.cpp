@@ -1,4 +1,4 @@
-#include "sentence.h"
+#include "sentence.hpp"
 
 namespace parser::constructs {
 	using std::vector;

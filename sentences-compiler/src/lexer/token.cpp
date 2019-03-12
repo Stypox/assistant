@@ -1,4 +1,4 @@
-#include "token.h"
+#include "token.hpp"
 
 namespace lexer {
 	std::string toLowercaseIfLetters(std::string value, bool isLetters) {

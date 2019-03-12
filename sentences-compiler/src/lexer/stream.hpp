@@ -3,7 +3,7 @@
 
 #include <queue>
 
-#include "token.h"
+#include "token.hpp"
 
 namespace lexer {	
 	class Stream {

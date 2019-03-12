@@ -1,4 +1,4 @@
-#include "orword.h"
+#include "orword.hpp"
 
 namespace parser::constructs {
 	using std::vector;

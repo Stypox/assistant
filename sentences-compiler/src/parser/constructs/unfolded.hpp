@@ -8,8 +8,8 @@ namespace parser::constructs {
 	struct UnfoldedCapturingSentence;
 }
 
-#include "id.h"
-#include "sentence.h"
+#include "id.hpp"
+#include "sentence.hpp"
 
 namespace parser::constructs {
 	struct UnfoldedSentence {

@@ -28,7 +28,7 @@ $(SRC)main.o: $(SRC)main.cpp $(SRC)parser/parser.o $(SRC)app/application.o
 	$(CXX) $(CXXFLAGS) -o $(SRC)main.o -c $(SRC)main.cpp
 
 # src/app
-$(SRC)app/application.o: $(SRC)app/application.h $(SRC)app/application.cpp sentences.cpp
+$(SRC)app/application.o: $(SRC)app/application.hpp $(SRC)app/application.cpp sentences.cpp
 	$(CXX) $(CXXFLAGS) -o $(SRC)app/application.o -c $(SRC)app/application.cpp
 
 
@@ -39,11 +39,11 @@ $(SENTENCES_COMPILER)sentences-compiler.exe:
 	cd $(SENTENCES_COMPILER) && make
 
 # src/parser
-$(SRC)parser/parser.o: $(SRC)parser/parser.h $(SRC)parser/parser.cpp $(SRC)parser/sentence.o
+$(SRC)parser/parser.o: $(SRC)parser/parser.hpp $(SRC)parser/parser.cpp $(SRC)parser/sentence.o
 	$(CXX) $(CXXFLAGS) -o $(SRC)parser/parser.o -c $(SRC)parser/parser.cpp
-$(SRC)parser/sentence.o: $(SRC)parser/sentence.h $(SRC)parser/sentence.cpp $(SRC)parser/parsed_sentence.o
+$(SRC)parser/sentence.o: $(SRC)parser/sentence.hpp $(SRC)parser/sentence.cpp $(SRC)parser/parsed_sentence.o
 	$(CXX) $(CXXFLAGS) -o $(SRC)parser/sentence.o -c $(SRC)parser/sentence.cpp
-$(SRC)parser/parsed_sentence.o: $(SRC)parser/parsed_sentence.h $(SRC)parser/parsed_sentence.cpp
+$(SRC)parser/parsed_sentence.o: $(SRC)parser/parsed_sentence.hpp $(SRC)parser/parsed_sentence.cpp
 	$(CXX) $(CXXFLAGS) -o $(SRC)parser/parsed_sentence.o -c $(SRC)parser/parsed_sentence.cpp
 
 clean:

@@ -1,7 +1,7 @@
-#include "compiler.h"
+#include "compiler.hpp"
 
-#include "parser.h"
-#include "../app/application.h"
+#include "parser.hpp"
+#include "../app/application.hpp"
 
 namespace parser {
 	using std::string;

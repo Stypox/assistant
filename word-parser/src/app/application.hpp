@@ -1,11 +1,11 @@
 #ifndef _WORD_PARSER_APP_APPLICATION_H_
 #define _WORD_PARSER_APP_APPLICATION_H_
 
-#include <stypox/argparser.h>
+#include <stypox/argparser.hpp>
 #include <memory>
 #include <ostream>
 
-#include "../parser/parser.h"
+#include "../parser/parser.hpp"
 
 namespace app {
 	class Application {

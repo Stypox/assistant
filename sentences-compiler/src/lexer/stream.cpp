@@ -1,4 +1,4 @@
-#include "stream.h"
+#include "stream.hpp"
 
 namespace lexer {
 	Token Stream::get(bool readNext) {
