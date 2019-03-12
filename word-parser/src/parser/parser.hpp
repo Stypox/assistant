@@ -1,5 +1,5 @@
-#ifndef _WORD_PARSER_PARSER_PARSER_H_
-#define _WORD_PARSER_PARSER_PARSER_H_
+#ifndef _WORD_PARSER_PARSER_PARSER_HPP_
+#define _WORD_PARSER_PARSER_PARSER_HPP_
 
 #include "sentence.hpp"
 

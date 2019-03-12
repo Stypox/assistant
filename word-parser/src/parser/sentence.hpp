@@ -1,5 +1,5 @@
-#ifndef _WORD_PARSER_PARSER_SENTENCE_H_
-#define _WORD_PARSER_PARSER_SENTENCE_H_
+#ifndef _WORD_PARSER_PARSER_SENTENCE_HPP_
+#define _WORD_PARSER_PARSER_SENTENCE_HPP_
 
 #include <vector>
 #include <string>

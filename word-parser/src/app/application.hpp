@@ -1,5 +1,5 @@
-#ifndef _WORD_PARSER_APP_APPLICATION_H_
-#define _WORD_PARSER_APP_APPLICATION_H_
+#ifndef _WORD_PARSER_APP_APPLICATION_HPP_
+#define _WORD_PARSER_APP_APPLICATION_HPP_
 
 #include <stypox/argparser.hpp>
 #include <memory>
